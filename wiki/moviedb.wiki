@@ -12,4 +12,4 @@ moviedb is a small Windows-only application written by Joel Klinghed. It is an i
  * Lots of movie details downloaded from imdb.com
  * DVD-cover or movie poster downloaded from imdb.com
 
-Unfortunately, development of moviedb ceased in 2003, the last relase was 2.0 RC4. The website has been down for years. The program continued working fine for a while, but in early 2007 IMDb changed their website, and moviedb could no longer download information from their website.
+Unfortunately, development of moviedb ceased in 2003, the last relase was 2.0 RC5. The website has been down for years. The program continued working fine for a while, but in early 2007 IMDb changed their website, and moviedb could no longer download information from their website.
