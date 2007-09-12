@@ -4,7 +4,7 @@
 
 [http://i219.photobucket.com/albums/cc285/jmoviedb/moviedb.png http://i219.photobucket.com/albums/cc285/jmoviedb/moviedb-scaled.png]
 
-moviedb is a small application written by by Joel Klinghed. It is an invaluable tool for organizing and keeping track of a large movie collection, and lets you keep track of stuff like:
+moviedb is a small Windows-only application written by by Joel Klinghed. It is an invaluable tool for organizing and keeping track of a large movie collection, and lets you keep track of stuff like:
  * Which movies you have seen and which you haven't
  * The file format of each movie
  * Audio and subtitle languages for each movie
@@ -12,4 +12,4 @@ moviedb is a small application written by by Joel Klinghed. It is an invaluable 
  * Lots of movie details downloaded from imdb.com
  * DVD-cover or movie poster downloaded from imdb.com
 
-Unfortunately, development of moviedb ceased in 2003, the last relase was 2.0 RC4. It continued working fine for a while, but In early 2007 IMDb changed their website, and moviedb could no longer download information from their website.
+Unfortunately, development of moviedb ceased in 2003, the last relase was 2.0 RC4. The website has been down for years. The program continued working fine for a while, but in early 2007 IMDb changed their website, and moviedb could no longer download information from their website.
