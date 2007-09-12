@@ -2,9 +2,9 @@
 
 = Why JMoviedb? =
 
-My primary motivation for developing JMoviedb is to replace the now unusable moviedb application. Having a movie collection of more than 1500 titles, I am completely dependent on a way to keep an overview. I am aware of a few free and non-free moviedb alternatives, but I didn't like any of them very much.
+My primary motivation for developing JMoviedb is to replace the now unusable [moviedb] application. Having a movie collection of more than 1500 titles, I am completely dependent on a way to keep an overview. I am aware of a few free and non-free moviedb alternatives, but I didn't like any of them very much.
 
-This is mainly a hobby project. I am currently a computer science student at the Norwegian University of Science and Technology, and I feel that a little extra programming experience is in order.
+This is mainly a hobby project, though seeing as I am currently a computer science student a little extra programming experience is probably not a bad idea.
 
 === What's with the name? ===
 
