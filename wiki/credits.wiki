@@ -10,4 +10,4 @@
 == Art ==
 
  * Toolbar icons are taken from the "Silk" icon set by [http://famfamfam.com/ Mark James]
- * The main program icon is taken from the Dropline Nuovo! Gnome icon set by [http://silvestre.com.ar/ Silvestre]
+ * The main program icon is taken from the "Dropline Nuovo!" Gnome icon set by [http://silvestre.com.ar/ Silvestre]
