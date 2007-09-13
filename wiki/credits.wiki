@@ -1,0 +1,6 @@
+#summary Stuff in JMoviedb that I didn't make myself
+
+== Introduction ==
+
+ * [http://www.eclipse.org/swt/ Eclipse SWT] (distributed in a separate package in order to avoid [http://en.wikipedia.org/wiki/GNU_General_Public_License GPL]/[http://en.wikipedia.org/wiki/Eclipse_Public_License EPL] conflicts
+ * [http://db.apache.org/derby/ Apache Derby]
