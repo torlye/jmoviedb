@@ -2,5 +2,6 @@
 
 == Planned and copleted features ==
 
-|| *Feature* || *Progress* ||
-|| 1 || 2 ||
+|| *Feature* || *Priority* || *Progress* ||
+|| The main application window - menus, toolbars, status line etc. || High || In progress ||
+|| *.jmdb file format || High || Completed ||
