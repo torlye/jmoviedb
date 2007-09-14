@@ -1,7 +1,7 @@
 #summary A list of features and their implementation progress
 #labels Featured
 
-== Planned and copleted features ==
+== Planned and completed features ==
 
 || *Feature* || *Priority* || *Progress* || *Notes* ||
 || The main application window - menus, toolbars, status line etc. || High || In progress || ||
@@ -27,4 +27,5 @@
 || Loans - keep track of which movies you have lent to your buddies || Low || Not started || ||
 || Printing support || Low || Not started || ||
 || Clippy - a helpful animated character in the form of a paperclip. It pops up at regular intervals and offers help and useful "did you know" messages. || Very high || In progress || J/K! ||
+ 
  
