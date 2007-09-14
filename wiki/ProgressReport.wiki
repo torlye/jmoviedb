@@ -2,5 +2,5 @@
 
 == Planned and copleted features ==
 
-||*Feature*||*Progress*||
-||1||2||
+|| *Feature* || *Progress* ||
+|| 1 || 2 ||
