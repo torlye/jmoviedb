@@ -2,7 +2,7 @@
 
 == Software ==
 
- * [http://www.eclipse.org/swt/ Eclipse SWT] (distributed in a separate package in order to avoid [http://en.wikipedia.org/wiki/GNU_General_Public_License GPL]/[http://en.wikipedia.org/wiki/Eclipse_Public_License EPL] conflicts)
+ * [http://www.eclipse.org/swt/ Eclipse SWT + JFace] (distributed in a separate package in order to avoid [http://en.wikipedia.org/wiki/GNU_General_Public_License GPL]/[http://en.wikipedia.org/wiki/Eclipse_Public_License EPL] conflicts)
  * [http://db.apache.org/derby/ Apache Derby]
  * [http://browserlaunch2.sourceforge.net/ BrowserLauncher2]
  * [http://sourceforge.net/projects/javacsv Java CSV Library]
@@ -11,3 +11,4 @@
 
  * Toolbar icons are taken from the "Silk" icon set by [http://famfamfam.com/ Mark James]
  * The main program icon is taken from the "Dropline Nuovo!" Gnome icon set by [http://silvestre.com.ar/ Silvestre]
+ 
