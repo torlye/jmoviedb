@@ -18,12 +18,13 @@
 || Movie dialog: "Audio/subtitles" tab - details about the audio/subtitle languages and formats || High || Not started || ||
 || Import data from IMDb || High || In progress || Completed, except for cover image. Also need some nice GUI dialogs and probably a progeress bar. ||
 || Open a website in the system's browser when clicking a link in JMoviedb. Would be used to easily open a movie's IMDb page, etc. || High || In progress || Will only work on [http://browserlaunch2.sourceforge.net/platformsupport.shtml certain platforms]. Intelligent handling of cases where it does not work is planned. ||
-|| Special handling of TV-series: ability to set which episodes a TV-series entry contains. Example: A DVD box set containing season 1 of a TV-series || Medium || Not started || ||
+|| Special handling of TV-series. Example: A TV-series entry in the database may represent a DVD box set containing season 1 of the series || Medium || Not started || ||
 || IMDb mass import - update all movies in the list with data from imdb.com || Medium || Not started || It may be advantageous to make this feature multi-threaded, so that it will download data for two or more movies at the same time. This should lead to better bandwidth utilization and faster downloads depending on the connection. ||
 || Filtering the main window movie list different criteria, for example "show only movies that I have not seen" || Medium || Not started || ||
 || Importing data from the CSV-format that moviedb uses || Medium || Completed || May need an improved GUI dialog ||
 || Importing data from plain text files || Medium || Not started || ||
 || Exporting data to other formats (plain text, CSV, HTML?) || Low || Not started || ||
 || Printing support || Low || Not started || ||
+ 
  
  
