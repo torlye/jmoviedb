@@ -8,15 +8,16 @@
 || SQL Database design || High || Completed || ||
 || Database interfacing || High || In progress || ||
 || A simple movie list in the main window showing the contents of the database || High || Completed || ||
-|| An advanced movie list showing cover image, format, rating, runtime etc. for each movie type. Will include colour coding on seen/not seen status and format type. || High || Not started || ||
+|| An advanced movie list showing cover image, format, rating, runtime etc. for each movie type. Will include colour coding on seen/not seen status and format type. See the moviedb page for details. || High || Not started || ||
 || Sorting the main window movie list on ID, title, year, rating or format. Ascending or descending sort direction. || High || In progress || Completed, except for format type sorting ||
 || A movie dialog box for viewing/editing detailed information about a movie || High || In progress || ||
-|| Import data from IMDb || High || In progress || Completed, except for cover image. Also need some nice GUI dialogs and probably a progeress bar.
+|| Import data from IMDb || High || In progress || Completed, except for cover image. Also need some nice GUI dialogs and probably a progeress bar. ||
 || IMDb mass import - update all movies in the list with data from imdb.com || Medium || Not started || It may be advantageous to make this feature multi-threaded, so that it will download data for two or more movies at the same time. This should lead to better bandwidth utilization and faster downloads depending on the connection. ||
 || Filtering the main window movie list different criteria, for example "show only movies that I have not seen" || Medium || Not started || ||
 || Importing data from the CSV-format that moviedb uses || Medium || Completed || May need an improved GUI dialog ||
 || Importing data from plain text files || Medium || Not started || ||
 || Exporting data to other formats (plain text, CSV, HTML?) || Low || Not started || ||
 || Printing || Low || Not started || ||
+ 
  
  
