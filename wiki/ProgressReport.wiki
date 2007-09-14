@@ -1,4 +1,5 @@
 #summary A list of features and their implementation progress
+#labels Featured
 
 == Planned and copleted features ==
 
@@ -9,7 +10,12 @@
 || A simple movie list in the main window showing the contents of the database || High || Completed || ||
 || An advanced movie list showing cover image, format, rating, runtime etc. for each movie type. Will include colour coding on seen/not seen status and format type. See [moviedb the moviedb page] for details. || High || Not started || ||
 || Sorting the main window movie list on ID, title, year, rating or format. Ascending or descending sort direction. || High || In progress || Completed, except for format type sorting ||
-|| A movie dialog box for viewing/editing detailed information about a movie || High || In progress || ||
+|| A tabbed movie dialog box for viewing/editing detailed information about a movie || High || In progress || ||
+|| Movie dialog: "Main" tab - movie title and cover image, most details about the movie itself is located here || High || In progress || ||
+|| Movie dialog: "Tagline/plot" tab || High || In progress || ||
+|| Movie dialog: "Actors" tab - a list of the cast. May include an option to search for other movies with a specific actor || High || In progress || ||
+|| Movie dialog: "Format/video" tab - details about the format type (DVD, VHS, Blu-Ray etc) and the video format of the movie || High || Not starded || ||
+|| Movie dialog: "Audio/subtitles" tab - details about the audio/subtitle languages and formats || High || Not started || ||
 || Import data from IMDb || High || In progress || Completed, except for cover image. Also need some nice GUI dialogs and probably a progeress bar. ||
 || Open a website in the system's browser when clicking a link in JMoviedb. Would be used to easily open a movie's IMDb page, etc. || High || In progress || Will only work on [http://browserlaunch2.sourceforge.net/platformsupport.shtml certain platforms]. Intelligent handling of cases where it does not work is planned. ||
 || IMDb mass import - update all movies in the list with data from imdb.com || Medium || Not started || It may be advantageous to make this feature multi-threaded, so that it will download data for two or more movies at the same time. This should lead to better bandwidth utilization and faster downloads depending on the connection. ||
@@ -18,8 +24,4 @@
 || Importing data from plain text files || Medium || Not started || ||
 || Exporting data to other formats (plain text, CSV, HTML?) || Low || Not started || ||
 || Printing support || Low || Not started || ||
- 
- 
- 
- 
  
