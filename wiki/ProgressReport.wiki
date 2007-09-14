@@ -24,5 +24,7 @@
 || Importing data from the CSV-format that moviedb uses || Medium || Completed || May need an improved GUI dialog ||
 || Importing data from plain text files || Medium || Not started || ||
 || Exporting data to other formats (plain text, CSV, HTML?) || Low || Not started || ||
+|| Loans - keep track of which movies you have lent to your buddies || Low || Not started || ||
 || Printing support || Low || Not started || ||
 || Clippy - a helpful animated character in the form of a paperclip. It pops up at regular intervals and offers help and useful "did you know" messages. || Very high || In progress || J/K! ||
+ 
