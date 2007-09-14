@@ -25,6 +25,4 @@
 || Importing data from plain text files || Medium || Not started || ||
 || Exporting data to other formats (plain text, CSV, HTML?) || Low || Not started || ||
 || Printing support || Low || Not started || ||
- 
- 
- 
+|| Clippy - a helpful animated character in the form of a paperclip. It pops up at regular intervals and offers help and useful "did you know" messages. || Very high || In progress || J/K! ||
