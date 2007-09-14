@@ -3,8 +3,11 @@
 == Planned and copleted features ==
 
 || *Feature* || *Priority* || *Progress* || *Notes* ||
-|| The main application window - menus, toolbars, status line etc. || High || In progress ||
-|| Saving to and loading from the `*`.jmdb file format || High || Completed ||
-|| SQL Database design || High || Completed ||
-|| Database interfacing || High || In progress ||
-|| Importing data from the CSV-format that moviedb uses || Medium || In progress ||
+|| The main application window - menus, toolbars, status line etc. || High || In progress || ||
+|| Saving to and loading from the `*`.jmdb file format || High || Completed || ||
+|| SQL Database design || High || Completed || ||
+|| Database interfacing || High || In progress || ||
+|| Importing data from the CSV-format that moviedb uses || Medium || Completed || May need an improved GUI dialog ||
+|| Importing data from plain text files || Medium || Not started || ||
+|| Exporting data to other formats (plain text, CSV, HTML?) || Low || Not started || ||
+|| Printing || Low || Not started || ||
