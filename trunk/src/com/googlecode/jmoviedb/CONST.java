@@ -21,7 +21,7 @@ package com.googlecode.jmoviedb;
 
 /**
  * This class provides a number of public constants and static methods.
- * @author Tor
+ * @author Tor Arne Lye
  *
  */
 public class CONST {

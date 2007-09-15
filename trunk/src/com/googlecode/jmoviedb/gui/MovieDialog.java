@@ -51,6 +51,14 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * A MovieDialog is a tabbed dialog box that is used to display or edit information about an AbstractMovie subclass.
+ * When the dialog is closed, it will reaturn one of the following return codes: IDialogConstants.OK_ID, (if the user
+ * pressed the OK button) IDialogConstants.CANCEL_ID, (if the user pressed the cancel button) or 
+ * IDialogConstants.ABORT_ID (if the user pressed the delete button)
+ * @author Tor Arne Lye
+ *
+ */
 public class MovieDialog extends Dialog implements org.eclipse.swt.events.SelectionListener {
 	private AbstractMovie movie;
 	private Combo typeCombo;

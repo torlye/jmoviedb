@@ -35,7 +35,7 @@ import com.googlecode.jmoviedb.model.movietype.*;
 
 /**
  * This class handles all transactions to and from the DBMS.
- * @author Tor
+ * @author Tor Arne Lye
  *
  */
 public class Database /*extends Thread*/ {

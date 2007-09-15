@@ -32,10 +32,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 public class FileOpenAction extends Action {
 	
-	private Action fileSaveAction;
-	
-	public FileOpenAction(Action fileSaveAction) {
-		this.fileSaveAction = fileSaveAction;
+	public FileOpenAction() {
 		setText("Open...");
 		setToolTipText("Open");
 		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_OPEN));
