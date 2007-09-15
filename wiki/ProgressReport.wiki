@@ -14,7 +14,7 @@
 || Movie dialog: "Main" tab - movie title and cover image, most details about the movie itself is located here || High || In progress || ||
 || Movie dialog: "Tagline/plot" tab || High || In progress || ||
 || Movie dialog: "Actors" tab - a list of the cast. May include an option to search for other movies with a specific actor || High || In progress || ||
-|| Movie dialog: "Format/video" tab - details about the format type (DVD, VHS, Blu-Ray etc) and the video format of the movie || High || Not starded || ||
+|| Movie dialog: "Format/video" tab - details about the format type (DVD, VHS, Blu-Ray etc) and the video format of the movie || High || Not started || ||
 || Movie dialog: "Audio/subtitles" tab - details about the audio/subtitle languages and formats || High || Not started || ||
 || Import data from IMDb || High || In progress || Completed, except for cover image. Also need some nice GUI dialogs and probably a progeress bar. ||
 || Open a website in the system's browser when clicking a link in JMoviedb. Would be used to easily open a movie's IMDb page, etc. || High || In progress || Will only work on [http://browserlaunch2.sourceforge.net/platformsupport.shtml certain platforms]. Intelligent handling of cases where it does not work is planned. ||
@@ -27,5 +27,6 @@
 || Loans - keep track of which movies you have lent to your buddies || Low || Not started || ||
 || Printing support || Low || Not started || ||
 || Clippy - a helpful animated character in the form of a paperclip. It pops up at regular intervals and offers help and useful "did you know" messages. || Very high || In progress || J/K! ||
+ 
  
  
