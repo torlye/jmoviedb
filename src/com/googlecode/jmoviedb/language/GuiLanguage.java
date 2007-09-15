@@ -121,7 +121,6 @@ public class GuiLanguage {
 	public static String FORMAT_XSVCD_DESCRIPTION = "";
 	public static String FORMAT_KVCD_DESCRIPTION = "";
 
-//	try {
 	public static String FORMAT_DVD_URL = "http://en.wikipedia.org/wiki/DVD-Video";
 	public static String FORMAT_HDDVD_URL = "http://en.wikipedia.org/wiki/HD_DVD";
 	public static String FORMAT_BLURAY_URL = "http://en.wikipedia.org/wiki/Blu-ray";
@@ -131,9 +130,6 @@ public class GuiLanguage {
 	public static String FORMAT_XVCD_URL = "http://en.wikipedia.org/wiki/XVCD";
 	public static String FORMAT_XSVCD_URL = "http://en.wikipedia.org/wiki/XVCD";
 	public static String FORMAT_KVCD_URL = "http://en.wikipedia.org/wiki/K_Video_Compression_Dynamics";	
-//	} catch (MalformedURLException e) {
-//		// Should never happen
-//	 }
 	 
 	public static String LANGUAGE_ALBANIAN = "Albanian";
 	public static String LANGUAGE_ARABIC = "Arabic";

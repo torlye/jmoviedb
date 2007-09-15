@@ -219,6 +219,10 @@ public class Moviedb {
 		return title;
 	}
 	
+	/**
+	 * Gets the database's save status
+	 * @return false of there are unsaved changes, true otherwise
+	 */
 	public boolean isSaved() {
 		return saved;
 	}
@@ -233,6 +237,10 @@ public class Moviedb {
 	
 	public void addListener(IPropertyChangeListener listener) {
 		listeners.add(listener);
+		if(CONST.DEBUG_MODE) {
+			System.out.println("Moviedb has a new listener. It is " + listener);
+			System.out.println("Total listener count is now " + listeners.getListeners().length);
+		}
 	}
 	
 	public void removeListener(IPropertyChangeListener listener) {
@@ -241,6 +249,9 @@ public class Moviedb {
 	
 	public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
+		
+		if(CONST.DEBUG_MODE)
+			System.out.println("PCE: fired from Moviedb to " + listeners.getListeners().length + " listener(s)");
 		
 		Object[] listenerObjects = listeners.getListeners();
 		for (int i = 0; i < listenerObjects.length; i++) {
@@ -256,7 +267,7 @@ public class Moviedb {
 		this.saveFile = saveFile;
 	}
 	
-	public void shutdown() {
+	public void close() {
 		database.shutdown();
 		recursiveDeleteDirectory(new File(dbTempPath));
 	}

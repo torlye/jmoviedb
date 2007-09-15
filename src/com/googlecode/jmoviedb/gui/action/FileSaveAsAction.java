@@ -61,7 +61,8 @@ public class FileSaveAsAction extends Action {
 			
 			MainWindow.getMainWindow().getDB().setSaveFile(saveFile);
 			MainWindow.getMainWindow().getDB().save(saveFile);
-			
+			MainWindow.getMainWindow().setStatusLineMessage(GuiLanguage.SAVESUCCESS);
+			MainWindow.getMainWindow().updateShellText();
 			Settings.getSettings().updateRecentFiles(saveFile);
 			//TODO refresh the main window shell text
 		} catch (Exception e) {

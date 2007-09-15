@@ -30,6 +30,11 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.Point;
 
+/**
+ * Manages the user's preferences for the application and stores them in an xml file.
+ * @author Tor Arne Lye
+ *
+ */
 public class Settings {
 	private static Settings settingsInstance;
 	private static String fileName;

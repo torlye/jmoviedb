@@ -86,6 +86,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private AddMovieAction addTvMovieAction;
 	private AddMovieAction addMiniSeriesAction;
 	private AddMovieAction addVideomovieAction;
+	private AddMovieDropdownMenu addMovieDropdownMenu;
 	
 	private HelpHelpAction helpHelpAction;
 	private HelpAboutAction helpAboutAction;
@@ -117,8 +118,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		
 		fileSaveAsAction = new FileSaveAsAction();
 		fileSaveAction = new FileSaveAction(fileSaveAsAction);
-		newAction = new FileNewAction(fileSaveAction);
-		fileOpenAction = new FileOpenAction(fileSaveAction);
+		newAction = new FileNewAction();
+		fileOpenAction = new FileOpenAction();
 		printAction = new PrintAction();
 		fileImportAction = new FileImportAction();
 		createRecentFilesMenu();
@@ -134,6 +135,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		helpHelpAction = new HelpHelpAction();
 		helpAboutAction = new HelpAboutAction(this);
 		helpHelpAction.setEnabled(false);
+		printAction.setEnabled(false);
 		
 		addFilmAction = new AddMovieAction(CONST.MOVIETYPE_FILM);
 		addMovieSerialAction = new AddMovieAction(CONST.MOVIETYPE_MOVIESERIAL);
@@ -141,6 +143,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		addTvMovieAction = new AddMovieAction(CONST.MOVIETYPE_TVMOVIE);
 		addTvSeriesAction = new AddMovieAction(CONST.MOVIETYPE_TVSERIES);
 		addMiniSeriesAction = new AddMovieAction(CONST.MOVIETYPE_MINISERIES);
+		addMovieDropdownMenu = new AddMovieDropdownMenu();
 		
 		addMenuBar();
 		addCoolBar(coolBarStyle);
@@ -151,6 +154,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		setSearchParameters();
 	}
 
+	/**
+	 * Creates the program menus
+	 */
 	protected MenuManager createMenuManager(){
 		menuManager = new MenuManager();
 		
@@ -210,14 +216,19 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		return menuManager;
 	}
 
+	/**
+	 * Creates the CoolBar
+	 */
 	protected CoolBarManager createCoolBarManager(int style) {
 		CoolBarManager coolBarManager = new CoolBarManager(style);
 		coolBarManager.add(createToolBarManager(0));
 		coolBarManager.add(createToolBarManager(1));
-//		coolBarManager.add(createToolBarManager(2));
 		return coolBarManager;
 	}
 
+	/**
+	 * Creates the ToolBar
+	 */
 	protected ToolBarManager createToolBarManager(int number){
 		ToolBarManager toolBarManager = new ToolBarManager(toolBarStyle);
 		switch (number){
@@ -227,16 +238,16 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			toolBarManager.add(fileSaveAction);
 			break;
 		case 1:
-			toolBarManager.add(new AddMovieDropdownMenu());
+			toolBarManager.add(addMovieDropdownMenu);
 			toolBarManager.add(new TestAction("Test!"));
-			break;
-		case 2:
-			//
 			break;
 		}
 		return toolBarManager;
 	}
 
+	/**
+	 * Sets windows size and location on startup
+	 */
 	protected void initializeBounds(){
 		//read the stored window size from settings file
 		getShell().setSize(settings.getWindowSize());
@@ -251,7 +262,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	protected Control createContents(Composite parent) {
 		viewer = new ListViewer(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(new MovieContentProvider());
-		viewer.setLabelProvider(new LabelProvider());
+		viewer.setLabelProvider(new LabelProvider()); //TODO make a new label provider for advanced list view
 		try {
 			viewer.setInput(null);
 		} catch (Exception e) {
@@ -263,18 +274,17 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		return list;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText("JMoviedb");
 	}
 	
-//	protected StatusLineManager createStatusLineManager() {
-//		StatusLineManager slm = new StatusLineManager();
-//		slm.setErrorMessage("This is an error");
-//		slm.setMessage("This is a message");
-//		return slm;
-//	}
-	
+	/**
+	 * Saves the configuration file
+	 */
 	private void saveSettings() {
 		settings.setWindowSize(getShell().getSize());
 		settings.setWindowPosition(getShell().getLocation());
@@ -282,6 +292,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		settings.save();
 	}
 	
+	/**
+	 * Calculates the screen coordinates the window should move to if it is to be centered on the screen.
+	 * @param dimension
+	 * @return screen coordinates
+	 */
 	public Point getCenterScreenPos(Point dimension) {
 		Point screenSize = new Point(
 				getShell().getDisplay().getClientArea().width,
@@ -311,19 +326,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		statusLine.setMessage(message);
 	}
 	
+	/**
+	 * Opens a new database in the main window
+	 * @param db
+	 */
 	public void setDB(Moviedb db) {
 		viewer.setInput(db);
-		
-		String filePath = db.getSaveFile();
-		String fileName;
-		if(filePath != null) {
-			int beginIndex = filePath.lastIndexOf(File.separator);
-			fileName = filePath.substring(beginIndex + 1);
-		} else {
-			fileName = "New file";
-		}
-		
-		getShell().setText("JMoviedb - " + fileName);
+		updateShellText();
+		fileSaveAction.setEnabled(false);
 	}
 	
 	/**
@@ -334,6 +344,28 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		return (Moviedb)viewer.getInput();
 	}
 	
+	/**
+	 * Updates the text on the title bar (i.e. the shelltext)
+	 * Call this whenever a new file is opened, or if an open file
+	 * is saved in a new location/under a new name
+	 */
+	public void updateShellText() {
+		String filePath = getDB().getSaveFile();
+		String fileName;
+		if(filePath != null) {
+			int beginIndex = filePath.lastIndexOf(File.separator);
+			fileName = filePath.substring(beginIndex + 1);
+		} else {
+			fileName = "New file";
+		}
+		getShell().setText("JMoviedb - " + fileName);
+	}
+	
+	/**
+	 * Opens the movie dialog
+	 * @param m - the movie to open
+	 * @throws SQLException
+	 */
 	public void openMovieDialog(AbstractMovie m) throws SQLException {
 		MovieDialog d = new MovieDialog(m);
 		int returnCode = d.open();
@@ -356,7 +388,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		
 		switch (returnCode) {
 			case IDialogConstants.OK_ID:
-//				getDB().saveMovie(d.getModel());
+				getDB().saveMovie(d.getModel());
 				break;
 			case IDialogConstants.ABORT_ID:
 				//TODO MainWindow.getMainWindow().getDB().deleteMovie();
@@ -365,7 +397,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 	
 	/**
-	 * Enable or disable certain GUI elements.
+	 * Enable or disable certain GUI widgets. This widgets should be enabled when a database file is open.
 	 * @param enabled
 	 */
 	public void setEnabled(boolean enabled) {
@@ -373,8 +405,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //			getList().setEnabled(b); //org.eclipse.swt.SWTException: Invalid thread access????
 		fileSaveAction.setEnabled(enabled);
 		fileSaveAsAction.setEnabled(enabled);
-		printAction.setEnabled(enabled);
-//		addFilmAction.setEnabled(enabled); //TODO enable
+//		printAction.setEnabled(enabled);//TODO enable when feature is implemented
+		addFilmAction.setEnabled(enabled);
+		addMovieSerialAction.setEnabled(enabled);
+		addVideomovieAction.setEnabled(enabled);
+		addTvMovieAction.setEnabled(enabled);
+		addTvSeriesAction.setEnabled(enabled);
+		addMiniSeriesAction.setEnabled(enabled);
+		addMovieDropdownMenu.setEnabled(enabled);
 		
 		sortByIdAction.setEnabled(enabled);
 		sortByTitleAction.setEnabled(enabled);
@@ -399,6 +437,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		Display.getCurrent().dispose();
 	}
 	
+	/**
+	 * Called when the application is shutting down
+	 */
 	public void handleShellCloseEvent() {
 		int saveAnswer = saveOnCloseQuestion();
 		if(saveAnswer == CONST.ANSWER_SAVE)
@@ -427,20 +468,20 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		int returnCode = CONST.ANSWER_DONT_SAVE;
 		
 		if(getDB() != null && getDB().isSaved() == false) {
-			returnCode = new MessageDialog(MainWindow.getMainWindow().getShell(), "JMoviedb", null, "Do you want to save changes?", MessageDialog.QUESTION, new String[]{"Save", "Don't save", "Cancel"}, 0).open();
+			returnCode = new MessageDialog(getShell(), "JMoviedb", null, "Do you want to save changes?", MessageDialog.QUESTION, new String[]{"Save", "Don't save", "Cancel"}, 0).open();
 			if(returnCode == CONST.ANSWER_SAVE)
 				fileSaveAction.run();
 		}
 		return returnCode;
 	}
 	
+	/**
+	 * Returns the running instance of MainWindow
+	 * @return
+	 */
 	public static MainWindow getMainWindow() {
 		return instance;
 	}
-	
-//	public Action getSaveAction() {
-//		return fileSaveAction;
-//	}
 	
 	/**
 	 * Workaround to enable MainWindow's ExceptionHandler to handle exceptions thrown
@@ -486,6 +527,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		//TODO needs to actually do something
 		return true;
 	}
+	
+	/**
+	 * Opens the specified URL in the system's web browser
+	 * @param url the URL to open
+	 */
+	public void launchBrowser(String url) {
+		System.out.println("Browse to " + url); //TODO implement
+	}
 
 	/**
 	 * The main method that launches the application.
@@ -518,11 +567,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			}
 		}
 		else if(pce.getProperty().equals(CONST.RECENT_FILES_PROPERTY_NAME)) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("PCE: REFRESH RECENT FILES LIST");
-			
 			createRecentFilesMenu();
-			System.out.println("new name should now be " + openPreviousAction1.getText());
+			
+			if(CONST.DEBUG_MODE) {
+				System.out.println("PCE: REFRESH RECENT FILES LIST");
+				System.out.println("The topmost item should now be " + openPreviousAction1.getText());
+			}
+			
+			getMenuBarManager().updateAll(true); //TODO why does this not work?
 			menuManager.updateAll(true); //TODO why does this not work?
 		}
 	}

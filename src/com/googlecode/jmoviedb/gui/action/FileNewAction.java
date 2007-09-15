@@ -29,10 +29,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 public class FileNewAction extends Action {
 	
-	private Action fileSaveAction;
-	
-	public FileNewAction(Action fileSaveAction) {
-		this.fileSaveAction = fileSaveAction;
+	public FileNewAction() {
 		setText("New");
 		setToolTipText("New"); 
 		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_NEW));
