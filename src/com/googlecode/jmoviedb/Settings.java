@@ -21,8 +21,7 @@ package com.googlecode.jmoviedb;
 
 import java.io.IOException;
 
-import com.googlecode.jmoviedb.language.GuiLanguage;
-import com.googlecode.jmoviedb.language.ValidGuiLanguages;
+import com.googlecode.jmoviedb.language.*;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.dialogs.DialogSettings;

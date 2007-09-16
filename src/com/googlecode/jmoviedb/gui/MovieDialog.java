@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.*;
-import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.*;
 import com.googlecode.jmoviedb.model.movietype.*;
 import com.googlecode.jmoviedb.net.ImdbWorker;
