@@ -43,7 +43,7 @@ public class FileNewAction extends Action {
 		try {
 			MainWindow.getMainWindow().setDB(new Moviedb(null));
 		} catch (Exception e) {
-			ExceptionHandler.handle(e);
+			MainWindow.getMainWindow().handleException(e);
 		}
 	}
 }

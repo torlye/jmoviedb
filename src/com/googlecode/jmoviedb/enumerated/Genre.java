@@ -20,38 +20,38 @@
 package com.googlecode.jmoviedb.enumerated;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
+import com.googlecode.jmoviedb.language.GuiLanguage;
 
 @SuppressWarnings("static-access")
 
 public enum Genre {
-	action(0, "Action", Settings.getSettings().getLanguageClass().GENRE_ACTION), 
-	adventure(1, "Adventure", Settings.getSettings().getLanguageClass().GENRE_ADVENTURE),
-	animation(2, "Animation", Settings.getSettings().getLanguageClass().GENRE_ANIMATION), 
-	biography(3, "Biography", Settings.getSettings().getLanguageClass().GENRE_BIOGRAPHY),
-	comedy(4, "Comedy", Settings.getSettings().getLanguageClass().GENRE_COMEDY), 
-	crime(5, "Crime", Settings.getSettings().getLanguageClass().GENRE_CRIME), 
-	documentary(6, "Documentary", Settings.getSettings().getLanguageClass().GENRE_DOCUMENTARY), 
-	drama(7, "Drama", Settings.getSettings().getLanguageClass().GENRE_DRAMA),
-	family(8, "Family", Settings.getSettings().getLanguageClass().GENRE_FAMILY), 
-	fantasy(9, "Fantasy", Settings.getSettings().getLanguageClass().GENRE_FANTASY), 
-	filmnoir(10, "Film-Noir", Settings.getSettings().getLanguageClass().GENRE_FILMNOIR), 
-	gameshow(11, "Game-Show", Settings.getSettings().getLanguageClass().GENRE_GAMESHOW),
-	history(12, "History", Settings.getSettings().getLanguageClass().GENRE_HISTORY), 
-	horror(13, "Horror", Settings.getSettings().getLanguageClass().GENRE_HORROR), 
-	music(14, "Music", Settings.getSettings().getLanguageClass().GENRE_MUSIC), 
-	musical(15, "Musical", Settings.getSettings().getLanguageClass().GENRE_MUSICAL),
-	mystery(16, "Mystery", Settings.getSettings().getLanguageClass().GENRE_MYSTERY), 
-	news(17, "News", Settings.getSettings().getLanguageClass().GENRE_NEWS), 
-	realitytv(18, "Reality-TV", Settings.getSettings().getLanguageClass().GENRE_REALITYTV), 
-	romance(19, "Romance", Settings.getSettings().getLanguageClass().GENRE_ROMANCE),
-	scifi(20, "Sci-Fi", Settings.getSettings().getLanguageClass().GENRE_SCIFI), 
-	shortmovie(21, "Short", Settings.getSettings().getLanguageClass().GENRE_SHORT), 
-	sport(22, "Sport", Settings.getSettings().getLanguageClass().GENRE_SPORT), 
-	talkshow(23, "Talk-Show", Settings.getSettings().getLanguageClass().GENRE_TALKSHOW),
-	thriller(24, "Thriller", Settings.getSettings().getLanguageClass().GENRE_THRILLER), 
-	war(25, "War", Settings.getSettings().getLanguageClass().GENRE_WAR), 
-	western(26, "Western", Settings.getSettings().getLanguageClass().GENRE_WESTERN);
+	action(0, "Action", GuiLanguage.GENRE_ACTION), 
+	adventure(1, "Adventure", GuiLanguage.GENRE_ADVENTURE),
+	animation(2, "Animation", GuiLanguage.GENRE_ANIMATION), 
+	biography(3, "Biography", GuiLanguage.GENRE_BIOGRAPHY),
+	comedy(4, "Comedy", GuiLanguage.GENRE_COMEDY), 
+	crime(5, "Crime", GuiLanguage.GENRE_CRIME), 
+	documentary(6, "Documentary", GuiLanguage.GENRE_DOCUMENTARY), 
+	drama(7, "Drama", GuiLanguage.GENRE_DRAMA),
+	family(8, "Family", GuiLanguage.GENRE_FAMILY), 
+	fantasy(9, "Fantasy", GuiLanguage.GENRE_FANTASY), 
+	filmnoir(10, "Film-Noir", GuiLanguage.GENRE_FILMNOIR), 
+	gameshow(11, "Game-Show", GuiLanguage.GENRE_GAMESHOW),
+	history(12, "History", GuiLanguage.GENRE_HISTORY), 
+	horror(13, "Horror", GuiLanguage.GENRE_HORROR), 
+	music(14, "Music", GuiLanguage.GENRE_MUSIC), 
+	musical(15, "Musical", GuiLanguage.GENRE_MUSICAL),
+	mystery(16, "Mystery", GuiLanguage.GENRE_MYSTERY), 
+	news(17, "News", GuiLanguage.GENRE_NEWS), 
+	realitytv(18, "Reality-TV", GuiLanguage.GENRE_REALITYTV), 
+	romance(19, "Romance", GuiLanguage.GENRE_ROMANCE),
+	scifi(20, "Sci-Fi", GuiLanguage.GENRE_SCIFI), 
+	shortmovie(21, "Short", GuiLanguage.GENRE_SHORT), 
+	sport(22, "Sport", GuiLanguage.GENRE_SPORT), 
+	talkshow(23, "Talk-Show", GuiLanguage.GENRE_TALKSHOW),
+	thriller(24, "Thriller", GuiLanguage.GENRE_THRILLER), 
+	war(25, "War", GuiLanguage.GENRE_WAR), 
+	western(26, "Western", GuiLanguage.GENRE_WESTERN);
 	
 	private int id;
 	private String IMDBname;

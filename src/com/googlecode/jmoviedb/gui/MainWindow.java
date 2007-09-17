@@ -180,11 +180,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		menuManager.add(fileMenu);
 		
 		MenuManager editMenu = new MenuManager("&Edit");
-		editMenu.add(new TestAction("Test!"));
+		editMenu.add(new TestAction("Test!", false));
 		menuManager.add(editMenu);
 		
 		MenuManager viewMenu = new MenuManager("&View");
-		viewMenu.add(new TestAction("Test!"));
+		viewMenu.add(new TestAction("Test!", false));
 		menuManager.add(viewMenu);
 		
 		MenuManager sortMenu = new MenuManager("&Sort");
@@ -239,7 +239,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			break;
 		case 1:
 			toolBarManager.add(addMovieDropdownMenu);
-			toolBarManager.add(new TestAction("Test!"));
+			toolBarManager.add(new TestAction("Test!", false));
+			toolBarManager.add(new TestAction("Crash!", true));
 			break;
 		}
 		return toolBarManager;

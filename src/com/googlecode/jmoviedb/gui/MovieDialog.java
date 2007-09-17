@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -299,11 +300,11 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		imdbGotoButton.setText("Go to website");
 		
 //		Disable widgets until their respective functions are implememnted.
-		directorText.setEnabled(false);
-		writerText.setEnabled(false);
-		genreText.setEnabled(false);
-		countryText.setEnabled(false);
-		languageText.setEnabled(false);
+		directorText.setEditable(false);
+		writerText.setEditable(false);
+		genreText.setEditable(false);
+		countryText.setEditable(false);
+		languageText.setEditable(false);
 		
 		tab1.setControl(c1);
 		c1.setSize(700, 300);
@@ -372,29 +373,17 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		actorTable = new Table (c3, SWT.BORDER | SWT.MULTI | SWT.SINGLE); //TODO can be VIRTUAL
 		actorTable.setLayoutData(gdFill);
 		actorTable.setHeaderVisible(true);
-		TableColumn actorNameColumn = new TableColumn(actorTable, SWT.NONE);
-		TableColumn asColumn = new TableColumn(actorTable, SWT.NONE);
-		TableColumn characterNameColumn = new TableColumn(actorTable, SWT.NONE);
+		actorNameColumn = new TableColumn(actorTable, SWT.NONE);
+		asColumn = new TableColumn(actorTable, SWT.NONE);
+		characterNameColumn = new TableColumn(actorTable, SWT.NONE);
 		actorNameColumn.setText("Actor");
 		asColumn.setText("");
 		characterNameColumn.setText("Character");
 		
-		//TODO move to setModel
-//		for(ActorInfo a : movie.getActors()) {
-//			TableItem i = new TableItem(actorTable, SWT.NONE);
-//			i.setText(0, a.getPerson().getName());
-//			i.setText(1, "as");
-//			i.setText(2, a.getCharacter());
-//		}
-
 		//TODO find out why auto column width is a little too small
 //		actorNameColumn.setResizable(false);
 //		asColumn.setResizable(false);
 //		characterNameColumn.setResizable(false);
-		
-		actorNameColumn.pack();
-		asColumn.pack();
-		characterNameColumn.pack();
 		
 		tab3.setControl(c3);
 	}
@@ -429,11 +418,11 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		altTitleText.setText(m.getCustomTitle());
 		if(m.getYear() != 0)
 			yearText.setText(m.getYear() + "");
-//		directorText.setText(m.getDirectors());
-//		writerText.setText(m.getWriters());
-//		genreText.setText(m.getGenres());
-//		countryText.setText(m.getCountries());
-//		languageText.setText(m.getImdbLanguages());
+		directorText.setText(m.getDirectorsAsString());
+		writerText.setText(m.getWritersAsString());
+		genreText.setText(m.getGenresAsString());
+		countryText.setText(m.getCountriesAsString());
+		languageText.setText(m.getLanguagesAsString());
 		if(m.getRunTime() != 0)
 			runtimeText.setText(m.getRunTime() + "");
 		rateScale.setSelection(m.getRatingAsInt());
@@ -443,6 +432,15 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		taglineText.setText(m.getTagline());
 		plotText.setText(m.getPlotOutline());
 		
+		for(ActorInfo a : movie.getActors()) {
+			TableItem i = new TableItem(actorTable, SWT.NONE);
+			i.setText(0, a.getPerson().getName());
+			i.setText(1, "as");
+			i.setText(2, a.getCharacter());
+		}
+		actorNameColumn.pack();
+		asColumn.pack();
+		characterNameColumn.pack();
 		
 	}
 	
@@ -540,7 +538,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		f.setCountries(c);
 		ArrayList<Language> l = new ArrayList<Language>();
 		l.add(Language.english);
-		f.setImdbLanguages(l);
+		f.setLanguages(l);
 		f.setLegal(false);
 		f.setSeen(true);
 		f.setYear(1989);

@@ -59,7 +59,7 @@ public class FileOpenAction extends Action {
 			Settings.getSettings().updateRecentFiles(openFile);
 			MainWindow.getMainWindow().setDB(db);
 		} catch (Exception e) {
-			ExceptionHandler.handle(e);
+			MainWindow.getMainWindow().handleException(e);
 		}
 	}
 }

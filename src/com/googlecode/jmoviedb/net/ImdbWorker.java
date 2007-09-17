@@ -95,7 +95,7 @@ public class ImdbWorker {
 		movie.setPlotOutline(parser.getPlot());
 		movie.setTagline(parser.getTagline());
 		
-		movie.setImdbLanguages(parser.getLanguages());
+		movie.setLanguages(parser.getLanguages());
 		movie.setCountries(parser.getCountries());
 		movie.setGenres(parser.getGenres());
 		movie.setDirectors(parser.getDirectors());

@@ -26,21 +26,27 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 public class TestAction extends Action {
-	String message;
+	private String message;
+	private boolean exception;
 	
-	public TestAction(String message) {
+	public TestAction(String message, boolean exception) {
 		setText(message);
 		setToolTipText(message);
 		this.message = message;
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_PREFERENCES));
+		this.exception = exception;
+		if(exception)
+			setImageDescriptor(ImageDescriptor.createFromFile(null, "resources/icon-silk/exclamation.png"));
+		else
+			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_PREFERENCES));
 	}
 	
 	/**
 	 * Runs the action
 	 */
 	public void run() {
-		System.out.println(message);
-		MainWindow.getMainWindow().setStatusLineMessage(message);
-		
+		if(exception)
+			MainWindow.getMainWindow().handleException(new Exception("Test exception!"));
+		else
+			MainWindow.getMainWindow().setStatusLineMessage(message);
 	}
 }

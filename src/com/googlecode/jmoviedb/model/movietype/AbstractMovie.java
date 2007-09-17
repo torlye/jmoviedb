@@ -250,6 +250,16 @@ public abstract class AbstractMovie {
 	public ArrayList<Country> getCountries() {
 		return countries;
 	}
+	
+	public String getCountriesAsString() {
+		String s = "";
+		for(Country c : countries) {
+			s += c.getName() + " / ";
+		}
+		if(s.endsWith(" / "))
+			s = s.substring(0, s.length()-3);
+		return s;
+	}
 
 	public void setCountries(ArrayList<Country> countries) {
 		this.countries = countries;
@@ -265,6 +275,20 @@ public abstract class AbstractMovie {
 
 	public ArrayList<Person> getDirectors() {
 		return directors;
+	}
+
+	/**
+	 * Returns a list of all directors in a single string 
+	 * @return directors
+	 */
+	public String getDirectorsAsString() {
+		String s = "";
+		for(Person d : directors) {
+			s += d.getName() + ", ";
+		}
+		if(s.endsWith(", "))
+			s = s.substring(0, s.length()-2);
+		return s;
 	}
 
 	public void setDirectors(ArrayList<Person> directors) {
@@ -297,6 +321,16 @@ public abstract class AbstractMovie {
 
 	public ArrayList<Genre> getGenres() {
 		return genres;
+	}
+	
+	public String getGenresAsString() {
+		String s = "";
+		for(Genre g : genres) {
+			s += g.getGuiLanguageName() + " / ";
+		}
+		if(s.endsWith(" / "))
+			s = s.substring(0, s.length()-3);
+		return s;
 	}
 
 	public void setGenres(ArrayList<Genre> genres) {
@@ -358,11 +392,21 @@ public abstract class AbstractMovie {
 		return true;
 	}
 
-	public ArrayList<Language> getImdbLanguages() {
+	public ArrayList<Language> getLanguages() {
 		return imdbLanguages;
 	}
+	
+	public String getLanguagesAsString() {
+		String s = "";
+		for(Language l : imdbLanguages) {
+			s += l.getName() + " / ";
+		}
+		if(s.endsWith(" / "))
+			s = s.substring(0, s.length()-3);
+		return s;
+	}
 
-	public void setImdbLanguages(ArrayList<Language> imdbLanguages) {
+	public void setLanguages(ArrayList<Language> imdbLanguages) {
 		this.imdbLanguages = imdbLanguages;
 	}
 
@@ -485,6 +529,20 @@ public abstract class AbstractMovie {
 
 	public ArrayList<Person> getWriters() {
 		return writers;
+	}
+	
+	/**
+	 * Returns a list of all writers in a single string 
+	 * @return writers
+	 */
+	public String getWritersAsString() {
+		String s = "";
+		for(Person w : writers) {
+			s += w.getName() + ", ";
+		}
+		if(s.endsWith(", "))
+			s = s.substring(0, s.length()-2);
+		return s;
 	}
 
 	public void setWriters(ArrayList<Person> writers) {
