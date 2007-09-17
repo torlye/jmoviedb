@@ -53,7 +53,7 @@ public class OpenPreviousAction extends Action {
 			Settings.getSettings().updateRecentFiles(filePath);
 			MainWindow.getMainWindow().setDB(db);
 		} catch (Exception e) {
-			ExceptionHandler.handle(e);
+			MainWindow.getMainWindow().handleException(e);
 		}
 	}
 	

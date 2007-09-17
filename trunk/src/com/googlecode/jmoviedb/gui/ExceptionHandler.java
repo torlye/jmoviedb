@@ -31,45 +31,31 @@ import org.eclipse.jface.window.Window.IExceptionHandler;
  */
 public class ExceptionHandler implements IExceptionHandler {
 	
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	public ExceptionHandler(Shell parentShell, String dialogTitle, Image dialogTitleImage, String dialogMessage, int dialogImageType, String[] dialogButtonLabels, int defaultIndex) {
+//		super(parentShell, dialogTitle, dialogTitleImage, dialogMessage, dialogImageType, dialogButtonLabels, defaultIndex);
+//	}
+
 	/**
 	 * Handle an exception
 	 * @param e the exception to be handled
 	 */
 	public void handleException(Throwable e) {
 		if(CONST.DEBUG_MODE) {
-			System.out.println("Non-static exceptionhandler caught an exception");
+			System.out.println("Exceptionhandler caught an exception");
 			System.out.println(e.getClass().toString());
 			e.printStackTrace();
 		}
 		
-		String message = e.getClass().toString() + "\n\n" + e.getMessage() + "\n\n";
-		StackTraceElement[] stackTrace = e.getStackTrace();
-		for(StackTraceElement el : stackTrace) {
-			message += el.toString() + "\n";
-		}
+		//TODO make a proper message
+		String message = "Insert a sensible message here";
 		
-		MessageDialog dialog = new MessageDialog(MainWindow.getMainWindow().getShell(), "An Error occured", null, message, MessageDialog.ERROR, new String[]{"OK", "Send email"}, 0);
+		MessageDialog dialog = new ExceptionDialog(MainWindow.getMainWindow().getShell(), "Error!", null, message, MessageDialog.ERROR, new String[]{"OK", "Send email"}, 0, e);
 		int returnCode = dialog.open();
 		if(returnCode == 1) {
-			//TODO send email
+			//TODO send email option
 		}
 	}
-	
-	//TODO this should maybe be removed
-	public static void handle(Exception e) {
-		if(CONST.DEBUG_MODE) {
-			System.out.println("Static exceptionhandler caught an exception");
-			System.out.println(e.getClass().toString());
-			e.printStackTrace();
-		}
-		
-		String message = e.getClass().toString() + "\n\n" + e.getMessage() + "\n\n";
-		StackTraceElement[] stackTrace = e.getStackTrace();
-		for(StackTraceElement el : stackTrace) {
-			message += el.toString() + "\n";
-		}
-		
-		MessageDialog.openError(MainWindow.getMainWindow().getShell(), "An Error occured", message);
-	}
-	
 }
