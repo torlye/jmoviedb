@@ -128,7 +128,7 @@ public class CSVimport implements IRunnableWithProgress {
 			progressMonitor.done();
 			
 			//TODO move this somewhere else maybe?
-			window.setDB(db);
+			window.setDB(db); //TODO InvocationTargetException
 		} 
 		/* Because the last catch clause should catch any exception other than
 		 * InterruptedException, any InterruptedExceptions have to be caught and

@@ -248,7 +248,9 @@ public class ImdbParser {
 	 * @return an ArrayList of ActorInfo objects
 	 */
 	protected ArrayList<ActorInfo> getActors() {
-		Pattern pattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(<a href=\"quotes\">)?([^<>]+)(</a>)?</td>");
+		//TODO the following does not work:
+		//<td class="char"><a href="/character/ch0008987/">Nick</a> (as Nephi Pomaikai Brown)</td>
+		Pattern pattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(<a href=\"[^\"]+\">)?([^<>]+)(</a>)?</td>");
 		Matcher matcher = pattern.matcher(html);
 		ArrayList<ActorInfo> templist = new ArrayList<ActorInfo>();
 		int counter = 0;
@@ -287,7 +289,7 @@ public class ImdbParser {
 	 * @return an array of writers
 	 */
 	protected ArrayList<Person> getWriters() {
-		Pattern pattern = Pattern.compile("<h5>Writers?:</h5>(.+?)</div>");
+		Pattern pattern = Pattern.compile("<h5>Writers?(\\s<a[^<]+</a>)?:</h5>(.+?)</div>");
 		Matcher matcher = pattern.matcher(html);
 		ArrayList<Person> personArray = new ArrayList<Person>();
 		
@@ -295,7 +297,7 @@ public class ImdbParser {
 			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
 			Matcher personMatcher = personPattern.matcher(matcher.group(1));
 			while(personMatcher.find()) {
-				personArray.add(new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2))));
+				personArray.add(new Person(personMatcher.group(2), CONST.fixHtmlCharacters(personMatcher.group(2))));
 			}
 		}
 
