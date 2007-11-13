@@ -50,7 +50,7 @@ public class ExceptionHandler implements IExceptionHandler {
 		}
 		
 		//TODO make a proper message
-		String message = "Insert a sensible message here";
+		String message = "TODO: Insert a sensible message here";
 		
 		MessageDialog dialog = new ExceptionDialog(MainWindow.getMainWindow().getShell(), "Error!", null, message, MessageDialog.ERROR, new String[]{"OK", "Send email"}, 0, e);
 		int returnCode = dialog.open();

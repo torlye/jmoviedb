@@ -349,24 +349,16 @@ public abstract class AbstractMovie {
 		return imdbID;
 	}
 
-	public void setImdbID(String imdbID) {
-		if(imdbID == null)
-			this.imdbID = "";
-		else
-			this.imdbID = imdbID;
-	}
-	
 	/**
-	 * Sets the IMDb ID from a URL string. The URL is parsed
+	 * Sets the IMDb ID from a string containing exactly seven 
+	 * consecutive numerical digits. The String is parsed
 	 * and only the numerical part is stored.
-	 * @param imdbURL a string containing the IMDb URL
+	 * @param imdbID a string containing the IMDb ID
 	 */
-	public void setImdbIDfromURL(String imdbURL) {
-		Pattern urlPattern = Pattern.compile("\\D*(\\d+)\\D*");
-		Matcher matcher = urlPattern.matcher(imdbURL);
-		if(matcher.find()) {
-			setImdbID(matcher.group(1));
-		}
+	public void setImdbID(String imdbID) {
+		Matcher matcher = Pattern.compile("\\D*(\\d{7})\\D*").matcher(imdbID);
+		if(matcher.find())
+			this.imdbID = matcher.group(1);
 	}
 	
 	/**
@@ -374,6 +366,8 @@ public abstract class AbstractMovie {
 	 * @return IMDb URL
 	 */
 	public String getImdbUrl() {
+		if(getImdbID() == null || getImdbID().length() != 7)
+			return "";
 		return Settings.getSettings().getImdbUrl() + getImdbID() + "/";
 	}
 	

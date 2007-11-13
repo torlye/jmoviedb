@@ -93,7 +93,7 @@ public class Film extends AbstractMovie {
 		else
 			setTitle(title);
 		
-		setImdbIDfromURL(imdbURL);
+		setImdbID(imdbURL);
 		setYear(year);
 		
 		//parse the format parameter

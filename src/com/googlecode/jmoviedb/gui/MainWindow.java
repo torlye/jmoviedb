@@ -332,7 +332,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 * @param db
 	 */
 	public void setDB(Moviedb db) {
-		viewer.setInput(db);
+		viewer.setInput(db); //TODO InvocationTargetException
 		updateShellText();
 		fileSaveAction.setEnabled(false);
 	}

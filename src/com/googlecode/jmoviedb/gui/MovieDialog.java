@@ -490,7 +490,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 			System.out.println("_new copied to old id " + movie.getID());
 		}
 		
-		movie.setImdbIDfromURL(imdbText.getText());
+		movie.setImdbID(imdbText.getText());
 		movie.setTitle(titleText.getText());
 		movie.setCustomTitle(altTitleText.getText());
 		movie.setYear(yearText.getText());
