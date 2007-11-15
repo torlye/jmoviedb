@@ -28,6 +28,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//import org.apache.derby.client.am.Connection;
+//import org.apache.derby.client.am.PreparedStatement;
+//import org.apache.derby.client.am.ResultSet;
+//import org.apache.derby.client.am.Statement;
+
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.model.*;
@@ -298,9 +303,9 @@ public class Database /*extends Thread*/ {
 							rs.getInt("TVSYSTEM"),
 							rs.getString("SCENERELEASENAME"),
 							rs.getInt("VIDEORESOLUTION"),
-							rs.getInt("VIDEOASPECT"),
-							rs.getBlob("COVER")
+							rs.getInt("VIDEOASPECT")
 							);
+//					m.setImageBytes(rs.getBlob("COVER").); //TODO finish
 					break;
 				case 1: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
 				case 2: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO

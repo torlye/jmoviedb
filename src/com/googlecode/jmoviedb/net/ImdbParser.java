@@ -19,12 +19,14 @@
 
 package com.googlecode.jmoviedb.net;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
 import java.util.*;
 import java.util.regex.*;
 
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
 import com.googlecode.jmoviedb.CONST;
@@ -230,17 +232,43 @@ public class ImdbParser {
 	 * @return image data
 	 * @throws IOException
 	 */
-	protected ImageData getImageData() throws IOException {
+	protected byte[] getImageData() throws IOException {
 		String url = getImageURL();
 		
 		if(url == null)
 			return null;
 		
+		//Read the image into a byte array
 		InputStream stream = new URL(url).openStream();
-		ImageData imageData = new ImageData(stream);
+		byte[] imageBytes = new byte[0];
+		while(stream.available() > 0) { //loop while there is more data to read
+			
+			//how much data is ready right now?
+			int readLength = stream.available();
+			
+			//create a new array that contains the bytes read until now, but with
+			//free space for more
+			byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
+			
+			//read the new bytes into the empty part of the newly created array
+			stream.read(newBytes, imageBytes.length, readLength);
+			
+			//replace the "old" byte array with the new one
+			imageBytes = newBytes;
+		}
 		stream.close();
 		
-		return imageData;
+		/* Check for valid data.
+		 * If the data is a valid, supported image format, the byte array is returned.
+		 * If the data is invalid or unsupported the exception is thrown and caught.
+		 * The data is ignored and null is returned instead.
+		 */
+		try {
+			new ImageData(new ByteArrayInputStream(imageBytes));
+			return imageBytes;
+		} catch(SWTException e) {
+			return null;			
+		}
 	}
 	
 	/**
@@ -289,13 +317,12 @@ public class ImdbParser {
 	 * @return an array of writers
 	 */
 	protected ArrayList<Person> getWriters() {
-		Pattern pattern = Pattern.compile("<h5>Writers?(\\s<a[^<]+</a>)?:</h5>(.+?)</div>");
-		Matcher matcher = pattern.matcher(html);
+		Matcher matcher = Pattern.compile("<h5>Writers?(\\s<a[^<]+</a>)?:</h5>(.+?)</div>").matcher(html);
 		ArrayList<Person> personArray = new ArrayList<Person>();
 		
 		if(matcher.find()) {
 			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
-			Matcher personMatcher = personPattern.matcher(matcher.group(1));
+			Matcher personMatcher = personPattern.matcher(matcher.group(2));
 			while(personMatcher.find()) {
 				personArray.add(new Person(personMatcher.group(2), CONST.fixHtmlCharacters(personMatcher.group(2))));
 			}

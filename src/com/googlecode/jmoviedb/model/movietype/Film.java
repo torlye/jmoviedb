@@ -57,9 +57,8 @@ public class Film extends AbstractMovie {
 			int tvSystem,
 			String sceneReleaseName,
 			int resolutionID,
-			int aspectID,
-			Blob cover) {
-		super(id, imdbID, title, customTitle, year, rating, plotOutline, tagline, color, runTime, notes, version, customVersion, legal, seen, formatID, discTypeID, videoCodecID, myEncode, dvdRegion, tvSystem, sceneReleaseName, resolutionID, aspectID, cover);
+			int aspectID) {
+		super(id, imdbID, title, customTitle, year, rating, plotOutline, tagline, color, runTime, notes, version, customVersion, legal, seen, formatID, discTypeID, videoCodecID, myEncode, dvdRegion, tvSystem, sceneReleaseName, resolutionID, aspectID);
 	}
 	
 	/**
