@@ -61,6 +61,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public class MovieDialog extends Dialog implements org.eclipse.swt.events.SelectionListener {
 	private AbstractMovie movie;
+	private Composite imageArea;
 	private Combo typeCombo;
 	private Text imdbText;
 	private Text titleText;
@@ -208,7 +209,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		fillerLayout1.heightHint = 1;
 		
 
-		Composite imageArea = new Composite(c1, SWT.BORDER);
+		imageArea = new Composite(c1, SWT.BORDER);
 		imageArea.setLayoutData(imageLayout);
 		
 		Label typeLabel = new Label(c1, SWT.CENTER);
@@ -441,6 +442,11 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		actorNameColumn.pack();
 		asColumn.pack();
 		characterNameColumn.pack();
+		
+		if(movie.getImageData() != null)
+			imageArea.setBackgroundImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), movie.getImageData()));
+		else
+			imageArea.setBackgroundImage(null);
 		
 	}
 	

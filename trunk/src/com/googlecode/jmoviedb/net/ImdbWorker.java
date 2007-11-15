@@ -102,6 +102,8 @@ public class ImdbWorker {
 		movie.setWriters(parser.getWriters());
 		movie.setActors(parser.getActors());
 		
+		movie.setImageBytes(parser.getImageData());
+		
 		if(CONST.DEBUG_MODE) {
 			System.out.println("");
 			System.out.println("------- BEGIN IMDB DATA DUMP -------");
@@ -144,8 +146,12 @@ public class ImdbWorker {
 			System.out.println(actors + "\n");
 			
 			System.out.println("Image URL: " + parser.getImageURL());
-			ImageData data = parser.getImageData();
-			System.out.println("Image size: " + data.width + "x" + data.height);
+			try{
+				ImageData data = movie.getImageData();
+				System.out.println("Image size: " + data.width + "x" + data.height);
+			} catch(NullPointerException e) {
+				System.out.println("No image!");
+			}
 			
 			System.out.println("------- END IMDB DATA DUMP -------");
 			System.out.println("");

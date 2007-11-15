@@ -19,9 +19,15 @@
 
 package com.googlecode.jmoviedb.model.movietype;
 
+import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Blob;
+
+import org.apache.derby.client.am.Blob;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.ImageData;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,6 +90,8 @@ public abstract class AbstractMovie {
 	private AspectRatio aspectRatio;
 	private boolean[] dvdRegion;
 	
+	private byte[] imageBytes;
+	
 	/**
 	 * Database constructor, to be used when loading movies from the database.
 	 * @param id
@@ -136,8 +144,7 @@ public abstract class AbstractMovie {
 			int tvSystem,
 			String sceneReleaseName,
 			int resolutionID,
-			int aspectID,
-			Blob cover) {
+			int aspectID) {
 		this();
 		setID(id);
 		setImdbID(imdbID);
@@ -163,7 +170,7 @@ public abstract class AbstractMovie {
 		setSceneReleaseName(sceneReleaseName);
 		setResolution(Resolution.intToEnum(resolutionID));
 		setAspectRatio(AspectRatio.intToEnum(aspectID));
-		//setCoverImage TODO finish this
+		setImageBytes(null);
 	}
 	
 	/**
@@ -204,6 +211,7 @@ public abstract class AbstractMovie {
 		this.resolution = Resolution.unspecified;
 		this.aspectRatio = AspectRatio.unspecified;
 		this.dvdRegion = new boolean[]{false, false, false, false, false, false, false, false, false};
+		this.imageBytes = null;
 	}
 
 	public String toString() {
@@ -670,6 +678,33 @@ public abstract class AbstractMovie {
 		if(dvdRegion[8]) region += CONST.R8;
 		
 		return region;
+	}
+
+	/**
+	 * Returns the movie's image data
+	 * @return an array of bytes
+	 */
+	public byte[] getImageBytes() {
+		return imageBytes;
+	}
+
+	/**
+	 * Sets the movie's image data
+	 * @param imageBytes
+	 */
+	public void setImageBytes(byte[] imageBytes) {
+		this.imageBytes = imageBytes;
+	}
+	
+	public ImageData getImageData() {
+		if(imageBytes==null)
+			return null;
+		try {
+			return new ImageData(new ByteArrayInputStream(imageBytes));
+		} catch(SWTException e) {//Invalid or unsupported image data
+			System.out.println("E R R O R " + e.getMessage());
+			return null;
+		}
 	}
 
 }
