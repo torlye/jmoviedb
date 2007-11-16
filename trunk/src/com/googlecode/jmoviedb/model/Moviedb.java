@@ -162,10 +162,11 @@ public class Moviedb {
 		if(CONST.DEBUG_MODE)
 			System.out.println("MODEL: saveMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
 		
-		if(m.getID() == -1)
-			m.setID(database.addMovie(m));
-		else
-			database.editMovie(m);
+//		if(m.getID() == -1)
+//			m.setID(database.addMovie(m));
+//		else
+//			database.editMovie(m);
+		database.saveMovie(m);
 		movies.put(m.getID(), m);
 
 		setSaved(false);

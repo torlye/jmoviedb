@@ -19,6 +19,9 @@
 
 package com.googlecode.jmoviedb.storage;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -26,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 //import org.apache.derby.client.am.Connection;
@@ -34,7 +38,14 @@ import java.util.HashMap;
 //import org.apache.derby.client.am.Statement;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.enumerated.AspectRatio;
+import com.googlecode.jmoviedb.enumerated.DiscType;
+import com.googlecode.jmoviedb.enumerated.FilmVersion;
+import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.MovieType;
+import com.googlecode.jmoviedb.enumerated.Resolution;
+import com.googlecode.jmoviedb.enumerated.TVsystem;
+import com.googlecode.jmoviedb.enumerated.VideoCodec;
 import com.googlecode.jmoviedb.model.*;
 import com.googlecode.jmoviedb.model.movietype.*;
 
@@ -91,11 +102,25 @@ public class Database /*extends Thread*/ {
 				throw e;
 		}
 		
-		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
-				"PLOTOUTLINE, TAGLINE, COLOR, RUNTIME) " + 
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS);
-		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET TYPE = ?, IMDBID = ?, TITLE = ?, CUSTOMTITLE = ?, " +
-				"MOVIEYEAR = ?, RATING = ?, PLOTOUTLINE = ?, TAGLINE = ?, COLOR = ?, RUNTIME = ?" +
+		//Make sure addMovieStatement and editMovieStatement have the same column names at all times
+		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
+				"TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
+				"PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, NOTES, VERSION, " +
+				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
+				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
+				"VIDEORESOLUTION, VIDEOASPECT, COVER) " + 
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+				"?, ?, ?, ?, ?, ?)", 
+				PreparedStatement.RETURN_GENERATED_KEYS);
+		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
+				"TYPE = ?, IMDBID = ?, TITLE = ?, CUSTOMTITLE = ?, " +
+				"MOVIEYEAR = ?, RATING = ?, PLOTOUTLINE = ?, TAGLINE = ?, " +
+				"COLOR = ?, RUNTIME = ?, NOTES = ?, VERSION = ?, " +
+				"CUSTOMFILMVERSION = ?, LEGAL = ?, SEEN = ?, LOCATION = ?, FORMAT = ?, " +
+				"DISC = ?, VIDEO = ?, MYENCODE = ?, DVDREGION = ?, TVSYSTEM = ?, " +
+				"SCENERELEASENAME = ?, VIDEORESOLUTION = ?, VIDEOASPECT = ?, " +
+				"COVER = ? " +
 				"WHERE MOVIEID = ?");
 		getMovieStatement1 = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
@@ -150,6 +175,7 @@ public class Database /*extends Thread*/ {
 				"CUSTOMFILMVERSION VARCHAR(100), " +
 				"LEGAL SMALLINT, " +
 				"SEEN SMALLINT, " +
+				"LOCATION VARCHAR(150), " +
 				"FORMAT SMALLINT, " +
 				"DISC SMALLINT, " +
 				"VIDEO SMALLINT, " +
@@ -272,7 +298,7 @@ public class Database /*extends Thread*/ {
 		
 	}
 	
-	public HashMap<Integer, AbstractMovie> getMovieList() throws SQLException {
+	public HashMap<Integer, AbstractMovie> getMovieList() throws SQLException, IOException {
 		ResultSet rs  = getMovieList.executeQuery();
 		HashMap<Integer, AbstractMovie> hm = new HashMap<Integer, AbstractMovie>();
 		
@@ -327,50 +353,61 @@ public class Database /*extends Thread*/ {
 		return hm;
 	}
 	
-	public void editMovie(AbstractMovie m) throws SQLException {
+	public void saveMovie(AbstractMovie m) throws SQLException {
 		if(CONST.DEBUG_MODE)
-			System.out.println("DATABASE: editMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
+			System.out.println("DATABASE: saveMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
 		
 		int type = MovieType.abstractMovieToInt(m);
+		PreparedStatement statement;
+		boolean edit;
 		
-		editMovieStatement.setInt(1, type);
-		editMovieStatement.setString(2, m.getImdbID());
-		editMovieStatement.setString(3, m.getTitle());
-		editMovieStatement.setString(4, m.getCustomTitle());
-		editMovieStatement.setInt(5, m.getYear());
-		editMovieStatement.setInt(6, m.getRatingAsInt());
-		editMovieStatement.setString(7, m.getPlotOutline());
-		editMovieStatement.setString(8, m.getTagline());
-		editMovieStatement.setInt(9, m.getColorInt());
-		editMovieStatement.setInt(10, m.getRunTime());
-		editMovieStatement.setInt(11, m.getID());
-		editMovieStatement.execute();
-	}
-	
-	public int addMovie(AbstractMovie m) throws SQLException {
-		if(CONST.DEBUG_MODE)
-			System.out.println("DATABASE: addMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
-		
-		int type = MovieType.abstractMovieToInt(m);
-		
-		addMovieStatement.setInt(1, type);
-		addMovieStatement.setString(2, m.getImdbID());
-		addMovieStatement.setString(3, m.getTitle());
-		addMovieStatement.setString(4, m.getCustomTitle());
-		addMovieStatement.setInt(5, m.getYear());
-		addMovieStatement.setInt(6, m.getRatingAsInt());
-		addMovieStatement.setString(7, m.getPlotOutline());
-		addMovieStatement.setString(8, m.getTagline());
-		addMovieStatement.setInt(9, m.getColorInt());
-		addMovieStatement.setInt(10, m.getRunTime());
-		addMovieStatement.execute();
-
-		ResultSet generatedKey = addMovieStatement.getGeneratedKeys();
-		if(generatedKey.next()) {
-			System.out.println("Generated key: " + generatedKey.getInt(1));
-			return generatedKey.getInt(1);
+		if(m.getID() == -1) {
+			statement = addMovieStatement;
+			edit = false;
 		} else {
-			throw new SQLException("Failed getting the autogenerated key");
+			statement = editMovieStatement;
+			edit = true;
+		}
+		
+		statement.setInt(1, type);
+		statement.setString(2, m.getImdbID());
+		statement.setString(3, m.getTitle());
+		statement.setString(4, m.getCustomTitle());
+		statement.setInt(5, m.getYear());
+		statement.setInt(6, m.getRatingAsInt());
+		statement.setString(7, m.getPlotOutline());
+		statement.setString(8, m.getTagline());
+		statement.setInt(9, m.getColorInt());
+		statement.setInt(10, m.getRunTime());
+		statement.setString(11, m.getNotes());
+		statement.setInt(12, m.getVersion().getID());
+		statement.setString(13, m.getCustomVersion());
+		statement.setInt(14, CONST.booleanToInt(m.isLegal()));
+		statement.setInt(15, CONST.booleanToInt(m.isSeen()));
+		statement.setString(16, ""); //TODO FIX!
+		statement.setInt(17, m.getFormat().getID());
+		statement.setInt(18, m.getDisc().getID());
+		statement.setInt(19, m.getVideo().getID());
+		statement.setInt(20, CONST.booleanToInt(m.isMyEncode()));
+		statement.setInt(21, m.getDvdRegionAsInt());
+		statement.setInt(22, m.getTvSystem().getID());
+		statement.setString(23, m.getSceneReleaseName());
+		statement.setInt(24, m.getResolution().getID());
+		statement.setInt(25, m.getAspectRatio().getID());
+		statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()));
+		if(edit)
+			statement.setInt(27, m.getID());
+		statement.execute();
+		
+		if(!edit) {
+			ResultSet generatedKey = statement.getGeneratedKeys();
+			if(generatedKey.next()) {
+				System.out.println("DATABASE: Generated key: " + generatedKey.getInt(1));
+//				return generatedKey.getInt(1);
+				m.setID(generatedKey.getInt(1));
+			} else {
+				throw new SQLException("DATABASE: Failed getting the autogenerated key");
+			}
 		}
 	}
 	
@@ -431,7 +468,7 @@ public class Database /*extends Thread*/ {
 	 * @return an instance of an AbstractMovie subclass
 	 * @throws SQLException
 	 */
-	public AbstractMovie getMovie(int id) throws SQLException {
+	public AbstractMovie getMovie(int id) throws SQLException, IOException {
 		getMovieStatement1.setInt(1, id);
 		ResultSet rs = getMovieStatement1.executeQuery();
 		if(!rs.next())
@@ -452,13 +489,49 @@ public class Database /*extends Thread*/ {
 		m.setTagline(rs.getString("TAGLINE"));
 		m.setColorInt(rs.getInt("COLOR"));
 		m.setRunTime(rs.getInt("RUNTIME"));
+		m.setNotes(rs.getString("NOTES"));
+		m.setVersion(FilmVersion.intToEnum(rs.getInt("VERSION")));
+		m.setCustomVersion(rs.getString("CUSTOMFILMVERSION"));
+		m.setLegal(rs.getInt("LEGAL"));
 		m.setSeen(rs.getInt("SEEN"));
+		String foo = rs.getString("LOCATION"); //TODO fix!
+		m.setFormat(FormatType.intToEnum(rs.getInt("FORMAT")));
+		m.setDisc(DiscType.intToEnum(rs.getInt("DISC")));
+		m.setVideo(VideoCodec.intToEnum(rs.getInt("VIDEO")));
+		m.setMyEncode(rs.getInt("MYENCODE"));
+		m.setDvdRegionAsInt(rs.getInt("DVDREGION"));
+		m.setTvSystem(TVsystem.intToEnum(rs.getInt("TVSYSTEM")));
+		m.setSceneReleaseName(rs.getString("SCENERELEASENAME"));
+		m.setResolution(Resolution.intToEnum(rs.getInt("VIDEORESOLUTION")));
+		m.setAspectRatio(AspectRatio.intToEnum(rs.getInt("VIDEOASPECT")));
 		
+		InputStream stream = rs.getBinaryStream("COVER");
+		byte[] imageBytes = new byte[0];
+		while(stream.available() > 0) { //loop while there is more data to read
+			
+			//how much data is ready right now?
+			int readLength = stream.available();
+			
+			//create a new array that contains the bytes read until now, but with
+			//free space for more
+			byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
+			
+			//read the new bytes into the empty part of the newly created array
+			stream.read(newBytes, imageBytes.length, readLength);
+			
+			//replace the "old" byte array with the new one
+			imageBytes = newBytes;
+		}
+		stream.close();
 		rs.close();
+		
+		if(CONST.isValidImage(imageBytes))
+			m.setImageBytes(imageBytes);
+		
 		return m;
 	}
 	
-	public AbstractMovie getMovieFull(int id) throws SQLException {
+	public AbstractMovie getMovieFull(int id) throws SQLException, IOException {
 		AbstractMovie m = getMovie(id);
 		
 		getActors.setInt(1, id);

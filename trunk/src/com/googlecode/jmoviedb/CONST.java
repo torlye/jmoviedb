@@ -19,6 +19,11 @@
 
 package com.googlecode.jmoviedb;
 
+import java.io.ByteArrayInputStream;
+
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.ImageData;
+
 /**
  * This class provides a number of public constants and static methods.
  * @author Tor Arne Lye
@@ -393,6 +398,22 @@ public class CONST {
 			s = "0" + s;
 		
 		return s;
+	}
+	
+	/**
+	 * Check for valid image data.
+	 * If the data is a valid, supported SWT image format, true is returned.
+	 * If the data is invalid or unsupported, false is returned instead.
+	 * @param imageBytes the bytes to check
+	 * @return true or false
+	 */
+	public static boolean isValidImage(byte[] imageBytes) {
+		try {
+			new ImageData(new ByteArrayInputStream(imageBytes));
+			return true;
+		} catch(SWTException e) {
+			return false;			
+		}
 	}
 	
 	/**

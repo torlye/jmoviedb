@@ -258,17 +258,10 @@ public class ImdbParser {
 		}
 		stream.close();
 		
-		/* Check for valid data.
-		 * If the data is a valid, supported image format, the byte array is returned.
-		 * If the data is invalid or unsupported the exception is thrown and caught.
-		 * The data is ignored and null is returned instead.
-		 */
-		try {
-			new ImageData(new ByteArrayInputStream(imageBytes));
+		// Check for valid data
+		if(CONST.isValidImage(imageBytes))
 			return imageBytes;
-		} catch(SWTException e) {
-			return null;			
-		}
+		return null;			
 	}
 	
 	/**
