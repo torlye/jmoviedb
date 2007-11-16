@@ -23,11 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.derby.client.am.Blob;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,7 +49,7 @@ import com.googlecode.jmoviedb.model.Person;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
 
 
-public abstract class AbstractMovie {
+public abstract class AbstractMovie implements Cloneable {
 
 	//imdb data
 	private String imdbID;
@@ -615,6 +613,10 @@ public abstract class AbstractMovie {
 	public void setMyEncode(boolean myEncode) {
 		this.myEncode = myEncode;
 	}
+	
+	public void setMyEncode(int myEncode) {
+		setMyEncode(CONST.intToBoolean(myEncode));
+	}
 
 	public String getSceneReleaseName() {
 		return sceneReleaseName;
@@ -705,6 +707,11 @@ public abstract class AbstractMovie {
 			System.out.println("E R R O R " + e.getMessage());
 			return null;
 		}
+	}
+	
+	public AbstractMovie clone() {
+		//TODO finish
+		return null;
 	}
 
 }
