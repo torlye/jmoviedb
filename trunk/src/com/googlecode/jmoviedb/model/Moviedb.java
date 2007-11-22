@@ -132,9 +132,9 @@ public class Moviedb {
 		setSaved(false);
 	}
 
-	public AbstractMovie getMovie(int listID) throws SQLException {
+	public AbstractMovie getMovie(int listID) throws SQLException, IOException {
 		int movieID = sortedMovieList[listID];
-		return movies.get(movieID);
+		return database.getMovie(movieID);
 		//TODO load more info from DB
 	}
 	
