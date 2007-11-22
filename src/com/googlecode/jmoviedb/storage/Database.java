@@ -28,6 +28,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ public class Database /*extends Thread*/ {
 	private PreparedStatement deleteMovieStatement;
 	private PreparedStatement getMovieList;
 	private PreparedStatement updatePersonsStatement;
+	private PreparedStatement checkPersonsStatement;
 	private PreparedStatement clearActors;
 	private PreparedStatement clearDirectors;
 	private PreparedStatement clearWriters;
@@ -125,7 +127,9 @@ public class Database /*extends Thread*/ {
 		getMovieStatement1 = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
 		getMovieList = connection.prepareStatement("SELECT * FROM MOVIE");
-//		updatePersonsStatement = connection.prepareStatement("INSERT INTO PERSON VALUES (?, ?) IF NOT EXIST PERSONID = ?"); //TODO doesn't work. check sql syntax
+		//eneste løsning blir å kjøre en select id from person og sjekke antall retur (0 eller 1)
+		updatePersonsStatement = connection.prepareStatement("INSERT WHEN (NOT EXIST PERSONID = ?) THEN INTO PERSON VALUES (?, ?)"); //TODO doesn't work. check sql syntax
+		checkPersonsStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE PERSONID = ?");
 		clearActors = connection.prepareStatement("DELETE FROM MOVIEACTOR WHERE MOVIEID = ?");
 		clearDirectors = connection.prepareStatement("DELETE FROM MOVIEDIRECTOR WHERE MOVIEID = ?");
 		clearWriters = connection.prepareStatement("DELETE FROM MOVIEWRITER WHERE MOVIEID = ?");
@@ -193,24 +197,24 @@ public class Database /*extends Thread*/ {
 				"PERSONID CHAR(7) NOT NULL, " +
 				"CHARACTERDESCRIPTION VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
-				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
-				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
+				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
+				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" + //Probably remove cascade
 				")";
 		String movieDirector = "CREATE TABLE MOVIEDIRECTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
-				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
-				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
+				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
+				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" + //Probably remove cascade
 				")";
 		String movieWriter = "CREATE TABLE MOVIEWRITER(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
-				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
-				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
+				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
+				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" + //Probably remove cascade
 				")";
 		String movieGenre = "CREATE TABLE MOVIEGENRE(" +
 				"MOVIEID INTEGER NOT NULL, " +
@@ -394,10 +398,18 @@ public class Database /*extends Thread*/ {
 		statement.setString(23, m.getSceneReleaseName());
 		statement.setInt(24, m.getResolution().getID());
 		statement.setInt(25, m.getAspectRatio().getID());
-		statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()));
+		
+		if(m.getImageBytes() != null)
+			statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()));
+		else
+			statement.setNull(26, Types.BLOB);
+		
 		if(edit)
 			statement.setInt(27, m.getID());
+		
 		statement.execute();
+		
+		updatePersons(m);
 		
 		if(!edit) {
 			ResultSet generatedKey = statement.getGeneratedKeys();
@@ -426,8 +438,8 @@ public class Database /*extends Thread*/ {
 		
 		for(Person p : m.getDirectors()) { //TODO names are not updated if they change
 			updatePersonsStatement.setString(1, p.getID());
-			updatePersonsStatement.setString(2, p.getID());
-			updatePersonsStatement.setString(3, p.getName());
+			updatePersonsStatement.setString(2, p.getName());
+			updatePersonsStatement.setString(3, p.getID());
 			updatePersonsStatement.execute();
 			
 			addDirector.setInt(1, m.getID());
@@ -438,8 +450,8 @@ public class Database /*extends Thread*/ {
 		
 		for(Person p : m.getWriters()) { //TODO names are not updated if they change
 			updatePersonsStatement.setString(1, p.getID());
-			updatePersonsStatement.setString(2, p.getID());
-			updatePersonsStatement.setString(3, p.getName());
+			updatePersonsStatement.setString(2, p.getName());
+			updatePersonsStatement.setString(3, p.getID());
 			updatePersonsStatement.execute();
 			
 			addWriter.setInt(1, m.getID());
@@ -450,8 +462,8 @@ public class Database /*extends Thread*/ {
 		
 		for(ActorInfo a : m.getActors()) { //TODO names are not updated if they change
 			updatePersonsStatement.setString(1, a.getPerson().getID());
-			updatePersonsStatement.setString(2, a.getPerson().getID());
-			updatePersonsStatement.setString(3, a.getPerson().getName());
+			updatePersonsStatement.setString(2, a.getPerson().getName());
+			updatePersonsStatement.setString(3, a.getPerson().getID());
 			updatePersonsStatement.execute();
 			
 			addActor.setInt(1, m.getID());
@@ -506,28 +518,30 @@ public class Database /*extends Thread*/ {
 		m.setAspectRatio(AspectRatio.intToEnum(rs.getInt("VIDEOASPECT")));
 		
 		InputStream stream = rs.getBinaryStream("COVER");
-		byte[] imageBytes = new byte[0];
-		while(stream.available() > 0) { //loop while there is more data to read
+		if(stream != null) {
+			byte[] imageBytes = new byte[0];
+			while(stream.available() > 0) { //loop while there is more data to read
+
+				//how much data is ready right now?
+				int readLength = stream.available();
+
+				//create a new array that contains the bytes read until now, but with
+				//free space for more
+				byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
+
+				//read the new bytes into the empty part of the newly created array
+				stream.read(newBytes, imageBytes.length, readLength);
+
+				//replace the "old" byte array with the new one
+				imageBytes = newBytes;
+			}
+			stream.close();
 			
-			//how much data is ready right now?
-			int readLength = stream.available();
-			
-			//create a new array that contains the bytes read until now, but with
-			//free space for more
-			byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
-			
-			//read the new bytes into the empty part of the newly created array
-			stream.read(newBytes, imageBytes.length, readLength);
-			
-			//replace the "old" byte array with the new one
-			imageBytes = newBytes;
+			if(CONST.isValidImage(imageBytes))
+				m.setImageBytes(imageBytes);
 		}
-		stream.close();
 		rs.close();
-		
-		if(CONST.isValidImage(imageBytes))
-			m.setImageBytes(imageBytes);
-		
+
 		return m;
 	}
 	

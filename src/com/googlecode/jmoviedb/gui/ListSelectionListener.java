@@ -19,6 +19,7 @@
 
 package com.googlecode.jmoviedb.gui;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import com.googlecode.jmoviedb.CONST;
@@ -48,6 +49,8 @@ public class ListSelectionListener implements SelectionListener {
 			MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getDB().getMovie(selection));
 			
 		} catch (SQLException e) {
+			MainWindow.getMainWindow().handleException(e);
+		} catch (IOException e) {
 			MainWindow.getMainWindow().handleException(e);
 		}
 	}
