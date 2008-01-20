@@ -52,6 +52,8 @@ public class OpenPreviousAction extends Action {
 			Moviedb db = new Moviedb(filePath);
 			Settings.getSettings().updateRecentFiles(filePath);
 			MainWindow.getMainWindow().setDB(db);
+		} catch (java.io.FileNotFoundException e) {
+			//TODO sensible error dialog
 		} catch (Exception e) {
 			MainWindow.getMainWindow().handleException(e);
 		}
