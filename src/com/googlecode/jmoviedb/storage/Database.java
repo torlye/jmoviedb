@@ -68,8 +68,9 @@ public class Database /*extends Thread*/ {
 	private PreparedStatement getMovieStatement1;
 	private PreparedStatement deleteMovieStatement;
 	private PreparedStatement getMovieList;
-	private PreparedStatement updatePersonsStatement;
-	private PreparedStatement checkPersonsStatement;
+	private PreparedStatement addPersonStatement;
+	private PreparedStatement updatePersonStatement;
+	private PreparedStatement checkPersonStatement;
 	private PreparedStatement clearActors;
 	private PreparedStatement clearDirectors;
 	private PreparedStatement clearWriters;
@@ -127,9 +128,9 @@ public class Database /*extends Thread*/ {
 		getMovieStatement1 = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
 		getMovieList = connection.prepareStatement("SELECT * FROM MOVIE");
-		//eneste løsning blir å kjøre en select id from person og sjekke antall retur (0 eller 1)
-		updatePersonsStatement = connection.prepareStatement("INSERT WHEN (NOT EXIST PERSONID = ?) THEN INTO PERSON VALUES (?, ?)"); //TODO doesn't work. check sql syntax
-		checkPersonsStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE PERSONID = ?");
+		addPersonStatement = connection.prepareStatement("INSERT INTO PERSON VALUES (?, ?)");
+		updatePersonStatement = connection.prepareStatement("UPDATE PERSON SET NAME = ? WHERE PERSONID = ?");
+		checkPersonStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE PERSONID = ?");
 		clearActors = connection.prepareStatement("DELETE FROM MOVIEACTOR WHERE MOVIEID = ?");
 		clearDirectors = connection.prepareStatement("DELETE FROM MOVIEDIRECTOR WHERE MOVIEID = ?");
 		clearWriters = connection.prepareStatement("DELETE FROM MOVIEWRITER WHERE MOVIEID = ?");
@@ -434,13 +435,10 @@ public class Database /*extends Thread*/ {
 		clearWriters.setInt(1, m.getID());
 		clearActors.execute();
 		clearDirectors.execute();
-		clearDirectors.execute();
+		clearWriters.execute();
 		
-		for(Person p : m.getDirectors()) { //TODO names are not updated if they change
-			updatePersonsStatement.setString(1, p.getID());
-			updatePersonsStatement.setString(2, p.getName());
-			updatePersonsStatement.setString(3, p.getID());
-			updatePersonsStatement.execute();
+		for(Person p : m.getDirectors()) {
+			addOrUpdatePerson(p);
 			
 			addDirector.setInt(1, m.getID());
 			addDirector.setString(2, p.getID());
@@ -448,23 +446,17 @@ public class Database /*extends Thread*/ {
 			addDirector.execute();
 		}
 		
-		for(Person p : m.getWriters()) { //TODO names are not updated if they change
-			updatePersonsStatement.setString(1, p.getID());
-			updatePersonsStatement.setString(2, p.getName());
-			updatePersonsStatement.setString(3, p.getID());
-			updatePersonsStatement.execute();
+		for(Person p : m.getWriters()) {
+			addOrUpdatePerson(p);
 			
 			addWriter.setInt(1, m.getID());
 			addWriter.setString(2, p.getID());
 			addWriter.setString(3, "");
-			addWriter.execute();
+			addWriter.execute(); //TODO fix cases where a writer or director is listed twice
 		}
 		
-		for(ActorInfo a : m.getActors()) { //TODO names are not updated if they change
-			updatePersonsStatement.setString(1, a.getPerson().getID());
-			updatePersonsStatement.setString(2, a.getPerson().getName());
-			updatePersonsStatement.setString(3, a.getPerson().getID());
-			updatePersonsStatement.execute();
+		for(ActorInfo a : m.getActors()) {
+			addOrUpdatePerson(a.getPerson());
 			
 			addActor.setInt(1, m.getID());
 			addActor.setString(2, a.getPerson().getID());
@@ -584,6 +576,23 @@ public class Database /*extends Thread*/ {
 		if(m.getID()!=-1) {
 			deleteMovieStatement.setInt(1, m.getID());
 			deleteMovieStatement.execute();
+		}
+	}
+	
+	private void addOrUpdatePerson(Person p) throws SQLException {
+		checkPersonStatement.setString(1, p.getID());
+		ResultSet rs = checkPersonStatement.executeQuery();
+		if(rs.next()) { //Person exists in database
+			if(rs.getString("NAME") != p.getName()) { //Person's name has change since last time it was added
+				updatePersonStatement.setString(1, p.getName());
+				updatePersonStatement.setString(2, p.getID());
+				updatePersonStatement.execute();
+			}
+		}
+		else { //person does not yet exist in database
+			addPersonStatement.setString(1, p.getID());
+			addPersonStatement.setString(2, p.getName());
+			addPersonStatement.execute();
 		}
 	}
 }

@@ -317,7 +317,7 @@ public class ImdbParser {
 			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
 			Matcher personMatcher = personPattern.matcher(matcher.group(2));
 			while(personMatcher.find()) {
-				personArray.add(new Person(personMatcher.group(2), CONST.fixHtmlCharacters(personMatcher.group(2))));
+				personArray.add(new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2))));
 			}
 		}
 
