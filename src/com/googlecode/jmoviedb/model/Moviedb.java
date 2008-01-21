@@ -113,8 +113,19 @@ public class Moviedb {
 		setSaved(true);
 	}
 	
+	/**
+	 * Saves the database to the specified file. This method is currently unsafe - 
+	 * if save is called when there still are outstanding disk writes some changes
+	 * presumably will not be saved. This will probably be very rare, as the database
+	 * has autocommit enabled, but the problem nonetheless needs to be researched 
+	 * further to prevent data loss.
+	 * @param file the file to store the database in
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 * @throws IOException
+	 */
 	public void save(String file) throws ClassNotFoundException, SQLException, IOException {
-		if(database == null) {
+		if(database == null) {//TODO move this somewhere else. 
 			database = new Database(dbTempPath);
 			database.createTables();
 		}
@@ -134,8 +145,7 @@ public class Moviedb {
 
 	public AbstractMovie getMovie(int listID) throws SQLException, IOException {
 		int movieID = sortedMovieList[listID];
-		return database.getMovie(movieID);
-		//TODO load more info from DB
+		return database.getMovieFull(movieID);
 	}
 	
 	/**

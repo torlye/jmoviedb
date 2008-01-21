@@ -40,9 +40,12 @@ import java.util.HashMap;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
+import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.DiscType;
 import com.googlecode.jmoviedb.enumerated.FilmVersion;
 import com.googlecode.jmoviedb.enumerated.FormatType;
+import com.googlecode.jmoviedb.enumerated.Genre;
+import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.enumerated.Resolution;
 import com.googlecode.jmoviedb.enumerated.TVsystem;
@@ -74,12 +77,21 @@ public class Database /*extends Thread*/ {
 	private PreparedStatement clearActors;
 	private PreparedStatement clearDirectors;
 	private PreparedStatement clearWriters;
+	private PreparedStatement clearGenres;
+	private PreparedStatement clearLanguages;
+	private PreparedStatement clearCountries;
 	private PreparedStatement addActor;
 	private PreparedStatement addWriter;
 	private PreparedStatement addDirector;
+	private PreparedStatement addGenre;
+	private PreparedStatement addLanguage;
+	private PreparedStatement addCountry;
 	private PreparedStatement getActors;
 	private PreparedStatement getDirectors;
 	private PreparedStatement getWriters;
+	private PreparedStatement getGenres;
+	private PreparedStatement getLanguages;
+	private PreparedStatement getCountries;
 	
 	//TODO finish the javadoc description
 	/**
@@ -134,14 +146,24 @@ public class Database /*extends Thread*/ {
 		clearActors = connection.prepareStatement("DELETE FROM MOVIEACTOR WHERE MOVIEID = ?");
 		clearDirectors = connection.prepareStatement("DELETE FROM MOVIEDIRECTOR WHERE MOVIEID = ?");
 		clearWriters = connection.prepareStatement("DELETE FROM MOVIEWRITER WHERE MOVIEID = ?");
+		clearGenres = connection.prepareStatement("DELETE FROM MOVIEGENRE WHERE MOVIEID = ?");
+		clearCountries = connection.prepareStatement("DELETE FROM MOVIECOUNTRY WHERE MOVIEID = ?");
+		clearLanguages = connection.prepareStatement("DELETE FROM MOVIELANGUAGE WHERE MOVIEID = ?");
 		addActor = connection.prepareStatement("INSERT INTO MOVIEACTOR VALUES (?, ?, ?)");
 		addDirector = connection.prepareStatement("INSERT INTO MOVIEDIRECTOR VALUES (?, ?, ?)");
 		addWriter = connection.prepareStatement("INSERT INTO MOVIEWRITER VALUES (?, ?, ?)");
-//		getActors = connection.prepareStatement("SELECT * FROM MOVIEACTOR JOIN PERSON ON MOVIEACTOR.PERSONID = PERSON.PERSONID HAVING MOVIEID = ?");
-//		getDirectors = connection.prepareStatement("SELECT * FROM MOVIEDIRECTOR JOIN PERSON WHERE MOVIEID = ?");
-//		getWriters = connection.prepareStatement("SELECT * FROM MOVIEWRITER JOIN PERSON WHERE MOVIEID = ?");
+		addGenre = connection.prepareStatement("INSERT INTO MOVIEGENRE VALUES(?, ?)");
+		addLanguage = connection.prepareStatement("INSERT INTO MOVIELANGUAGE VALUES(?, ?)");
+		addCountry = connection.prepareStatement("INSERT INTO MOVIECOUNTRY VALUES(?, ?)");
+		getActors = connection.prepareStatement("SELECT * FROM MOVIEACTOR JOIN PERSON ON MOVIEACTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
+		getDirectors = connection.prepareStatement("SELECT * FROM MOVIEDIRECTOR JOIN PERSON ON MOVIEDIRECTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
+		getWriters = connection.prepareStatement("SELECT * FROM MOVIEWRITER JOIN PERSON ON MOVIEWRITER.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
+		getGenres = connection.prepareStatement("SELECT * FROM MOVIEGENRE WHERE MOVIEID = ?");
+		getLanguages = connection.prepareStatement("SELECT * FROM MOVIELANGUAGE WHERE MOVIEID = ?");
+		getCountries = connection.prepareStatement("SELECT * FROM MOVIECOUNTRY WHERE MOVIEID = ?");
 	}
 	
+	//TODO remove this?
 	private ResultSet execute(String query, boolean wantResultSet) throws SQLException {
 		Statement statement = connection.createStatement();
 		ResultSet rs = null;
@@ -410,7 +432,7 @@ public class Database /*extends Thread*/ {
 		
 		statement.execute();
 		
-		updatePersons(m);
+		updateRelations(m);
 		
 		if(!edit) {
 			ResultSet generatedKey = statement.getGeneratedKeys();
@@ -429,13 +451,10 @@ public class Database /*extends Thread*/ {
 	 * if they're not there already.
 	 * @param m
 	 */
-	private void updatePersons(AbstractMovie m) throws SQLException {
-		clearActors.setInt(1, m.getID());
+	private void updateRelations(AbstractMovie m) throws SQLException {
+		
 		clearDirectors.setInt(1, m.getID());
-		clearWriters.setInt(1, m.getID());
-		clearActors.execute();
 		clearDirectors.execute();
-		clearWriters.execute();
 		
 		for(Person p : m.getDirectors()) {
 			addOrUpdatePerson(p);
@@ -446,6 +465,9 @@ public class Database /*extends Thread*/ {
 			addDirector.execute();
 		}
 		
+		clearWriters.setInt(1, m.getID());
+		clearWriters.execute();
+		
 		for(Person p : m.getWriters()) {
 			addOrUpdatePerson(p);
 			
@@ -455,6 +477,9 @@ public class Database /*extends Thread*/ {
 			addWriter.execute(); //TODO fix cases where a writer or director is listed twice
 		}
 		
+		clearActors.setInt(1, m.getID());
+		clearActors.execute();
+		
 		for(ActorInfo a : m.getActors()) {
 			addOrUpdatePerson(a.getPerson());
 			
@@ -462,6 +487,33 @@ public class Database /*extends Thread*/ {
 			addActor.setString(2, a.getPerson().getID());
 			addActor.setString(3, a.getCharacter());
 			addActor.execute();
+		}
+
+		clearGenres.setInt(1, m.getID());
+		clearGenres.execute();
+		
+		for(Genre g : m.getGenres()) {
+			addGenre.setInt(1, m.getID());
+			addGenre.setInt(2, g.getID());
+			addGenre.execute();
+		}
+		
+		clearLanguages.setInt(1, m.getID());
+		clearLanguages.execute();
+		
+		for(Language l : m.getLanguages()) {
+			addLanguage.setInt(1, m.getID());
+			addLanguage.setInt(2, l.getID());
+			addLanguage.execute();
+		}
+		
+		clearCountries.setInt(1, m.getID());
+		clearCountries.execute();
+		
+		for(Country c : m.getCountries()) {
+			addCountry.setInt(1, m.getID());
+			addCountry.setInt(2, c.getID());
+			addCountry.execute();
 		}
 		
 	}
@@ -539,35 +591,55 @@ public class Database /*extends Thread*/ {
 	
 	public AbstractMovie getMovieFull(int id) throws SQLException, IOException {
 		AbstractMovie m = getMovie(id);
-		
+				
 		getActors.setInt(1, id);
-		getDirectors.setInt(1, id);
-		getWriters.setInt(1, id);
-		
 		ResultSet rsA = getActors.executeQuery();
 		ArrayList<ActorInfo> actors = new ArrayList<ActorInfo>();
 		int counter = 0;
-		while(rsA.next()) {
+		while(rsA.next())
 			actors.add(new ActorInfo(counter, new Person(rsA.getString("PERSONID"), rsA.getString("NAME")), rsA.getString("CHARACTERDESCRIPTION")));
-		}
 		m.setActors(actors);
 		rsA.close();
 		
+		getDirectors.setInt(1, id);
 		ResultSet rsD = getDirectors.executeQuery();
 		ArrayList<Person> directors = new ArrayList<Person>();
-		while(rsD.next()) {
+		while(rsD.next())
 			directors.add(new Person(rsD.getString("PERSONID"), rsD.getString("NAME")));
-		}
 		m.setDirectors(directors);
 		rsD.close();
 		
+		getWriters.setInt(1, id);
 		ResultSet rsW = getWriters.executeQuery();
 		ArrayList<Person> writers = new ArrayList<Person>();
-		while(rsW.next()) {
+		while(rsW.next())
 			writers.add(new Person(rsW.getString("PERSONID"), rsW.getString("NAME")));
-		}
 		m.setWriters(writers);
 		rsW.close();
+		
+		getGenres.setInt(1, id);
+		ResultSet rsG = getGenres.executeQuery();
+		ArrayList<Genre> genres = new ArrayList<Genre>();
+		while(rsG.next())
+			genres.add(Genre.intToEnum(rsG.getInt("GENREID")));
+		m.setGenres(genres);
+		rsG.close();
+		
+		getLanguages.setInt(1, id);
+		ResultSet rsL = getLanguages.executeQuery();
+		ArrayList<Language> languages = new ArrayList<Language>();
+		while(rsL.next())
+			languages.add(Language.intToEnum(rsL.getInt("LANGUAGEID")));
+		m.setLanguages(languages);
+		rsL.close();
+		
+		getCountries.setInt(1, id);
+		ResultSet rsC = getCountries.executeQuery();
+		ArrayList<Country> countries = new ArrayList<Country>();
+		while(rsC.next())
+			countries.add(Country.intToEnum(rsC.getInt("COUNTRYID")));
+		m.setCountries(countries);
+		rsC.close();
 		
 		return m;
 	}
