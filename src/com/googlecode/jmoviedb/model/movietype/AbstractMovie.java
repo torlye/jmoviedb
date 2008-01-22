@@ -76,6 +76,7 @@ public abstract class AbstractMovie implements Cloneable {
 	private boolean legal;
 	private boolean seen;
 	private boolean myEncode;
+	private String location;
 	
 	private FormatType format;
 	private ContainerFormat container;
@@ -315,6 +316,14 @@ public abstract class AbstractMovie implements Cloneable {
 
 	public void setCustomTitle(String customTitle) {
 		this.customTitle = customTitle;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+	
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 	public FormatType getFormat() {
