@@ -22,9 +22,14 @@ package com.googlecode.jmoviedb.model;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
@@ -48,9 +53,9 @@ public class Moviedb {
 	public static final String ACTOR_LIST_PROPERTY_NAME = "actorlist";
 	public static final String SAVE_STATUS_PROPERTY_NAME = "savestatus";
 	
-	private HashMap<Integer, AbstractMovie> movies;
+	private BasicEventList<AbstractMovie> movies;
 //	private HashMap<Integer, String> actors;
-	private int[] sortedMovieList;
+//	private int[] sortedMovieList;
 	private String title;
 	private boolean saved;
 	
@@ -62,9 +67,7 @@ public class Moviedb {
 	
 	private Moviedb() {
 		listeners = new ListenerList();
-		movies = new HashMap<Integer, AbstractMovie>();
-		sortedMovieList = new int[0]; 
-//		actors = new HashMap<Integer, String>();
+		movies = new BasicEventList<AbstractMovie>();
 		title = "Untitled"; // TODO change this
 		setSaved(true);
 		dbTempPath = getRandomTempPath();
@@ -78,7 +81,6 @@ public class Moviedb {
 			saveFile = file;
 			open(saveFile);
 		}
-		sort();
 	}
 	
 	/**
@@ -109,7 +111,7 @@ public class Moviedb {
 	private void open(String file) throws ClassNotFoundException, SQLException, IOException {
 		new ZipWorker(file, dbTempPath).extract();
 		database = new Database(dbTempPath);
-		movies = database.getMovieList();
+		movies.addAll(database.getMovieList());
 		setSaved(true);
 	}
 	
@@ -142,8 +144,8 @@ public class Moviedb {
 		setSaved(false);
 	}
 
-	public AbstractMovie getMovie(int listID) throws SQLException, IOException {
-		int movieID = sortedMovieList[listID];
+	public AbstractMovie getMovie(int movieID) throws SQLException, IOException {
+//		int movieID = sortedMovieList[listID];
 		return database.getMovieFull(movieID);
 	}
 	
@@ -155,30 +157,14 @@ public class Moviedb {
 	 * @throws Exception
 	 */
 	public void saveMovie(AbstractMovie m) throws SQLException {
-		saveMovieWithoutSorting(m);
-		sort();
-		// firePropertyChange sould be unnecessary, as it is fired from sort(int, int).
-	}
-
-	/**
-	 * Stores a movie in the database. This is a special case that adds a movie without
-	 * sorting or triggering property change events. This is useful for example when
-	 * importing a number of movies in one operation.
-	 * @param m
-	 * @throws SQLException 
-	 */
-	public void saveMovieWithoutSorting(AbstractMovie m) throws SQLException {
 		if(CONST.DEBUG_MODE)
 			System.out.println("MODEL: saveMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
 		
-//		if(m.getID() == -1)
-//			m.setID(database.addMovie(m));
-//		else
-//			database.editMovie(m);
 		database.saveMovie(m);
-		movies.put(m.getID(), m);
+		movies.add(m);
 
 		setSaved(false);
+		firePropertyChange(MOVIE_LIST_PROPERTY_NAME, null, null);
 		
 		if(CONST.DEBUG_MODE)
 			System.out.println("Total number of movies is now " + getMovieCount());
@@ -189,41 +175,9 @@ public class Moviedb {
 		return movies.size();
 	}
 	
-	public AbstractMovie[] getMovieArray() {
-		try {
-			AbstractMovie[] returnArray = new AbstractMovie[sortedMovieList.length];
-			int counter = 0;
-			
-			for(int i : sortedMovieList) {
-				returnArray[counter] = movies.get(i);
-				counter++;
-			}
-			if(CONST.DEBUG_MODE)
-				System.out.println("Returning a movie array of size " + returnArray.length);
-			
-			return returnArray;
-		} catch(Exception e) {
-			//TODO
-			e.printStackTrace();
-			return null;
-		}
+	public EventList<AbstractMovie> getMovieList() {
+		return movies;
 	}
-	
-//	public AbstractMovie[] getMovieArray() {
-//		AbstractMovie[] returnArray = new AbstractMovie[movies.size()];
-//		
-//		Iterator movieIterator = movies.keySet().iterator();
-//		int i = 0;
-//		while(movieIterator.hasNext()) {
-//			returnArray[i] = movies.get(movieIterator.next());
-//			i++;
-//		}
-//		return returnArray;
-//	}
-//	
-//	public Iterator getMovieIterator() {
-//		return movies.keySet().iterator();
-//	}
 	
 	public String toString() {
 		return title;
@@ -237,7 +191,7 @@ public class Moviedb {
 		return saved;
 	}
 	
-	public void setSaved(boolean s) {
+	private void setSaved(boolean s) {
 		if(saved == s)
 			return;
 		boolean oldValue = saved;
@@ -247,14 +201,15 @@ public class Moviedb {
 	
 	public void addListener(IPropertyChangeListener listener) {
 		listeners.add(listener);
-		if(CONST.DEBUG_MODE) {
-			System.out.println("Moviedb has a new listener. It is " + listener);
-			System.out.println("Total listener count is now " + listeners.getListeners().length);
-		}
+		if(CONST.DEBUG_MODE)
+			System.out.println("Moviedb has a new listener. It is " + listener
+					+ " Total listener count is now " + listeners.getListeners().length);
 	}
 	
 	public void removeListener(IPropertyChangeListener listener) {
 		listeners.remove(listener);
+		if(CONST.DEBUG_MODE)
+			System.out.println("Moviedb lost a listener. Total listener count is now " + listeners.getListeners().length);
 	}
 	
 	public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
@@ -297,57 +252,5 @@ public class Moviedb {
 					files[i].delete();
 			}
 		}
-	}
-	
-	/**
-	 * Sorts the movie list
-	 */
-	public void sort() {
-		//TODO needs lots of work. this is a dummy implementation.
-		
-		int sortBy = Settings.getSettings().getSortBy();
-		int sortDir = Settings.getSettings().getSortDirection();
-		
-		boolean descending = false;
-		if(sortDir == CONST.SORT_DESCENDING)
-			descending = true;
-		
-		//creating a temporary array to sort on
-		AbstractMovie[] movieArray = new AbstractMovie[getMovieCount()];
-		int counter = 0;
-		for(int id : movies.keySet()) {
-			movieArray[counter] = movies.get(id);
-			counter++;
-		}
-		
-		//sorting according to the correct parameter
-		if(sortBy == CONST.SORT_BY_ID) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("Sorting by ID, descending: " + descending);
-			Arrays.sort(movieArray, new IdSorter(descending));
-		} else if(sortBy == CONST.SORT_BY_TITLE) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("Sorting by title, descending: " + descending);
-			Arrays.sort(movieArray, new TitleSorter(descending));
-		} else if(sortBy == CONST.SORT_BY_YEAR) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("Sorting by year, descending: " + descending);
-			Arrays.sort(movieArray, new YearSorter(descending));
-		} else if(sortBy == CONST.SORT_BY_RATING) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("Sorting by rating, descending: " + descending);
-			Arrays.sort(movieArray, new RatingSorter(descending));
-		}
-		
-		//updating sortedMovieList with the new data
-		sortedMovieList = new int[movieArray.length];	
-		for(int i=0; i<movieArray.length; i++) {
-			sortedMovieList[i] = movieArray[i].getID();
-		}
-			
-		if(CONST.DEBUG_MODE)
-			System.out.println("Sort completed, " + movieArray.length + " items");
-		
-		firePropertyChange(MOVIE_LIST_PROPERTY_NAME, null, null);
 	}
 }
