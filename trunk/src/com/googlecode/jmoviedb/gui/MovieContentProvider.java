@@ -42,7 +42,7 @@ public class MovieContentProvider implements IStructuredContentProvider {
 		if(oldInput != null) {
 			System.out.println("CLOSING DATABASE");
 			((Moviedb)oldInput).removeListener(MainWindow.getMainWindow());
-			((Moviedb)oldInput).close();
+			((Moviedb)oldInput).closeDatabase();
 		}
 		if(newInput != null) {
 			System.out.println("OPENING NEW DATABASE");

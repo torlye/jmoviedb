@@ -58,17 +58,15 @@ import com.googlecode.jmoviedb.model.movietype.*;
  * @author Tor Arne Lye
  *
  */
-public class Database /*extends Thread*/ {
+public class Database {
 	
 	private String path;
-	
-	private int queryCount;
 	
 	private Connection connection = null;
 	
 	private PreparedStatement addMovieStatement;
 	private PreparedStatement editMovieStatement;
-	private PreparedStatement getMovieStatement1;
+	private PreparedStatement getMovieStatement;
 	private PreparedStatement deleteMovieStatement;
 	private PreparedStatement getMovieList;
 	private PreparedStatement addPersonStatement;
@@ -93,7 +91,6 @@ public class Database /*extends Thread*/ {
 	private PreparedStatement getLanguages;
 	private PreparedStatement getCountries;
 	
-	//TODO finish the javadoc description
 	/**
 	 * The default constructor. It opens a new database connection and, if 
 	 * @param path the path to keep the database storage files. If database files already
@@ -103,21 +100,22 @@ public class Database /*extends Thread*/ {
 	 */
 	public Database(String path) throws ClassNotFoundException, SQLException {
 		this.path = path;
-		queryCount = 0;
 		System.out.println("Creating database @ " + path); 
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 		connection = DriverManager.getConnection("jdbc:derby:"+path+";create=true");
+		
 		try {
 			createTables();
 		} catch (SQLException e) {
-			/*If the SQLState equals "X0Y32", the exception is thrown because the tables
-			 * already exist. This exception is ignored, all others are re-thrown.
+			/*
+			 * If the SQLState equals "X0Y32", the exception was thrown because the tables
+			 * already existed. This exception is ignored, all others are re-thrown.
 			 */
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
 		
-		//Make sure addMovieStatement and editMovieStatement have the same column names at all times
+		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
 				"TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
 				"PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, NOTES, VERSION, " +
@@ -137,9 +135,9 @@ public class Database /*extends Thread*/ {
 				"SCENERELEASENAME = ?, VIDEORESOLUTION = ?, VIDEOASPECT = ?, " +
 				"COVER = ? " +
 				"WHERE MOVIEID = ?");
-		getMovieStatement1 = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
+		getMovieStatement = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
-		getMovieList = connection.prepareStatement("SELECT * FROM MOVIE");
+		getMovieList = connection.prepareStatement("SELECT MOVIEID FROM MOVIE");
 		addPersonStatement = connection.prepareStatement("INSERT INTO PERSON VALUES (?, ?)");
 		updatePersonStatement = connection.prepareStatement("UPDATE PERSON SET NAME = ? WHERE PERSONID = ?");
 		checkPersonStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE PERSONID = ?");
@@ -162,24 +160,12 @@ public class Database /*extends Thread*/ {
 		getLanguages = connection.prepareStatement("SELECT * FROM MOVIELANGUAGE WHERE MOVIEID = ?");
 		getCountries = connection.prepareStatement("SELECT * FROM MOVIECOUNTRY WHERE MOVIEID = ?");
 	}
-	
-	//TODO remove this?
-	private ResultSet execute(String query, boolean wantResultSet) throws SQLException {
-		Statement statement = connection.createStatement();
-		ResultSet rs = null;
-		queryCount++;
-		System.out.println(queryCount + ": " + query);
-		if(wantResultSet) {
-			rs = statement.executeQuery(query);
-//			rs.close();
-		}
-		else
-			statement.executeUpdate(query); //TODO exception her når man åpner
-		statement.close();
-		return rs;
-	}
 
-	public void createTables() throws SQLException  {
+	/**
+	 * Creates all the tables to be used in the database
+	 * @throws SQLException in case of any SQL-related trouble
+	 */
+	private void createTables() throws SQLException  {
 		String person = "CREATE TABLE PERSON(" +
 				"PERSONID CHAR(7) NOT NULL, " +
 				"NAME VARCHAR(250), " +
@@ -278,41 +264,48 @@ public class Database /*extends Thread*/ {
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
 
-
-		execute(movie, false);
-		execute(person, false);
-		execute(movieActor, false);
-		execute(movieDirector, false);
-		execute(movieWriter, false);
-		execute(movieGenre, false);
-		execute(movieCountry, false);
-		execute(movieLanguage, false);
-		execute(movieAudio, false);
-		execute(movieSubtitle, false);
+		for(String query : new String[]{movie, person, movieActor, movieDirector,
+				movieWriter, movieGenre, movieCountry, movieLanguage, movieAudio, 
+				movieSubtitle}) {
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(query);
+			statement.close();
+		}
 	}
 	
-//	public void deleteTables() throws SQLException {
-//		execute("DROP TABLE MOVIEACTOR", false);
-//		execute("DROP TABLE MOVIEDIRECTOR", false);
-//		execute("DROP TABLE MOVIEWRITER", false);
-//		execute("DROP TABLE MOVIE", false);
-//		execute("DROP TABLE PERSON", false);
-//	}
-	
-//	public void close() throws SQLException {
-//		connection.close();
-//	}
-	
-	public void shutdown() {
-		try {
-			addMovieStatement.close();
-			getMovieStatement1.close();
-			deleteMovieStatement.close();
-			getMovieList.close();
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	/**
+	 * Closes all PreparedStatements and shuts down the connection.
+	 * @throws SQLException
+	 */
+	public void shutdown() throws SQLException {
+		addMovieStatement.close();
+		editMovieStatement.close();
+		getMovieStatement.close();
+		deleteMovieStatement.close();
+		getMovieList.close();
+		addPersonStatement.close();
+		updatePersonStatement.close();
+		checkPersonStatement.close();
+		clearActors.close();
+		clearCountries.close();
+		clearDirectors.close();
+		clearGenres.close();
+		clearLanguages.close();
+		clearWriters.close();
+		addActor.close();
+		addCountry.close();
+		addDirector.close();
+		addGenre.close();
+		addLanguage.close();
+		addWriter.close();
+		getActors.close();
+		getCountries.close();
+		getDirectors.close();
+		getGenres.close();
+		getLanguages.close();
+		getWriters.close();
+
+		connection.close();
 	}
 	
 	public void load() {
@@ -330,48 +323,7 @@ public class Database /*extends Thread*/ {
 		HashMap<Integer, AbstractMovie> hm = new HashMap<Integer, AbstractMovie>();
 		
 		while(rs.next()) {
-			AbstractMovie m;
-			switch(rs.getInt("TYPE")) {
-				case 0:
-					m = new Film(rs.getInt("MOVIEID"), 
-							rs.getString("IMDBID"), 
-							rs.getString("TITLE"),
-							rs.getString("CUSTOMTITLE"),
-							rs.getInt("MOVIEYEAR"),
-							rs.getInt("RATING"),
-							rs.getString("PLOTOUTLINE"),
-							rs.getString("TAGLINE"),
-							rs.getInt("COLOR"),
-							rs.getInt("RUNTIME"),
-							rs.getString("NOTES"),
-							rs.getInt("VERSION"),
-							rs.getString("CUSTOMFILMVERSION"),
-							rs.getInt("LEGAL"),
-							rs.getInt("SEEN"),
-							rs.getInt("FORMAT"),
-							rs.getInt("DISC"),
-							rs.getInt("VIDEO"),
-							rs.getInt("MYENCODE"),
-							rs.getInt("DVDREGION"),
-							rs.getInt("TVSYSTEM"),
-							rs.getString("SCENERELEASENAME"),
-							rs.getInt("VIDEORESOLUTION"),
-							rs.getInt("VIDEOASPECT")
-							);
-//					m.setImageBytes(rs.getBlob("COVER").); //TODO finish
-					break;
-				case 1: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
-				case 2: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
-				case 3: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
-				case 4: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
-				case 5: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
-				case 6: m = getMovie(rs.getInt("MOVIEID")); System.out.println("Not implemented yet!"); break; //TODO
-				default: 
-					m = new Film();
-					if(CONST.DEBUG_MODE)
-						System.out.println("Invalid movie type: " + rs.getInt("TYPE"));
-					break;
-			}
+			AbstractMovie m = getMovieLite(rs.getInt("MOVIEID"));
 			hm.put(rs.getInt("MOVIEID"), m);
 		}
 		
@@ -411,7 +363,7 @@ public class Database /*extends Thread*/ {
 		statement.setString(13, m.getCustomVersion());
 		statement.setInt(14, CONST.booleanToInt(m.isLegal()));
 		statement.setInt(15, CONST.booleanToInt(m.isSeen()));
-		statement.setString(16, ""); //TODO FIX!
+		statement.setString(16, m.getLocation());
 		statement.setInt(17, m.getFormat().getID());
 		statement.setInt(18, m.getDisc().getID());
 		statement.setInt(19, m.getVideo().getID());
@@ -524,9 +476,9 @@ public class Database /*extends Thread*/ {
 	 * @return an instance of an AbstractMovie subclass
 	 * @throws SQLException
 	 */
-	public AbstractMovie getMovie(int id) throws SQLException, IOException {
-		getMovieStatement1.setInt(1, id);
-		ResultSet rs = getMovieStatement1.executeQuery();
+	public AbstractMovie getMovieLite(int id) throws SQLException, IOException {
+		getMovieStatement.setInt(1, id);
+		ResultSet rs = getMovieStatement.executeQuery();
 		if(!rs.next())
 			return null;
 		
@@ -550,7 +502,7 @@ public class Database /*extends Thread*/ {
 		m.setCustomVersion(rs.getString("CUSTOMFILMVERSION"));
 		m.setLegal(rs.getInt("LEGAL"));
 		m.setSeen(rs.getInt("SEEN"));
-		String foo = rs.getString("LOCATION"); //TODO fix!
+		m.setLocation(rs.getString("LOCATION"));
 		m.setFormat(FormatType.intToEnum(rs.getInt("FORMAT")));
 		m.setDisc(DiscType.intToEnum(rs.getInt("DISC")));
 		m.setVideo(VideoCodec.intToEnum(rs.getInt("VIDEO")));
@@ -590,7 +542,7 @@ public class Database /*extends Thread*/ {
 	}
 	
 	public AbstractMovie getMovieFull(int id) throws SQLException, IOException {
-		AbstractMovie m = getMovie(id);
+		AbstractMovie m = getMovieLite(id);
 				
 		getActors.setInt(1, id);
 		ResultSet rsA = getActors.executeQuery();
@@ -655,7 +607,7 @@ public class Database /*extends Thread*/ {
 		checkPersonStatement.setString(1, p.getID());
 		ResultSet rs = checkPersonStatement.executeQuery();
 		if(rs.next()) { //Person exists in database
-			if(rs.getString("NAME") != p.getName()) { //Person's name has change since last time it was added
+			if(rs.getString("NAME") != p.getName()) { //Person's name has changed since last time it was added
 				updatePersonStatement.setString(1, p.getName());
 				updatePersonStatement.setString(2, p.getID());
 				updatePersonStatement.execute();

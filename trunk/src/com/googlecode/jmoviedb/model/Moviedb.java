@@ -127,8 +127,7 @@ public class Moviedb {
 	public void save(String file) throws ClassNotFoundException, SQLException, IOException {
 		if(database == null) {//TODO move this somewhere else. 
 			database = new Database(dbTempPath);
-			database.createTables();
-		}
+		}//TODO close and re-open database (create new database instance)
 		database.save(this);
 		new ZipWorker(file, dbTempPath).compress();
 		setSaved(true);
@@ -278,12 +277,17 @@ public class Moviedb {
 		this.saveFile = saveFile;
 	}
 	
-	public void close() {
-		database.shutdown();
+	public void closeDatabase() {
+		try {
+			database.shutdown();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		recursiveDeleteDirectory(new File(dbTempPath));
 	}
 	
-	public static void recursiveDeleteDirectory(File path) {
+	private static void recursiveDeleteDirectory(File path) {
 		if(path.exists()) {
 			File[] files = path.listFiles();
 			for(int i = 0; i<files.length; i++) {
