@@ -318,18 +318,17 @@ public class Database {
 		
 	}
 	
-	public HashMap<Integer, AbstractMovie> getMovieList() throws SQLException, IOException {
+	public ArrayList<AbstractMovie> getMovieList() throws SQLException, IOException {
 		ResultSet rs  = getMovieList.executeQuery();
-		HashMap<Integer, AbstractMovie> hm = new HashMap<Integer, AbstractMovie>();
+		ArrayList<AbstractMovie> list = new ArrayList<AbstractMovie>();
 		
 		while(rs.next()) {
-			AbstractMovie m = getMovieLite(rs.getInt("MOVIEID"));
-			hm.put(rs.getInt("MOVIEID"), m);
+			list.add(getMovieLite(rs.getInt("MOVIEID")));
 		}
 		
 		rs.close();
 		
-		return hm;
+		return list;
 	}
 	
 	public void saveMovie(AbstractMovie m) throws SQLException {

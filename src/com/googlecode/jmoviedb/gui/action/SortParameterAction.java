@@ -48,12 +48,13 @@ public class SortParameterAction extends Action {
 		Settings s = Settings.getSettings();
 		if(sortParameter < 0 && s.getSortDirection() != sortParameter) {
 			s.setSortDirection(sortParameter);
-			MainWindow.getMainWindow().getDB().sort();
+			MainWindow.getMainWindow().reSort();
 		}
 		
 		else if(sortParameter >= 0 && s.getSortBy() != sortParameter) {
 			s.setSortBy(sortParameter);
-			MainWindow.getMainWindow().getDB().sort();
+			MainWindow.getMainWindow().reSort();
 		}
 	}
+	
 }

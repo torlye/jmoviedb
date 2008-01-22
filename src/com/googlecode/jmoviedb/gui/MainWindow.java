@@ -22,10 +22,19 @@ package com.googlecode.jmoviedb.gui;
 import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Comparator;
+
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.swt.EventListViewer;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.gui.action.*;
+import com.googlecode.jmoviedb.gui.action.sort.IdSorter;
+import com.googlecode.jmoviedb.gui.action.sort.RatingSorter;
+import com.googlecode.jmoviedb.gui.action.sort.TitleSorter;
+import com.googlecode.jmoviedb.gui.action.sort.YearSorter;
 import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
@@ -94,8 +103,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private MenuManager menuManager;
 	private MenuManager fileMenu;
 	
+	private Moviedb currentlyOpenDb;
 	private List list;
-	private ListViewer viewer;
+	private EventListViewer viewer;
+	private SortedList<AbstractMovie> sortedList;
+	
+	private SearchField searchField;
+	private ClearSearchfieldAction clearSearchfieldAction;
 	
 	private StatusLineThreadManager statusLine;
 	
@@ -136,6 +150,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		helpAboutAction = new HelpAboutAction(this);
 		helpHelpAction.setEnabled(false);
 		printAction.setEnabled(false);
+		searchField = new SearchField();
+		clearSearchfieldAction = new ClearSearchfieldAction(searchField);
 		
 		addFilmAction = new AddMovieAction(CONST.MOVIETYPE_FILM);
 		addMovieSerialAction = new AddMovieAction(CONST.MOVIETYPE_MOVIESERIAL);
@@ -152,6 +168,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		statusLine = new StatusLineThreadManager(getStatusLineManager());
 		
 		setSearchParameters();
+		
 	}
 
 	/**
@@ -223,6 +240,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		CoolBarManager coolBarManager = new CoolBarManager(style);
 		coolBarManager.add(createToolBarManager(0));
 		coolBarManager.add(createToolBarManager(1));
+		coolBarManager.add(createToolBarManager(2));
 		return coolBarManager;
 	}
 
@@ -241,6 +259,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			toolBarManager.add(addMovieDropdownMenu);
 			toolBarManager.add(new TestAction("Test!", false));
 			toolBarManager.add(new TestAction("Crash!", true));
+			break;
+		case 2:
+			toolBarManager.add(searchField);
+			toolBarManager.add(clearSearchfieldAction);
 			break;
 		}
 		return toolBarManager;
@@ -261,17 +283,15 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 
 	protected Control createContents(Composite parent) {
-		viewer = new ListViewer(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		viewer.setContentProvider(new MovieContentProvider());
-		viewer.setLabelProvider(new LabelProvider()); //TODO make a new label provider for advanced list view
-		try {
-			viewer.setInput(null);
-		} catch (Exception e) {
-			//TODO find out if this is ever thrown
-			e.printStackTrace();
-		}
-		list = viewer.getList();
+		list = new List(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
 		list.addSelectionListener(new ListSelectionListener());
+		
+		try {
+			setDB(new Moviedb(null));
+		} catch(Exception e) {
+			handleException(e);
+		}
+		
 		return list;
 	}
 
@@ -332,7 +352,23 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 * @param db
 	 */
 	public void setDB(Moviedb db) {
-		viewer.setInput(db); //TODO InvocationTargetException
+		if(sortedList!=null)
+			sortedList.dispose();
+		if(viewer!=null)
+			viewer.dispose();
+		if(currentlyOpenDb!=null) {
+			currentlyOpenDb.removeListener(this);
+			currentlyOpenDb.closeDatabase();
+			currentlyOpenDb = null;
+		}
+		
+		sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
+		viewer = new EventListViewer(
+				new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()), 
+				list, new LabelProvider()); //TODO make a new label provider for advanced list view
+		
+		currentlyOpenDb = db;
+		currentlyOpenDb.addListener(this);
 		updateShellText();
 		fileSaveAction.setEnabled(false);
 	}
@@ -342,7 +378,47 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 * @return the database
 	 */
 	public Moviedb getDB() {
-		return (Moviedb)viewer.getInput();
+		return currentlyOpenDb;
+	}
+	
+	/**
+	 * Sorts the movie list
+	 */
+	public void reSort() {
+		sortedList.setComparator(getComparator());
+	}
+	
+	/**
+	 * Creates a new Comparator according to the stored sort parameters
+	 * @return a comparator
+	 */
+	private Comparator<AbstractMovie> getComparator() {
+		int sortBy = Settings.getSettings().getSortBy();
+		int sortDir = Settings.getSettings().getSortDirection();
+		
+		boolean descending = false;
+		if(sortDir == CONST.SORT_DESCENDING)
+			descending = true;
+		
+		//sorting according to the correct parameter
+		if(sortBy == CONST.SORT_BY_ID) {
+			if(CONST.DEBUG_MODE)
+				System.out.println("Sorting by ID, descending: " + descending);
+			return new IdSorter(descending);
+		} else if(sortBy == CONST.SORT_BY_TITLE) {
+			if(CONST.DEBUG_MODE)
+				System.out.println("Sorting by title, descending: " + descending);
+			return new TitleSorter(descending);
+		} else if(sortBy == CONST.SORT_BY_YEAR) {
+			if(CONST.DEBUG_MODE)
+				System.out.println("Sorting by year, descending: " + descending);
+			return new YearSorter(descending);
+		} else if(sortBy == CONST.SORT_BY_RATING) {
+			if(CONST.DEBUG_MODE)
+				System.out.println("Sorting by rating, descending: " + descending);
+			return new RatingSorter(descending);
+		}
+		return null;
 	}
 	
 	/**
@@ -551,12 +627,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 
 	public void propertyChange(PropertyChangeEvent pce) {
-		if(pce.getProperty().equals(Moviedb.MOVIE_LIST_PROPERTY_NAME)) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("PCE: REFRESH MOVIE LIST");
-			viewer.refresh();
-		}
-		else if(pce.getProperty().equals(Moviedb.SAVE_STATUS_PROPERTY_NAME)) {
+//		if(pce.getProperty().equals(Moviedb.MOVIE_LIST_PROPERTY_NAME)) {
+//			if(CONST.DEBUG_MODE)
+//				System.out.println("PCE: REFRESH MOVIE LIST");
+//			viewer.refresh();
+//		}
+//		else 
+			if(pce.getProperty().equals(Moviedb.SAVE_STATUS_PROPERTY_NAME)) {
 			if((Boolean)(pce.getNewValue())) {
 				fileSaveAction.setEnabled(false);
 				if(CONST.DEBUG_MODE)

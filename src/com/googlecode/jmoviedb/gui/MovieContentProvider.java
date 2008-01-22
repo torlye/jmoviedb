@@ -23,33 +23,33 @@ import com.googlecode.jmoviedb.model.Moviedb;
 
 import org.eclipse.jface.viewers.*;
 
-public class MovieContentProvider implements IStructuredContentProvider {
+public class MovieContentProvider /*implements IStructuredContentProvider*/ {
 	
-	public MovieContentProvider() {
-	}
-
-	public Object[] getElements(Object input) {
-		System.out.println("GETTING ARRAY ELEMENTS");
-		return ((Moviedb)input).getMovieArray();
-	}
-
-	public void dispose() {
-	}
-
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		System.out.println("Change input: " + newInput);
-		
-		if(oldInput != null) {
-			System.out.println("CLOSING DATABASE");
-			((Moviedb)oldInput).removeListener(MainWindow.getMainWindow());
-			((Moviedb)oldInput).closeDatabase();
-		}
-		if(newInput != null) {
-			System.out.println("OPENING NEW DATABASE");
-			((Moviedb)newInput).addListener(MainWindow.getMainWindow());
-			MainWindow.getMainWindow().setEnabled(true);
-		} else {
-			MainWindow.getMainWindow().setEnabled(false);
-		}
-	}
+//	public MovieContentProvider() {
+//	}
+//
+//	public Object[] getElements(Object input) {
+//		System.out.println("GETTING ARRAY ELEMENTS");
+//		return ((Moviedb)input).getMovieArray();
+//	}
+//
+//	public void dispose() {
+//	}
+//
+//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+//		System.out.println("Change input: " + newInput);
+//		
+//		if(oldInput != null) {
+//			System.out.println("CLOSING DATABASE");
+//			((Moviedb)oldInput).removeListener(MainWindow.getMainWindow());
+//			((Moviedb)oldInput).closeDatabase();
+//		}
+//		if(newInput != null) {
+//			System.out.println("OPENING NEW DATABASE");
+//			((Moviedb)newInput).addListener(MainWindow.getMainWindow());
+//			MainWindow.getMainWindow().setEnabled(true);
+//		} else {
+//			MainWindow.getMainWindow().setEnabled(false);
+//		}
+//	}
 }

@@ -112,7 +112,7 @@ public class CSVimport implements IRunnableWithProgress {
 							reader2.get(10), reader2.get(11), reader2.get(12), reader2.get(13));
 					System.out.println(reader2.get(0));
 					read++;
-					db.saveMovieWithoutSorting(f);
+//					db.saveMovieWithoutSorting(f); //TODO
 					progressMonitor.subTask(reader2.get(1));
 				}
 				
@@ -123,7 +123,7 @@ public class CSVimport implements IRunnableWithProgress {
 			reader2 = null;
 			
 			progressMonitor.subTask("Sorting...");
-			db.sort();
+//			db.sort(); //TODO
 			
 			progressMonitor.done();
 			
