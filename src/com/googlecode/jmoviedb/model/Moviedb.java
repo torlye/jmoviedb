@@ -154,17 +154,20 @@ public class Moviedb {
 	 * the movie is added as a new element in the database. If not, the existing
 	 * movie element is updated.
 	 * @param m
-	 * @throws Exception
+	 * @throws SQLException
 	 */
 	public void saveMovie(AbstractMovie m) throws SQLException {
 		if(CONST.DEBUG_MODE)
 			System.out.println("MODEL: saveMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
 		
+		if(m.getID()==-1)
+			movies.add(m);
 		database.saveMovie(m);
-		movies.add(m);
+		
+		//TODO fire only when editing an existing movie
+		firePropertyChange(MOVIE_LIST_PROPERTY_NAME, null, null);
 
 		setSaved(false);
-		firePropertyChange(MOVIE_LIST_PROPERTY_NAME, null, null);
 		
 		if(CONST.DEBUG_MODE)
 			System.out.println("Total number of movies is now " + getMovieCount());

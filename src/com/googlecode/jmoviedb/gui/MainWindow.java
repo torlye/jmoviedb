@@ -20,12 +20,15 @@
 package com.googlecode.jmoviedb.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swt.EventListViewer;
 
 import com.googlecode.jmoviedb.CONST;
@@ -38,10 +41,19 @@ import com.googlecode.jmoviedb.gui.action.sort.YearSorter;
 import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
+import edu.stanford.ejalbert.BrowserLauncher;
+import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
+import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
+import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherErrorHandler;
+import edu.stanford.ejalbert.launching.BrowserDescription;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -56,6 +68,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
@@ -107,6 +120,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private List list;
 	private EventListViewer viewer;
 	private SortedList<AbstractMovie> sortedList;
+	private FilterList<AbstractMovie> filteredList;
 	
 	private SearchField searchField;
 	private ClearSearchfieldAction clearSearchfieldAction;
@@ -114,6 +128,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private StatusLineThreadManager statusLine;
 	
 	private ExceptionHandler exceptionHandler;
+	private BrowserLauncher browserLauncher;
 
 	public MainWindow() {
 		super(null);
@@ -122,6 +137,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		Settings.getSettings().addListener(this);
 		exceptionHandler = new ExceptionHandler();
 		setExceptionHandler(exceptionHandler);
+		try {
+			browserLauncher = new BrowserLauncher(null, exceptionHandler);
+			/*
+			 * If one of the following exceptions are thrown and caught,
+			 * the system will not be able to open browsers. 
+			 */
+		} catch (BrowserLaunchingInitializingException e) {
+		} catch (UnsupportedOperatingSystemException e) {}
 		
 		setDefaultImages(new Image[]{
 				ImageDescriptor.createFromFile(null, CONST.ICON_MAIN_16).createImage(), 
@@ -261,8 +284,16 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			toolBarManager.add(new TestAction("Crash!", true));
 			break;
 		case 2:
+			toolBarManager.add(
+					new ControlContribution("searchLabel")  {
+						@Override
+						protected Control createControl(Composite parent) {
+							Label label = new Label(parent, SWT.NONE);
+							label.setText("Search");
+							return label;
+						}
+					});
 			toolBarManager.add(searchField);
-			toolBarManager.add(clearSearchfieldAction);
 			break;
 		}
 		return toolBarManager;
@@ -284,7 +315,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 	protected Control createContents(Composite parent) {
 		list = new List(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		list.addSelectionListener(new ListSelectionListener());
+		ListSelectionListener l = new ListSelectionListener();
+		list.addKeyListener(l);
+		list.addSelectionListener(l);
 		
 		try {
 			setDB(new Moviedb(null));
@@ -354,6 +387,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public void setDB(Moviedb db) {
 		if(sortedList!=null)
 			sortedList.dispose();
+		if(filteredList!=null) {
+			filteredList.dispose();
+		}
 		if(viewer!=null)
 			viewer.dispose();
 		if(currentlyOpenDb!=null) {
@@ -363,14 +399,26 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 		
 		sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
-		viewer = new EventListViewer(
-				new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()), 
-				list, new LabelProvider()); //TODO make a new label provider for advanced list view
+		filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
+		viewer = new EventListViewer(filteredList, list, new LabelProvider());
+		filteredList.addListEventListener(
+				new ListEventListener<AbstractMovie>() {
+					public void listChanged(ListEvent<AbstractMovie> arg0) {
+						if(filteredList.size() != currentlyOpenDb.getMovieCount())
+							setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
+						else
+							setStatusLineMessage(filteredList.size()+" movies");
+					}
+				});
+		//TODO make a new label provider for advanced list view
 		
 		currentlyOpenDb = db;
 		currentlyOpenDb.addListener(this);
 		updateShellText();
 		fileSaveAction.setEnabled(false);
+		
+		if(db.getMovieCount()>0)
+			setStatusLineMessage("Opened "+db.getMovieCount()+" movies");
 	}
 	
 	/**
@@ -574,7 +622,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 * Create or rebuild the recent files menu (rebuild each time the contents change)
 	 */
 	private void createRecentFilesMenu() {
-		System.out.println("UPDATING RECENT FILES MENU");
+		System.out.println("BUILDING RECENT FILES MENU");
 		
 		String[] recentFiles = settings.getRecentFiles();
 		boolean[] recentEnabled = new boolean[4];
@@ -597,20 +645,15 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 	
 	/**
-	 * Checks whether or not a browser window can be opened
-	 * @return true if browser launching is supported, false otherwise
-	 */
-	public boolean canLaunchBrowser() {
-		//TODO needs to actually do something
-		return true;
-	}
-	
-	/**
 	 * Opens the specified URL in the system's web browser
 	 * @param url the URL to open
 	 */
 	public void launchBrowser(String url) {
-		System.out.println("Browse to " + url); //TODO implement
+		System.out.println("Browse to " + url);
+		if(browserLauncher!=null)
+			browserLauncher.openURLinBrowser(url);
+		else
+			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);
 	}
 
 	/**
@@ -627,12 +670,12 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 
 	public void propertyChange(PropertyChangeEvent pce) {
-//		if(pce.getProperty().equals(Moviedb.MOVIE_LIST_PROPERTY_NAME)) {
-//			if(CONST.DEBUG_MODE)
-//				System.out.println("PCE: REFRESH MOVIE LIST");
-//			viewer.refresh();
-//		}
-//		else 
+		if(pce.getProperty().equals(Moviedb.MOVIE_LIST_PROPERTY_NAME)) {
+			if(CONST.DEBUG_MODE)
+				System.out.println("PCE: REFRESH MOVIE LIST");
+//			sortedList.listChanged(listChanges) //TODO notify list of changes
+		}
+		else 
 			if(pce.getProperty().equals(Moviedb.SAVE_STATUS_PROPERTY_NAME)) {
 			if((Boolean)(pce.getNewValue())) {
 				fileSaveAction.setEnabled(false);
@@ -675,6 +718,12 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			case CONST.SORT_BY_TYPE: sortByTypeAction.setChecked(true); break;
 			case CONST.SORT_BY_RATING: sortByRatingAction.setChecked(true); break;
 		}
+	}
+	
+	public AbstractMovie getSelectedItem() throws SQLException, IOException {
+		if(list.getSelectionIndex() != -1)
+			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());			
+		return null;
 	}
 	
 }

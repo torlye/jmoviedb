@@ -87,14 +87,25 @@ public class CONST {
 	public static final String VERSION_CSV = "2.0";
 	
 	/**
+	 * Glazed Lists version number
+	 */
+	public static final String VERSION_GLAZED = "1.7";
+	
+	/**
 	 * This program's website
 	 */
-	public static final String WEBSITE = "http://code.google.com/p/jmoviedb/";
+	public static final String WEBSITE = "http://jmoviedb.googlecode.com";
 	
 	/**
 	 * SWT website
 	 */
 	public static final String WEBSITE_SWT = "http://www.eclipse.org/swt";
+	
+	/**
+	 * Glazed Lists website
+	 */
+	public static final String WEBSITE_GLAZED = "http://publicobject.com/glazedlists";
+	
 	
 	/**
 	 * Apache Derby website

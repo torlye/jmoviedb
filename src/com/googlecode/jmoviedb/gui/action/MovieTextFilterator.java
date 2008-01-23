@@ -10,6 +10,7 @@ public class MovieTextFilterator implements TextFilterator<AbstractMovie> {
 
 	public void getFilterStrings(List<String> baseList, AbstractMovie element) {
 		baseList.add(element.getDisplayTitle());
+		baseList.add(element.getYear() + "");
 	}
 
 }

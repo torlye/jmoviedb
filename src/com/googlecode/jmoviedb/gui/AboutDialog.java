@@ -35,26 +35,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
-import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
-
 public class AboutDialog extends MessageDialog implements SelectionListener {
 	
-	private BrowserLauncher launcher;
-
 	public AboutDialog(Shell parentShell, String dialogTitle, Image dialogTitleImage, String dialogMessage, int dialogImageType, String[] dialogButtonLabels, int defaultIndex) {
 		super(parentShell, dialogTitle, dialogTitleImage, dialogMessage,
 				dialogImageType, dialogButtonLabels, defaultIndex);
-		try {
-			launcher = new BrowserLauncher();
-		} catch (BrowserLaunchingInitializingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedOperatingSystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -91,6 +76,10 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 		Link derbyLink = new Link(c, SWT.NONE);
 		derbyLink.setText("<A>Apache Derby " + CONST.VERSION_DERBY + "</A>");
 		derbyLink.addSelectionListener(this);
+		
+		Link glazedLink = new Link(c, SWT.NONE);
+		glazedLink.setText("<A>Glazed Lists " + CONST.VERSION_GLAZED + "</A>");
+		glazedLink.addSelectionListener(this);
 		
 		Link browserLink = new Link(c, SWT.NONE);
 		browserLink.setText("<A>BrowserLauncher2 " + CONST.VERSION_BROWSERLAUNCHER + "</A>");
@@ -170,24 +159,26 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 	 */
 	public void widgetSelected(SelectionEvent e) {
 		if(e.getSource().toString().contains("moviedb"))
-			launcher.openURLinBrowser(CONST.WEBSITE);
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE);
 		else if(e.getSource().toString().contains("SWT"))
-			launcher.openURLinBrowser(CONST.WEBSITE_SWT);
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_SWT);
 		else if(e.getSource().toString().contains("Apache"))
-			launcher.openURLinBrowser(CONST.WEBSITE_DERBY);
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_DERBY);
+		else if(e.getSource().toString().contains("Glazed"))
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_GLAZED);
 		else if(e.getSource().toString().contains("BrowserLauncher2"))
-			launcher.openURLinBrowser(CONST.WEBSITE_BROWSERLAUNCHER);
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_BROWSERLAUNCHER);
 		else if(e.getSource().toString().contains("CSV"))
-			launcher.openURLinBrowser(CONST.WEBSITE_CSV);
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_CSV);
 		else if(e.getSource().toString().contains("Eclipse"))
-			launcher.openURLinBrowser("http://www.eclipse.org");
+			MainWindow.getMainWindow().launchBrowser("http://www.eclipse.org");
 		else if(e.getSource().toString().contains("Ruby"))
-			launcher.openURLinBrowser("http://rubysoftware.nl");
+			MainWindow.getMainWindow().launchBrowser("http://rubysoftware.nl");
 		else if(e.getSource().toString().contains("Crystal"))
-			launcher.openURLinBrowser("http://www.everaldo.com/crystal.html");
+			MainWindow.getMainWindow().launchBrowser("http://www.everaldo.com/crystal.html");
 		else if(e.getSource().toString().contains("Exquisite"))
-			launcher.openURLinBrowser("http://www.kde-look.org/content/show.php?content=14788");
+			MainWindow.getMainWindow().launchBrowser("http://www.kde-look.org/content/show.php?content=14788");
 		else if(e.getSource().toString().contains("Dropline"))
-			launcher.openURLinBrowser("http://www.silvestre.com.ar/?p=5");
+			MainWindow.getMainWindow().launchBrowser("http://www.silvestre.com.ar/?p=5");
 	}
 }

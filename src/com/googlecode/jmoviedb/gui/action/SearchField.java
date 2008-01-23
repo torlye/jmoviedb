@@ -55,6 +55,4 @@ public class SearchField extends ControlContribution implements SelectionListene
 	 */
 	public void widgetSelected(SelectionEvent arg0) {}
 
-
-
 }

@@ -19,14 +19,10 @@
 
 package com.googlecode.jmoviedb.gui;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
-import com.googlecode.jmoviedb.CONST;
-
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.List;
 
 /**
  * Monitors the main window list for selection events.
@@ -34,7 +30,7 @@ import org.eclipse.swt.widgets.List;
  * @author Tor
  *
  */
-public class ListSelectionListener implements SelectionListener {
+public class ListSelectionListener implements SelectionListener, KeyListener {
 
 	/**
 	 * Sent when a list item is &quot;toggled&quot; or opened. For example
@@ -42,15 +38,9 @@ public class ListSelectionListener implements SelectionListener {
 	 */
 	public void widgetDefaultSelected(SelectionEvent event) {
 		try {
-			int selection = ((List)(event.widget)).getSelectionIndex();
-			if(CONST.DEBUG_MODE) {
-				System.out.println("List item " + selection + " opened, movieID " + MainWindow.getMainWindow().getDB().getMovie(selection).getID());
-			}
-			MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getDB().getMovie(selection));
+			MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getSelectedItem());
 			
-		} catch (SQLException e) {
-			MainWindow.getMainWindow().handleException(e);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			MainWindow.getMainWindow().handleException(e);
 		}
 	}
@@ -58,7 +48,22 @@ public class ListSelectionListener implements SelectionListener {
 	/**
 	 * Sent when a list item is selected. Not currently used for anything.
 	 */
-	public void widgetSelected(SelectionEvent arg0) {
+	public void widgetSelected(SelectionEvent event) {
+		//Do nothing
+	}
+
+	//TODO fix cases where Enter keypresses lead to widgetDefaultSelected calls.
+	public void keyPressed(KeyEvent e) {
+		if(e.character=='\r')
+			try {
+				MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getSelectedItem());
+
+			} catch (Exception ex) {
+				MainWindow.getMainWindow().handleException(ex);
+			}
+	}
+
+	public void keyReleased(KeyEvent e) {
 		//Do nothing
 	}
 }
