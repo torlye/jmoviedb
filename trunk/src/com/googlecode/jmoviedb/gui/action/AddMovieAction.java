@@ -103,7 +103,7 @@ public class AddMovieAction extends Action {
 				break;
 			}
 			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			MainWindow.getMainWindow().handleException(e);
 		}
 	}

@@ -30,40 +30,41 @@ import org.eclipse.swt.events.SelectionListener;
  * @author Tor
  *
  */
-public class ListSelectionListener implements SelectionListener, KeyListener {
+public class ListSelectionListener /*implements SelectionListener, KeyListener */{
 
-	/**
-	 * Sent when a list item is &quot;toggled&quot; or opened. For example
-	 * if the item is double-clicked.
-	 */
-	public void widgetDefaultSelected(SelectionEvent event) {
-		try {
-			MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getSelectedItem());
-			
-		} catch (Exception e) {
-			MainWindow.getMainWindow().handleException(e);
-		}
-	}
-
-	/**
-	 * Sent when a list item is selected. Not currently used for anything.
-	 */
-	public void widgetSelected(SelectionEvent event) {
-		//Do nothing
-	}
-
-	//TODO fix cases where Enter keypresses lead to widgetDefaultSelected calls.
-	public void keyPressed(KeyEvent e) {
-		if(e.character=='\r')
-			try {
-				MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getSelectedItem());
-
-			} catch (Exception ex) {
-				MainWindow.getMainWindow().handleException(ex);
-			}
-	}
-
-	public void keyReleased(KeyEvent e) {
-		//Do nothing
-	}
+//	/**
+//	 * Sent when a list item is &quot;toggled&quot; or opened. For example
+//	 * if the item is double-clicked.
+//	 */
+//	public void widgetDefaultSelected(SelectionEvent event) {
+//		try {
+//			MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getSelectedItem());
+//			
+//			
+//		} catch (Exception e) {
+//			MainWindow.getMainWindow().handleException(e);
+//		}
+//	}
+//
+//	/**
+//	 * Sent when a list item is selected. Not currently used for anything.
+//	 */
+//	public void widgetSelected(SelectionEvent event) {
+//		//Do nothing
+//	}
+//
+//	//TODO fix cases where Enter keypresses lead to widgetDefaultSelected calls.
+//	public void keyPressed(KeyEvent e) {
+//		if(e.character=='\r')
+//			try {
+//				MainWindow.getMainWindow().openMovieDialog(MainWindow.getMainWindow().getSelectedItem());
+//
+//			} catch (Exception ex) {
+//				MainWindow.getMainWindow().handleException(ex);
+//			}
+//	}
+//
+//	public void keyReleased(KeyEvent e) {
+//		//Do nothing
+//	}
 }

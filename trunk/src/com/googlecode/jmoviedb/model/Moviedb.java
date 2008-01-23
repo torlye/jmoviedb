@@ -22,22 +22,12 @@ package com.googlecode.jmoviedb.model;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Random;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.enumerated.MovieType;
-import com.googlecode.jmoviedb.gui.action.sort.IdSorter;
-import com.googlecode.jmoviedb.gui.action.sort.RatingSorter;
-import com.googlecode.jmoviedb.gui.action.sort.TitleSorter;
-import com.googlecode.jmoviedb.gui.action.sort.YearSorter;
 import com.googlecode.jmoviedb.storage.Database;
 import com.googlecode.jmoviedb.storage.ZipWorker;
 
@@ -49,7 +39,6 @@ import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class Moviedb {
 	
-	public static final String MOVIE_LIST_PROPERTY_NAME = "movielist";
 	public static final String ACTOR_LIST_PROPERTY_NAME = "actorlist";
 	public static final String SAVE_STATUS_PROPERTY_NAME = "savestatus";
 	
@@ -153,20 +142,24 @@ public class Moviedb {
 	 * Stores a movie in the database. If the movie's getID() returns -1,
 	 * the movie is added as a new element in the database. If not, the existing
 	 * movie element is updated.
-	 * @param m
+	 * @param fullMovie the full movie instance to save.
+	 * @param liteMovie the movie instance used as a list item. null if a new movie is to be added.
 	 * @throws SQLException
 	 */
-	public void saveMovie(AbstractMovie m) throws SQLException {
+	public void saveMovie(AbstractMovie fullMovie, AbstractMovie liteMovie) throws SQLException, IOException {
+		int movieID = fullMovie.getID();
+		
 		if(CONST.DEBUG_MODE)
-			System.out.println("MODEL: saveMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
+			System.out.println("MODEL: saveMovie ID " + movieID);
 		
-		if(m.getID()==-1)
-			movies.add(m);
-		database.saveMovie(m);
+		database.saveMovie(fullMovie);
+		if(liteMovie==null && movieID<0)
+			movies.add(fullMovie);
+		else if(liteMovie!=null && movieID>=0) {
+			movies.remove(liteMovie);
+			movies.add(database.getMovieLite(fullMovie.getID()));
+		}
 		
-		//TODO fire only when editing an existing movie
-		firePropertyChange(MOVIE_LIST_PROPERTY_NAME, null, null);
-
 		setSaved(false);
 		
 		if(CONST.DEBUG_MODE)
