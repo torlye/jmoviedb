@@ -44,10 +44,7 @@ import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
-import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherErrorHandler;
-import edu.stanford.ejalbert.launching.BrowserDescription;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -60,9 +57,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -315,10 +315,30 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 	protected Control createContents(Composite parent) {
 		list = new List(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		ListSelectionListener l = new ListSelectionListener();
-		list.addKeyListener(l);
-		list.addSelectionListener(l);
-		
+		list.addKeyListener(new KeyListener(){
+			//TODO fix cases where Enter keypresses lead to both widgetDefaultSelected and keyPressed calls.
+			public void keyPressed(KeyEvent e) {
+				if(e.character=='\r')
+					try {
+						openMovieDialog(null);
+					} catch (Exception ex) {
+						handleException(ex);
+					}
+			}
+			public void keyReleased(KeyEvent e) {
+				//Do nothing
+			}});
+		list.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {
+				try {
+					openMovieDialog(null);	
+				} catch (Exception ex) {
+					handleException(ex);
+				}
+			}
+			public void widgetSelected(SelectionEvent e) {
+				//Do nothing
+			}});
 		try {
 			setDB(new Moviedb(null));
 		} catch(Exception e) {
@@ -487,40 +507,35 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 	
 	/**
-	 * Opens the movie dialog
-	 * @param m - the movie to open
+	 * Open a movie dialog
+	 * @param movie a fresh AbstractMovie subclass if creating a new movie, or null if opening the selected item in the movie list. 
 	 * @throws SQLException
+	 * @throws IOException
 	 */
-	public void openMovieDialog(AbstractMovie m) throws SQLException {
-		MovieDialog d = new MovieDialog(m);
+	public void openMovieDialog(AbstractMovie movie) throws SQLException, IOException {
+		AbstractMovie liteMovie = null;
+		
+		if(movie==null) {
+			if(list.getSelectionIndex() < 0)
+				return;
+			liteMovie = filteredList.get(list.getSelectionIndex());
+			movie=currentlyOpenDb.getMovie(liteMovie.getID());
+		}
+		
+		MovieDialog d = new MovieDialog(movie);
 		int returnCode = d.open();
-		
-		if(CONST.DEBUG_MODE) {
-			String s = "The movie dialog was closed using the ";
-			switch(returnCode) {
-				case IDialogConstants.OK_ID:
-					s += "OK button";
-					break;
-				case IDialogConstants.CANCEL_ID:
-					s += "Cancel button";
-					break;
-				case IDialogConstants.ABORT_ID:
-					s += "Delete button";
-					break;
-			}
-			System.out.println(s);
-		}
-		
+
 		switch (returnCode) {
-			case IDialogConstants.OK_ID:
-				getDB().saveMovie(d.getModel());
-				break;
-			case IDialogConstants.ABORT_ID:
-				//TODO MainWindow.getMainWindow().getDB().deleteMovie();
-				break;
+		case IDialogConstants.OK_ID:
+			getDB().saveMovie(d.getModel(), liteMovie);
+			break;
+		case IDialogConstants.ABORT_ID:
+			//TODO MainWindow.getMainWindow().getDB().deleteMovie();
+			break;
 		}
+		d = null;
 	}
-	
+
 	/**
 	 * Enable or disable certain GUI widgets. This widgets should be enabled when a database file is open.
 	 * @param enabled
@@ -653,7 +668,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		if(browserLauncher!=null)
 			browserLauncher.openURLinBrowser(url);
 		else
-			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);
+			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);//TODO needs more work
 	}
 
 	/**
@@ -670,13 +685,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 
 	public void propertyChange(PropertyChangeEvent pce) {
-		if(pce.getProperty().equals(Moviedb.MOVIE_LIST_PROPERTY_NAME)) {
-			if(CONST.DEBUG_MODE)
-				System.out.println("PCE: REFRESH MOVIE LIST");
-//			sortedList.listChanged(listChanges) //TODO notify list of changes
-		}
-		else 
-			if(pce.getProperty().equals(Moviedb.SAVE_STATUS_PROPERTY_NAME)) {
+
+		if(pce.getProperty().equals(Moviedb.SAVE_STATUS_PROPERTY_NAME)) {
 			if((Boolean)(pce.getNewValue())) {
 				fileSaveAction.setEnabled(false);
 				if(CONST.DEBUG_MODE)
@@ -687,14 +697,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 					System.out.println("PCE: SAVE STATUS - NOT SAVED");
 			}
 		}
-		else if(pce.getProperty().equals(CONST.RECENT_FILES_PROPERTY_NAME)) {
+		if(pce.getProperty().equals(CONST.RECENT_FILES_PROPERTY_NAME)) {
 			createRecentFilesMenu();
-			
+
 			if(CONST.DEBUG_MODE) {
 				System.out.println("PCE: REFRESH RECENT FILES LIST");
 				System.out.println("The topmost item should now be " + openPreviousAction1.getText());
 			}
-			
+
 			getMenuBarManager().updateAll(true); //TODO why does this not work?
 			menuManager.updateAll(true); //TODO why does this not work?
 		}
@@ -720,10 +730,12 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 	}
 	
-	public AbstractMovie getSelectedItem() throws SQLException, IOException {
-		if(list.getSelectionIndex() != -1)
-			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());			
-		return null;
-	}
+//	public AbstractMovie getSelectedItem() throws SQLException, IOException {
+//		return filteredList.get(list.getSelectionIndex());
+//		
+////		if(list.getSelectionIndex() != -1)
+////			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());			
+////		return null;
+//	}
 	
 }

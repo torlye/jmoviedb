@@ -95,25 +95,13 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 		Label l2 = new Label(c, SWT.NONE);
 		l2.setText("JMoviedb uses the following works of art:");
 		
-		Link eclipseLink = new Link(c, SWT.NONE);
-		eclipseLink.setText("<A>Eclipse toolbar icons</A>");
-		eclipseLink.addSelectionListener(this);
-		
-		Link rubyLink = new Link(c, SWT.NONE);
-		rubyLink.setText("<A>Ruby Software toolbar icons</A>");
-		rubyLink.addSelectionListener(this);
-		
-		Link crystalLink = new Link(c, SWT.NONE);
-		crystalLink.setText("<A>Crystal SVG icons</A>");
-		crystalLink.addSelectionListener(this);
-		
-		Link exquisiteLink = new Link(c, SWT.NONE);
-		exquisiteLink.setText("<A>Exquisite icons</A>");
-		exquisiteLink.addSelectionListener(this);
-		
 		Link droplineLink = new Link(c, SWT.NONE);
 		droplineLink.setText("<A>Dropline Nuovo icons</A>");
 		droplineLink.addSelectionListener(this);
+		
+		Link silkLink = new Link(c, SWT.NONE);
+		silkLink.setText("<A>Silk icons</A>");
+		silkLink.addSelectionListener(this);
 		
 		Label h3 = new Label(c, SWT.SEPARATOR | SWT.HORIZONTAL);
 		h3.setLayoutData(grabHorizontal);
@@ -170,15 +158,9 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_BROWSERLAUNCHER);
 		else if(e.getSource().toString().contains("CSV"))
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_CSV);
-		else if(e.getSource().toString().contains("Eclipse"))
-			MainWindow.getMainWindow().launchBrowser("http://www.eclipse.org");
-		else if(e.getSource().toString().contains("Ruby"))
-			MainWindow.getMainWindow().launchBrowser("http://rubysoftware.nl");
-		else if(e.getSource().toString().contains("Crystal"))
-			MainWindow.getMainWindow().launchBrowser("http://www.everaldo.com/crystal.html");
-		else if(e.getSource().toString().contains("Exquisite"))
-			MainWindow.getMainWindow().launchBrowser("http://www.kde-look.org/content/show.php?content=14788");
 		else if(e.getSource().toString().contains("Dropline"))
 			MainWindow.getMainWindow().launchBrowser("http://www.silvestre.com.ar/?p=5");
+		else if(e.getSource().toString().contains("Silk"))
+			MainWindow.getMainWindow().launchBrowser("http://famfamfam.com/");
 	}
 }

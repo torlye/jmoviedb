@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="JMoviedb" basedir="." default="main">
+
+	<property name="src.dir"     value="src"/>
+	<property name="temp.dir"    value="temp"/>
+	<property name="jar.dir"     value="jar"/>
+	<property name="main-class"  value="com.googlecode.jmoviedb.gui.MainWindow"/>
+	<property name="lib.dir"     value="lib"/>
+	<property name="res.dir"     value="resources"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+	
+	
+
+	<target name="clean">
+		<delete dir="${temp.dir}"/>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${temp.dir}"/>
+		<javac encoding="UTF-8" srcdir="${src.dir}" destdir="${temp.dir}" classpathref="classpath"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}"/>
+		<mkdir dir="${jar.dir}/${lib.dir}"/>
+		<copy todir="${jar.dir}/${lib.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		</copy>
+		<mkdir dir="${jar.dir}/${res.dir}"/>
+		<copy todir="${jar.dir}/${res.dir}">
+			<fileset dir="${res.dir}"/>
+		</copy>
+		
+		<manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}.jar">
+				<classpath refid="classpath" />
+		</manifestclasspath>
+		
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${temp.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+				<attribute name="Class-Path" value="${jar.classpath}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${jar.dir}/${ant.project.name}.jar"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="clean-build" depends="clean,jar"/>
+
+	<target name="main" depends="clean,run"/>
+
+</project>
