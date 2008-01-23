@@ -52,12 +52,18 @@ public class StatusLineThreadManager {
 	 * Sets a new message on the status line
 	 * @param message the message to be set
 	 */
+	@SuppressWarnings("deprecation")
 	public void setMessage(String message) {
 		if(CONST.DEBUG_MODE)
 			System.out.println("Status line: " + message);
 		statusLine.setMessage(message);
 		
 		if(message.length() > 0) {
+			if(thread!=null) {
+				//Ignore deprecation of Thread.stop, as it should be safe in this case.
+				thread.stop();
+				thread = null;
+			}
 			thread = new TThread();
 			thread.start();
 		}

@@ -21,22 +21,22 @@ package com.googlecode.jmoviedb.gui;
 
 import com.googlecode.jmoviedb.CONST;
 
+import edu.stanford.ejalbert.exceptionhandler.BrowserLauncherErrorHandler;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window.IExceptionHandler;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * A global exception handler.
- * @author Tor
  *
  */
-public class ExceptionHandler implements IExceptionHandler {
-	
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	public ExceptionHandler(Shell parentShell, String dialogTitle, Image dialogTitleImage, String dialogMessage, int dialogImageType, String[] dialogButtonLabels, int defaultIndex) {
-//		super(parentShell, dialogTitle, dialogTitleImage, dialogMessage, dialogImageType, dialogButtonLabels, defaultIndex);
-//	}
+public class ExceptionHandler implements IExceptionHandler, BrowserLauncherErrorHandler {
 
 	/**
 	 * Handle an exception
@@ -52,10 +52,35 @@ public class ExceptionHandler implements IExceptionHandler {
 		//TODO make a proper message
 		String message = "TODO: Insert a sensible message here";
 		
-		MessageDialog dialog = new ExceptionDialog(MainWindow.getMainWindow().getShell(), "Error!", null, message, MessageDialog.ERROR, new String[]{"OK", "Send email"}, 0, e);
+		MessageDialog dialog = new ExceptionDialog(MainWindow.getMainWindow().getShell(), "Error!", null, message, MessageDialog.ERROR, new String[]{"OK"}, 0, e);
 		int returnCode = dialog.open();
-		if(returnCode == 1) {
-			//TODO send email option
-		}
 	}
+
+	public void handleException(Exception ex) {
+		handleException((Throwable)ex);
+	}
+	
+	private class ExceptionDialog extends MessageDialog {	
+		private Throwable exception;
+
+		public ExceptionDialog(Shell parentShell, String dialogTitle, Image dialogTitleImage, String dialogMessage, int dialogImageType, String[] dialogButtonLabels, int defaultIndex, Throwable t) {
+			super(parentShell, dialogTitle, dialogTitleImage, dialogMessage, dialogImageType, dialogButtonLabels, defaultIndex);
+			exception = t;
+		}
+		
+		protected Control createCustomArea(Composite parent) {
+			Text text = new Text(parent, SWT.MULTI|SWT.READ_ONLY|SWT.BORDER|SWT.H_SCROLL|SWT.V_SCROLL);
+
+			String message = exception.getClass().toString() + "\n\n" + exception.getMessage() + "\n\n";
+			StackTraceElement[] stackTrace = exception.getStackTrace();
+			for(StackTraceElement el : stackTrace) {
+				message += el.toString() + "\n";
+			}
+			
+			text.setText(message);
+			return text;
+		}
+
+	}
+
 }
