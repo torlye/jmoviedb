@@ -11,8 +11,6 @@
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
-	
-	
 
 	<target name="clean">
 		<delete dir="${temp.dir}"/>
@@ -20,7 +18,7 @@
 
 	<target name="compile">
 		<mkdir dir="${temp.dir}"/>
-		<javac encoding="UTF-8" srcdir="${src.dir}" destdir="${temp.dir}" classpathref="classpath"/>
+		<javac source="1.5" target="1.5" encoding="UTF-8" srcdir="${src.dir}" destdir="${temp.dir}" classpathref="classpath"/>
 	</target>
 
 	<target name="jar" depends="compile">
@@ -34,6 +32,8 @@
 			<fileset dir="${res.dir}"/>
 		</copy>
 		
+		<jar destfile="${jar.dir}/${lib.dir}/artwork.jar" basedir="${res.dir}" index="true"/>
+		
 		<manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}.jar">
 				<classpath refid="classpath" />
 		</manifestclasspath>
@@ -43,7 +43,7 @@
 				<attribute name="Main-Class" value="${main-class}"/>
 				<attribute name="Class-Path" value="${jar.classpath}"/>
 			</manifest>
-		</jar>
+		</jar>		
 	</target>
 
 	<target name="run" depends="jar">
