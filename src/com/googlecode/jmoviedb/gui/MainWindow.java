@@ -667,8 +667,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		System.out.println("Browse to " + url);
 		if(browserLauncher!=null)
 			browserLauncher.openURLinBrowser(url);
-		else
-			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);//TODO needs more work
+//		else
+//			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);//TODO needs more work
 	}
 
 	/**
