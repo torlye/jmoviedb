@@ -12,4 +12,10 @@
 
  * Toolbar icons are taken from the "Silk" icon set by [http://famfamfam.com/ Mark James]
  * The main program icon is taken from the "Dropline Nuovo!" Gnome icon set by [http://silvestre.com.ar/ Silvestre]
- 
+
+ * [http://www.eclipse.org/ Eclipse], my preferred Java IDE
+ * [http://nsis.sourceforge.net/ NSIS] Nullsoft Scriptable Install System, a script-driven Windows install system
+ * [http://ant.apache.org/ Apache Ant]
+ * [http://launch4j.sourceforge.net/ launch4j]
+ * [http://www.gimp.org/ GIMP], a raster graphics editor
+ * [http://www.inkscape.org/ Inkscape], a vector graphics editor
