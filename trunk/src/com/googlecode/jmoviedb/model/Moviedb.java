@@ -22,6 +22,7 @@ package com.googlecode.jmoviedb.model;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -31,9 +32,9 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.storage.Database;
 import com.googlecode.jmoviedb.storage.ZipWorker;
 
-import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Listener;
 
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
@@ -52,10 +53,10 @@ public class Moviedb {
 	private String saveFile;
 	private String dbTempPath;
 	
-	private ListenerList listeners;
+	private ArrayList<IPropertyChangeListener> listeners;
 	
 	private Moviedb() {
-		listeners = new ListenerList();
+		listeners = new ArrayList<IPropertyChangeListener>();
 		movies = new BasicEventList<AbstractMovie>();
 		title = "Untitled"; // TODO change this
 		setSaved(true);
@@ -199,24 +200,23 @@ public class Moviedb {
 		listeners.add(listener);
 		if(CONST.DEBUG_MODE)
 			System.out.println("Moviedb has a new listener. It is " + listener
-					+ " Total listener count is now " + listeners.getListeners().length);
+					+ " Total listener count is now " + listeners.size());
 	}
 	
 	public void removeListener(IPropertyChangeListener listener) {
 		listeners.remove(listener);
 		if(CONST.DEBUG_MODE)
-			System.out.println("Moviedb lost a listener. Total listener count is now " + listeners.getListeners().length);
+			System.out.println("Moviedb lost a listener. Total listener count is now " + listeners.size());
 	}
 	
 	public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, propertyName, oldValue, newValue);
 		
 		if(CONST.DEBUG_MODE)
-			System.out.println("PCE: fired from Moviedb to " + listeners.getListeners().length + " listener(s)");
+			System.out.println("PCE: fired from Moviedb to " + listeners.size() + " listener(s)");
 		
-		Object[] listenerObjects = listeners.getListeners();
-		for (int i = 0; i < listenerObjects.length; i++) {
-			((IPropertyChangeListener)listenerObjects[i]).propertyChange(event);
+		for (IPropertyChangeListener listener : listeners) {
+			listener.propertyChange(event);
 		}
 	}
 

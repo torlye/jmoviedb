@@ -69,12 +69,12 @@ public class CONST {
 	/**
 	 * SWT version number
 	 */
-	public static final String VERSION_SWT = "3.3";
+	public static final String VERSION_SWT = "3.3.1.1";
 	
 	/**
 	 * Apache Derby version number
 	 */
-	public static final String VERSION_DERBY = "10.3.1.4";
+	public static final String VERSION_DERBY = "10.3.2.1";
 	
 	/**
 	 * BrowserLauncher2 version number
@@ -89,7 +89,7 @@ public class CONST {
 	/**
 	 * Glazed Lists version number
 	 */
-	public static final String VERSION_GLAZED = "1.7";
+	public static final String VERSION_GLAZED = "1.7.0";
 	
 	/**
 	 * This program's website
