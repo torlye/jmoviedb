@@ -1,6 +1,6 @@
 #summary Stuff in JMoviedb that I didn't make myself
 
-== Software ==
+== Software used in Moviedb ==
 
  * [http://www.eclipse.org/swt/ Eclipse SWT + JFace]
  * [http://db.apache.org/derby/ Apache Derby]
@@ -8,14 +8,16 @@
  * [http://browserlaunch2.sourceforge.net/ BrowserLauncher2]
  * [http://sourceforge.net/projects/javacsv Java CSV Library]
 
-== Art ==
+== Art used in Moviedb ==
 
  * Toolbar icons are taken from the "Silk" icon set by [http://famfamfam.com/ Mark James]
  * The main program icon is taken from the "Dropline Nuovo!" Gnome icon set by [http://silvestre.com.ar/ Silvestre]
 
+== Software tools used during development ==
+
  * [http://www.eclipse.org/ Eclipse], my preferred Java IDE
  * [http://nsis.sourceforge.net/ NSIS] Nullsoft Scriptable Install System, a script-driven Windows install system
- * [http://ant.apache.org/ Apache Ant]
+ * [http://ant.apache.org/ Apache Ant], a Java-based build tool similar to [http://en.wikipedia.org/wiki/Make_(software) make]
  * [http://launch4j.sourceforge.net/ launch4j]
  * [http://www.gimp.org/ GIMP], a raster graphics editor
  * [http://www.inkscape.org/ Inkscape], a vector graphics editor
