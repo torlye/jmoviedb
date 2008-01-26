@@ -1,4 +1,5 @@
 #summary My motivation for developing JMoviedb
+#labels Phase-Design
 
 = Why JMoviedb? =
 
@@ -12,4 +13,4 @@ It's written in Java and is meant as a replacement for moviedb. JMoviedb. Get it
 
 === Why SWT? ===
 
-I'm using the [http://www.eclipse.org/swt/ Eclipse SWT] GUI toolkit instead of Swing. I prefer SWT because it uses the OS native GUI controls on all supported platforms, and because of this it will obviously look much better. Swing is just plain ugly in comparison, and the layout managers are too confusing. In addition, SWT is much nicer to work with, and the JFace classes provides lots of helpful ready-to-use and half-implemented classes. (!ApplicationWindow, !ProgressMonitorDialog, etc.) Finally, it is fun to learn something new!
+I'm using the [http://www.eclipse.org/swt/ Eclipse SWT] GUI toolkit instead of Swing. I prefer SWT because it uses the OS native GUI controls on all supported platforms, and because of this it will look better and behave more like a native GUI application. Swing's default design isn't much to look at, and its layout managers are somewhat confusing. In addition, SWT is more pleasant to work with, and the JFace classes provides lots of helpful ready-to-use and half-implemented classes. (!ApplicationWindow, !ProgressMonitorDialog, etc.) Finally, it is always fun to learn something new!
