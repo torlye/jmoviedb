@@ -1,4 +1,5 @@
 #summary System requirements
+#labels Phase-Requirements,Featured
 
 == System requirements ==
 
