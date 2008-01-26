@@ -29,11 +29,11 @@
   * Importing data from the CSV-format that moviedb uses - needs an improved GUI dialog.
   * Importing data from plain text files.
   * Exporting data to other formats (plain text, CSV, HTML?).
-  * .deb and .rpm packages for Linux. Debian/Ubuntu .deb packages have higher priority.
+  * .deb and .rpm packages for popular Linux distributions.
   * .pkg packages for OSX.
 
 == Would be fun to have, but not very important right now ==
   * Loans - keep track of which movies you have lent to your buddies.
   * Printing support.
   * Barcode scanner support. Scan the UPC code on your DVD-covers and the movies are added automatically.
-  * Show movie collection statistics with nice pie charts, perhaps using the [http://code.google.com/apis/chart/ Google Chart API].
+  * Show movie collection statistics with pretty pie charts, perhaps using the [http://code.google.com/apis/chart/ Google Chart API].
