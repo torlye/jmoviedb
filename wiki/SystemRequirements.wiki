@@ -11,16 +11,10 @@
 
 === Details ===
 In reality, JMoviedb will only be tested on a few operating systems and architectures, namely:
-  * Windows x86
-  * Windows x86-64
-  * Linux x86
-  * Linux x86-64
-  * Linux PowerPC
+  * Windows - x86 and x86-64 
+  * Linux - x86, x86-64 and PowerPC
   * Mac OS X
-Windows testing will mainly be done on Windows XP. The latest release of Ubuntu will be used for Linux testing, while an [http://en.wikipedia.org/wiki/OSx86 OSx86] release of Leopard will have to suffice for Mac testing.
-
-JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher2] library, which adds the capability to open websites in the system's default browser. BrowserLauncher2 uses system specific system calls, and has limited platform and browser support. It should work with the most common counfigurations, though. ([http://browserlaunch2.sourceforge.net/platformsupport.shtml Details]) JMoviedb works fine even without BrowserLauncher2 support, but the user will have to open any websites maually by copying/pasting URLs.
-
+Windows testing will mainly be done on Windows XP. The latest release of Xubuntu will be used for Linux testing, while an [http://en.wikipedia.org/wiki/OSx86 OSx86] release of Leopard will have to suffice for Mac testing.
 
 
 ==== Notes for 64-bit Windows: ====
@@ -29,3 +23,6 @@ JMoviedb will run in 64-bit mode on x86-64 systems, also known as AMD64, EM64T o
 Sun has a 64-bit version of Java 6 available, but it is not prominently displayed on their website and may be hard to find. Direct download link [http://javadl.sun.com/webapps/download/AutoDL?BundleId=12796 here]. (Known to be working as of January 2008.)
 
 The 32-bit version of JMoviedb will work perfectly on 64-bit systems using a 32-bit Java version. Seeing as most people use 32-bit Java even on 64-bit systems (because of browser plugin compatibility), a 64-bit Windows version of JMoviedb is probably unnecessary. I have chosen to include it nonetheless because of special interest, i.e. I'm a geek. The 32- and 64-bit versions of Java can coexist on the same system without problems.
+
+==== BrowserLauncher notes: ====
+JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher] library, which enables a Java program to open websites in the system's web browser. BrowserLauncher uses platform specific system calls, and naturally has limited platform and browser support. It should work with the most common counfigurations, though. (More details [http://browserlaunch2.sourceforge.net/platformsupport.shtml here].) JMoviedb works fine without BrowserLauncher2 support, but the user will have to open any websites maually by copying/pasting URLs.
