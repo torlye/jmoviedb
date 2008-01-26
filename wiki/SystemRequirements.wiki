@@ -19,4 +19,9 @@ Windows testing will mainly be done on Windows XP. The latest release of Ubuntu 
 
 JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher2] library, which adds the capability to open websites in the system's default browser. BrowserLauncher2 uses system specific system calls, and has limited platform and browser support. It should work with the most common counfigurations, though. ([http://browserlaunch2.sourceforge.net/platformsupport.shtml Details]) JMoviedb works fine even without BrowserLauncher2 support, but the user will have to open any websites maually by copying/pasting URLs.
 
-==== Notes for 64-bit Windows: ==== This is a test
+==== Notes for 64-bit Windows: ====
+JMoviedb will run in 64-bit mode on x86-64 systems, also known as AMD64, EM64T or x64. A 64-bit version of Windows (such as Windows XP Professional x64 Edition) and a 64-bit Java environment are needed.
+
+Sun has a 64-bit version of Java 6 available, but it is not prominently displayed on their website and may be hard to find.
+
+The 32-bit version of JMoviedb will work on 64-bit systems using a 32-bit Java version.
