@@ -2,7 +2,7 @@
 <project name="JMoviedb" basedir="." default="main">
 
 	<property name="src.dir"     value="src"/>
-	<property name="temp.dir"    value="temp"/>
+	<property name="compile.dir" value="build"/>
 	<property name="jar.dir"     value="jar"/>
 	<property name="main-class"  value="com.googlecode.jmoviedb.gui.MainWindow"/>
 	<property name="lib.dir"     value="lib"/>
@@ -13,32 +13,37 @@
 	</path>
 
 	<target name="clean">
-		<delete dir="${temp.dir}"/>
+		<delete dir="${compile.dir}"/>
 	</target>
 
 	<target name="compile">
-		<mkdir dir="${temp.dir}"/>
-		<javac source="1.5" target="1.5" encoding="UTF-8" srcdir="${src.dir}" destdir="${temp.dir}" classpathref="classpath"/>
+		<mkdir dir="${compile.dir}"/>
+		<javac source="1.5" target="1.5" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}" classpathref="classpath"/>
 	</target>
 
 	<target name="jar" depends="compile">
+		<classfileset id="requiredClasses" dir="${compile.dir}">
+			<root classname="${main-class}"/>
+		</classfileset>
+		
 		<mkdir dir="${jar.dir}"/>
 		<mkdir dir="${jar.dir}/${lib.dir}"/>
 		<copy todir="${jar.dir}/${lib.dir}">
 			<fileset dir="${lib.dir}" includes="**/*.jar"/>
 		</copy>
-		<mkdir dir="${jar.dir}/${res.dir}"/>
+		<!--<mkdir dir="${jar.dir}/${res.dir}"/>
 		<copy todir="${jar.dir}/${res.dir}">
 			<fileset dir="${res.dir}"/>
-		</copy>
+		</copy>-->
 		
-		<jar destfile="${jar.dir}/${lib.dir}/artwork.jar" basedir="${res.dir}" index="true"/>
+		<jar destfile="${jar.dir}/${lib.dir}/artwork.jar" basedir="" includes="${res.dir}/*" index="false"/>
 		
 		<manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}.jar">
 				<classpath refid="classpath" />
 		</manifestclasspath>
 		
-		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${temp.dir}">
+		<jar destfile="${jar.dir}/${ant.project.name}.jar">
+			<fileset refid="requiredClasses"/>
 			<manifest>
 				<attribute name="Main-Class" value="${main-class}"/>
 				<attribute name="Class-Path" value="${jar.classpath}"/>
@@ -59,7 +64,7 @@
 
 	<target name="main" depends="clean,run"/>
 	
-	<target name="installer" depends="jar">
+	<target name="installer">
 		
 	</target>
 
