@@ -6,11 +6,11 @@
 === Summarized ===
   * The Sun Java Runtime Environment, version 1.5 (5.0) or newer
   * Any combination of system architecture and operating system that supports [http://www.eclipse.org/swt/ Eclipse SWT]. See website for details.
-  * An internet connection is required for 
+  * An internet connection is recommended.
 
 
 === Details ===
-In reality, JMoviedb will only be tested on a few operating systems, namely:
+In reality, JMoviedb will only be tested on a few operating systems and architectures, namely:
   * Windows x86
   * Windows x86-64
   * Linux x86
@@ -28,4 +28,4 @@ JMoviedb will run in 64-bit mode on x86-64 systems, also known as AMD64, EM64T o
 
 Sun has a 64-bit version of Java 6 available, but it is not prominently displayed on their website and may be hard to find. Direct download link [http://javadl.sun.com/webapps/download/AutoDL?BundleId=12796 here]. (Known to be working as of January 2008.)
 
-The 32-bit version of JMoviedb will work perfectly on 64-bit systems using a 32-bit Java version. Seeing as most people use 32-bit Java even on 64-bit systems (because of browser plugin compatibility), a 64-bit Windows version of JMoviedb is probably unnecessary. I have chosen to include it nonetheless because of special interest, i.e. I'm a geek.
+The 32-bit version of JMoviedb will work perfectly on 64-bit systems using a 32-bit Java version. Seeing as most people use 32-bit Java even on 64-bit systems (because of browser plugin compatibility), a 64-bit Windows version of JMoviedb is probably unnecessary. I have chosen to include it nonetheless because of special interest, i.e. I'm a geek. The 32- and 64-bit versions of Java can coexist on the same system without problems.
