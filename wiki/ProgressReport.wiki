@@ -16,8 +16,8 @@
   * "Live" search feature, search as you type. - Done, except for selecting search parameters (currently it only searches through movie titles).
 
 == Under heavy development right now ==
-  * Ant buildfile for build automation. Downloads build dependencies automatically and merges their contents into the application jar file, but filters so that only the referenced classes are used. Should ideally be able to build jar files for all supported platforms in one go, and create deb/rpm/pkg packages and the NSIS install script.
-  * Windows installer/uninstaller based on NSIS.
+  * [http://ant.apache.org/ Ant buildfile] for build automation. Downloads build dependencies automatically and merges their contents into the application jar file, but filters so that only the referenced classes are used. Should ideally be able to build jar files for all supported platforms in one go, and create deb/rpm/pkg packages and the NSIS install script.
+  * Windows installer/uninstaller based on [http://nsis.sourceforge.net/ NSIS].
 
 == Not implemented yet ==
   * An advanced movie list showing cover image, format, rating, runtime etc. for each movie type. Will include colour coding on seen/not seen status and format type. See [moviedb the moviedb page] for details.
