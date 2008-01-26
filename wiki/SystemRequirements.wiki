@@ -17,4 +17,6 @@ In reality, JMoviedb will only be tested on a few operating systems, namely:
   * Mac OS X
 Windows testing will mainly be done on Windows XP. The latest release of Ubuntu will be used for Linux testing, while an [http://en.wikipedia.org/wiki/OSx86 OSx86] release of Leopart will have to suffice for Mac testing.
 
-JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher2] library, which adds the capability to open websites in the system's default browser. BrowserLauncher2 uses system specific system calls, and has limited platform and browser support. It should work with the most common counfigurations, though. ([http://browserlaunch2.sourceforge.net/platformsupport.shtml Details])
+JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher2] library, which adds the capability to open websites in the system's default browser. BrowserLauncher2 uses system specific system calls, and has limited platform and browser support. It should work with the most common counfigurations, though. ([http://browserlaunch2.sourceforge.net/platformsupport.shtml Details]) JMoviedb works fine even without BrowserLauncher2 support, but the user will have to open any websites maually by copying/pasting URLs.
+
+==== Notes for 64-bit Windows: ==== This is a test
