@@ -1,0 +1,6 @@
+#summary System requirements
+
+== System requirements ==
+=== Summarized ===
+  * Java JRE 1.5 (5.0) or newer
+  * Any combination of system architecture and operating system that supports [http://www.eclipse.org/swt/ Eclipse SWT]. See website for details.
