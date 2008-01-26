@@ -22,6 +22,6 @@ JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher2] libra
 ==== Notes for 64-bit Windows: ====
 JMoviedb will run in 64-bit mode on x86-64 systems, also known as AMD64, EM64T or x64. A 64-bit version of Windows (such as Windows XP Professional x64 Edition) and a 64-bit Java environment are needed.
 
-Sun has a 64-bit version of Java 6 available, but it is not prominently displayed on their website and may be hard to find.
+Sun has a 64-bit version of Java 6 available, but it is not prominently displayed on their website and may be hard to find. Direct download link [http://javadl.sun.com/webapps/download/AutoDL?BundleId=12796 here]. (Known to be working as of January 2008)
 
-The 32-bit version of JMoviedb will work on 64-bit systems using a 32-bit Java version.
+The 32-bit version of JMoviedb will work perfectly on 64-bit systems using a 32-bit Java version. Seeing as most people use 32-bit Java even on 64-bit systems (because of browser plugin compatibility), a 64-bit Windows version of JMoviedb is probably unnecessary. I have chosen to include it nonetheless.
