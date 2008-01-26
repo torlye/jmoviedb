@@ -5,12 +5,16 @@
 === Summarized ===
   * The Sun Java Runtime Environment, version 1.5 (5.0) or newer
   * Any combination of system architecture and operating system that supports [http://www.eclipse.org/swt/ Eclipse SWT]. See website for details.
+  * An internet connection is required for 
 
 === Details ===
-  * In reality, JMoviedb will only be tested on a few operating systems, namely:
-    * Windows x86
-    * Windows x86-64
-    * Linux x86
-    * Linux x86-64
-    * Linux PowerPC
-    * Mac OS X
+In reality, JMoviedb will only be tested on a few operating systems, namely:
+  * Windows x86
+  * Windows x86-64
+  * Linux x86
+  * Linux x86-64
+  * Linux PowerPC
+  * Mac OS X
+Windows testing will mainly be done on Windows XP. The latest release of Ubuntu will be used for Linux testing, while an [http://en.wikipedia.org/wiki/OSx86 OSx86] release of Leopart will have to suffice for Mac testing.
+
+JMoviedb uses the [http://browserlaunch2.sourceforge.net BrowserLauncher2] library, which adds the capability to open websites in the system's default browser. BrowserLauncher2 uses system specific system calls, and has limited platform and browser support. It should work with the most common counfigurations, though. ([http://browserlaunch2.sourceforge.net/platformsupport.shtml Details])
