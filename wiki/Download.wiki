@@ -8,4 +8,4 @@
 || Linux/GTK x86-64 ||  || Jar ||
 || Linux/GTK PowerPC ||  || Jar ||
 || Mac OS X ||  || Jar ||
-|| Universal version, works on all platforms || || Jar ||
+|| Universal version, works on most platforms || || Jar ||
