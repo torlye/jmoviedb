@@ -1,0 +1,11 @@
+#summary List of Moviedb downloads
+
+= JMoviedb downloads =
+
+|| Windows || Installer || Jar ||
+|| Windows (64-bit) || Installer || Jar ||
+|| Linux/GTK x86 ||  || Jar ||
+|| Linux/GTK x86-64 ||  || Jar ||
+|| Linux/GTK PowerPC ||  || Jar ||
+|| Mac OS X ||  || Jar ||
+|| Universal version, works on all platforms || || Jar ||
