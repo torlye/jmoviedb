@@ -34,7 +34,7 @@ public class HelpAboutAction extends Action {
 		this.window = window;
 		setText("About JMoviedb");
 		setToolTipText("About JMoviedb");
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ABOUT));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ABOUT));
 	}
 	
 	public void run() {

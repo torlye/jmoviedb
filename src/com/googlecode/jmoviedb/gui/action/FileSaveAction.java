@@ -45,7 +45,7 @@ public class FileSaveAction extends Action {
 	public FileSaveAction(Action alternativeAction) {
 		setText(GuiLanguage.SAVE);
 		setToolTipText(GuiLanguage.SAVE);
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_SAVE));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_SAVE));
 		this.saveAsAction = alternativeAction;
 	}
 	

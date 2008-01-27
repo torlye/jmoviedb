@@ -35,9 +35,9 @@ public class TestAction extends Action {
 		this.message = message;
 		this.exception = exception;
 		if(exception)
-			setImageDescriptor(ImageDescriptor.createFromFile(null, "resources/icon-silk/exclamation.png"));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_EXCLAMATION));
 		else
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_PREFERENCES));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_PREFERENCES));
 	}
 	
 	/**

@@ -28,6 +28,6 @@ public class HelpHelpAction extends Action {
 	public HelpHelpAction() {
 		setText("Help");
 		setToolTipText("Help");
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_HELP));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_HELP));
 	}
 }

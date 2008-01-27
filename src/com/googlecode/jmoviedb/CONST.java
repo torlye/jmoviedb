@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb;
 
 import java.io.ByteArrayInputStream;
+import java.net.URL;
 
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
@@ -50,7 +51,7 @@ public class CONST {
 	 * The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int MINOR_VERSION = 0;
+	public static final int MINOR_VERSION = 1;
 	
 	/**
 	 * The "release" part of the current version number. Changes to this
@@ -250,127 +251,132 @@ public class CONST {
 	/**
 	 * Main program icon, 16x16 pixels
 	 */
-	public static final String ICON_MAIN_16 = "resources/icon-nuovo/gnome-mime-video-16.png";
+	public static final URL ICON_MAIN_16 = ClassLoader.getSystemResource("resources/icon-nuovo/gnome-mime-video-16.png");
 	
 	/**
 	 * Main program icon, 32x32 pixels
 	 */
-	public static final String ICON_MAIN_32 = "resources/icon-nuovo/gnome-mime-video-32.png";
+	public static final URL ICON_MAIN_32 = ClassLoader.getSystemResource("resources/icon-nuovo/gnome-mime-video-32.png");
 	
 	/**
 	 * Main program icon, 64x64 pixels
 	 */
-	public static final String ICON_MAIN_64 = "resources/icon-nuovo/gnome-mime-video-64.png";
+	public static final URL ICON_MAIN_64 = ClassLoader.getSystemResource("resources/icon-nuovo/gnome-mime-video-64.png");
 	
 	/**
 	 * Main program icon, 128x128 pixels
 	 */
-	public static final String ICON_MAIN_128 = "resources/icon-nuovo/gnome-mime-video-128.png";
+	public static final URL ICON_MAIN_128 = ClassLoader.getSystemResource("resources/icon-nuovo/gnome-mime-video-128.png");
 	
 	/**
 	 * Main program icon, 256x256 pixels
 	 */
-	public static final String ICON_MAIN_256 = "resources/icon-nuovo/gnome-mime-video-256.png";
+	public static final URL ICON_MAIN_256 = ClassLoader.getSystemResource("resources/icon-nuovo/gnome-mime-video-256.png");
 	
 	/**
 	 * Icon file for the main tab of the movie dialog
 	 */
-	public static final String ICON_MOVIEDIALOG_MAINTAB = "resources/icon_placeholder.png";
+	public static final URL ICON_MOVIEDIALOG_MAINTAB = ClassLoader.getSystemResource("resources/icon_placeholder.png");
 	
 	/**
 	 * Icon file for the tagline/plot tab of the movie dialog
 	 */
-	public static final String ICON_MOVIEDIALOG_TAGLINEPLOTTAB = "resources/icon_placeholder.png";
+	public static final URL ICON_MOVIEDIALOG_TAGLINEPLOTTAB = ClassLoader.getSystemResource("resources/icon_placeholder.png");
 	
 	/**
 	 * Icon file for the actors tab of the movie dialog
 	 */
-	public static final String ICON_MOVIEDIALOG_ACTORSTAB = "resources/icon-silk/group.png";
+	public static final URL ICON_MOVIEDIALOG_ACTORSTAB = ClassLoader.getSystemResource("resources/icon-silk/group.png");
 	
 	/**
 	 * Icon file for the format tab of the movie dialog
 	 */
-	public static final String ICON_MOVIEDIALOG_FORMATTAB = "resources/icon-silk/cd.png";
+	public static final URL ICON_MOVIEDIALOG_FORMATTAB = ClassLoader.getSystemResource("resources/icon-silk/cd.png");
 	
 	/**
 	 * Icon file for the audio/subtitle tab of the movie dialog
 	 */
-	public static final String ICON_MOVIEDIALOG_AUDIOSUBTAB = "resources/icon-silk/comments.png";
+	public static final URL ICON_MOVIEDIALOG_AUDIOSUBTAB = ClassLoader.getSystemResource("resources/icon-silk/comments.png");
 	
 	/**
 	 * Icon file for the "add film" action
 	 */
-	public static final String ICON_ADDFILM = "resources/icon-silk/film_add.png";
+	public static final URL ICON_ADDFILM = ClassLoader.getSystemResource("resources/icon-silk/film_add.png");
 	
 	/**
 	 * Icon file for the "add movie serial" action
 	 */
-	public static final String ICON_ADDMOVIESERIAL = "resources/icon-silk/film_add.png";
+	public static final URL ICON_ADDMOVIESERIAL = ClassLoader.getSystemResource("resources/icon-silk/film_add.png");
 	
 	/**
 	 * Icon file for the "add tv movie" action
 	 */
-	public static final String ICON_ADDTVMOVIE = "resources/icon-silk/television_add.png";
+	public static final URL ICON_ADDTVMOVIE = ClassLoader.getSystemResource("resources/icon-silk/television_add.png");
 	
 	/**
 	 * Icon file for the "add tv series" action
 	 */
-	public static final String ICON_ADDTVSERIES = "resources/icon-silk/television_add.png";
+	public static final URL ICON_ADDTVSERIES = ClassLoader.getSystemResource("resources/icon-silk/television_add.png");
 	
 	/**
 	 * Icon file for the "add mini series" action
 	 */
-	public static final String ICON_ADDMINISERIES = "resources/icon-silk/television_add.png";
+	public static final URL ICON_ADDMINISERIES = ClassLoader.getSystemResource("resources/icon-silk/television_add.png");
 	
 	/**
 	 * Icon file for the "add straight-to-video" action
 	 */
-	public static final String ICON_ADDVIDEOMOVIE = "resources/icon-silk/cd_add.png";
+	public static final URL ICON_ADDVIDEOMOVIE = ClassLoader.getSystemResource("resources/icon-silk/cd_add.png");
 	
 	/**
 	 * Icon file for the "save" action 
 	 */
-	public static final String ICON_SAVE = "resources/icon-silk/disk.png";
+	public static final URL ICON_SAVE = ClassLoader.getSystemResource("resources/icon-silk/disk.png");
 	
 	/**
 	 * Icon file for the "save as" action
 	 */
-	public static final String ICON_SAVEAS = "resources/icon-silk/disk_multiple.png";
+	public static final URL ICON_SAVEAS = ClassLoader.getSystemResource("resources/icon-silk/disk_multiple.png");
 	
 	/**
 	 * Icon file for the "new file" action
 	 */
-	public static final String ICON_NEW = "resources/icon-silk/page_white.png";
+	public static final URL ICON_NEW = ClassLoader.getSystemResource("resources/icon-silk/page_white.png");
 	
 	/**
 	 * Icon file for the "open" action
 	 */
-	public static final String ICON_OPEN = "resources/icon-silk/folder.png";
+	public static final URL ICON_OPEN = ClassLoader.getSystemResource("resources/icon-silk/folder.png");
 	
 	/**
 	 * Icon file for the "about" action
 	 */
-	public static final String ICON_ABOUT = "resources/icon-silk/information.png";
+	public static final URL ICON_ABOUT = ClassLoader.getSystemResource("resources/icon-silk/information.png");
 	
 	/**
 	 * Icon file for the "help" action
 	 */
-	public static final String ICON_HELP = "resources/icon-silk/help.png";
+	public static final URL ICON_HELP = ClassLoader.getSystemResource("resources/icon-silk/help.png");
 	
 	/**
 	 * Icon file for the "print" action
 	 */
-	public static final String ICON_PRINT = "resources/icon-silk/printer.png";
+	public static final URL ICON_PRINT = ClassLoader.getSystemResource("resources/icon-silk/printer.png");
 	
 	/**
-	 * Icon file for the "prefereces" action
+	 * Icon file for the "preferences" action
 	 */
-	public static final String ICON_PREFERENCES = "resources/icon-silk/cog.png";
-	
+	public static final URL ICON_PREFERENCES = ClassLoader.getSystemResource("resources/icon-silk/cog.png");
+
+	/**
+	 * Exclamation mark icon
+	 */
+	public static final URL ICON_EXCLAMATION = ClassLoader.getSystemResource("resources/icon-silk/exclamation.png");
+
 //	/**
 //	 * Icon file for the "" action
 //	 */
-//	public static final String ICON_ = "resources/icon-silk/";
+//	public static final URL ICON_ = ClassLoader.getSystemResource("resources/icon-silk/");
 	
 	//TODO move this
 	public static final String RECENT_FILES_PROPERTY_NAME = "RecentFiles";

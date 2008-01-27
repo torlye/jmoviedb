@@ -19,8 +19,6 @@
 
 package com.googlecode.jmoviedb.gui.action;
 
-import java.sql.SQLException;
-
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.language.GuiLanguage;
@@ -46,32 +44,32 @@ public class AddMovieAction extends Action {
 		case CONST.MOVIETYPE_FILM:
 			setText(GuiLanguage.ADDFILM + "...");
 			setToolTipText(GuiLanguage.ADDFILM);
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ADDFILM));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDFILM));
 			break;
 		case CONST.MOVIETYPE_VIDEOMOVIE:
 			setText(GuiLanguage.ADDVIDEOMOVIE + "...");
 			setToolTipText(GuiLanguage.ADDVIDEOMOVIE);
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ADDVIDEOMOVIE));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDVIDEOMOVIE));
 			break;
 		case CONST.MOVIETYPE_TVMOVIE:
 			setText(GuiLanguage.ADDTVMOVIE + "...");
 			setToolTipText(GuiLanguage.ADDTVMOVIE);
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ADDTVMOVIE));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDTVMOVIE));
 			break;
 		case CONST.MOVIETYPE_TVSERIES:
 			setText(GuiLanguage.ADDTVSERIES + "...");
 			setToolTipText(GuiLanguage.ADDTVSERIES);
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ADDTVSERIES));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDTVSERIES));
 			break;
 		case CONST.MOVIETYPE_MINISERIES:
 			setText(GuiLanguage.ADDMINISERIES + "...");
 			setToolTipText(GuiLanguage.ADDMINISERIES);
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ADDMINISERIES));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDMINISERIES));
 			break;
 		case CONST.MOVIETYPE_MOVIESERIAL:
 			setText(GuiLanguage.ADDMOVIESERIAL + "...");
 			setToolTipText(GuiLanguage.ADDMOVIESERIAL);
-			setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_ADDMOVIESERIAL));
+			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDMOVIESERIAL));
 			break;
 		}
 	}
