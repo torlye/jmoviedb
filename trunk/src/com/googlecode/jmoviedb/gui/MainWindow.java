@@ -45,19 +45,22 @@ import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 
+import org.apache.derby.iapi.services.stream.HeaderPrintWriter;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;//Do not remove
+import org.eclipse.jface.preference.PreferenceDialog;//Do not remove
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.ApplicationWindow;
+import org.eclipse.jface.wizard.Wizard;//Do not remove
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -147,11 +150,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		} catch (UnsupportedOperatingSystemException e) {}
 		
 		setDefaultImages(new Image[]{
-				ImageDescriptor.createFromFile(null, CONST.ICON_MAIN_16).createImage(), 
-				ImageDescriptor.createFromFile(null, CONST.ICON_MAIN_32).createImage(), 
-				ImageDescriptor.createFromFile(null, CONST.ICON_MAIN_64).createImage(), 
-				ImageDescriptor.createFromFile(null, CONST.ICON_MAIN_128).createImage(), 
-				ImageDescriptor.createFromFile(null, CONST.ICON_MAIN_256).createImage()});
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_16).createImage(), 
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_32).createImage(), 
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_64).createImage(), 
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_128).createImage(), 
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_256).createImage()});
 		
 		fileSaveAsAction = new FileSaveAsAction();
 		fileSaveAction = new FileSaveAction(fileSaveAsAction);
@@ -671,19 +674,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);//TODO needs more work
 	}
 
-	/**
-	 * The main method that launches the application.
-	 * @param args - not currently used
-	 */
-	public static void main(String[] args) {
-		for(String s : args)
-			System.out.println(s);
-		
-		settings = Settings.getSettings();
-		MainWindow m = new MainWindow();
-		m.run();
-	}
-
 	public void propertyChange(PropertyChangeEvent pce) {
 
 		if(pce.getProperty().equals(Moviedb.SAVE_STATUS_PROPERTY_NAME)) {
@@ -737,5 +727,32 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 ////			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());			
 ////		return null;
 //	}
-	
+
+	/**
+	 * The main method that launches the application.
+	 * @param args - not currently used
+	 */
+	public static void main(String[] args) {
+		for(String s : args)
+			System.out.println("CmdLineArg: "+s);
+		
+		//Disable creation of the derby.log file
+		System.getProperties().put("derby.stream.error.file", "");
+		
+		settings = Settings.getSettings();
+		MainWindow m = new MainWindow();
+		m.run();
+		
+		
+		/**
+		 * More magic
+		 */
+		new org.eclipse.jface.wizard.Wizard() {
+			public boolean performFinish() {
+				new org.eclipse.jface.dialogs.TitleAreaDialog(null);
+				new org.eclipse.jface.preference.PreferenceDialog(null, null);
+				return false;
+			}
+		};
+	}
 }

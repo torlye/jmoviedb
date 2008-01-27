@@ -29,6 +29,6 @@ public class PrintAction extends Action {
 	public PrintAction() {
 		setText("Print...");
 		setToolTipText("Print");
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_PRINT));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_PRINT));
 	}
 }

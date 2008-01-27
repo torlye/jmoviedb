@@ -30,12 +30,14 @@ import com.googlecode.jmoviedb.net.ImdbWorker;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -163,7 +165,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	}
 	
 	private void MainTab(CTabFolder tabFolder) {
-		Image image = new Image(null, CONST.ICON_MOVIEDIALOG_MAINTAB);
+		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).getImageData());
 		
 		CTabItem tab1 = new CTabItem(tabFolder, SWT.NULL);
 		tab1.setText("Main    ");
@@ -313,7 +315,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	
 	
 	private void TaglinePlotTab(CTabFolder tabFolder) {
-		Image image = new Image(null, CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB);
+		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).getImageData());
 		
 		CTabItem tab2 = new CTabItem(tabFolder, SWT.NULL);
 		tab2.setText("Tagline / plot");
@@ -356,7 +358,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	}
 	
 	private void ActorsTab(CTabFolder tabFolder) {
-		Image image = new Image(null, CONST.ICON_MOVIEDIALOG_ACTORSTAB);
+		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).getImageData());
 		CTabItem tab3 = new CTabItem(tabFolder, SWT.NULL);
 		tab3.setText("Actors");
 		tab3.setImage(image);
@@ -390,14 +392,14 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	}
 	
 	private void formatVideoTab(CTabFolder tabFolder) {
-		Image image = new Image(null, CONST.ICON_MOVIEDIALOG_FORMATTAB);
+		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).getImageData());
 		CTabItem tab4 = new CTabItem(tabFolder, SWT.NULL);
 		tab4.setText("Format and video");
 		tab4.setImage(image);
 	}
 	
 	private void audioSubtitleTab(CTabFolder tabFolder) {
-		Image image = new Image(null, CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB);
+		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB).getImageData());
 		CTabItem tab5 = new CTabItem(tabFolder, SWT.NULL);
 		tab5.setText("Audio and subtitles");
 		tab5.setImage(image);

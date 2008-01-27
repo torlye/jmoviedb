@@ -40,7 +40,7 @@ public class FileSaveAsAction extends Action {
 	public FileSaveAsAction() {
 		setText(GuiLanguage.SAVEAS + "...");
 		setToolTipText(GuiLanguage.SAVEAS);
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_SAVEAS));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_SAVEAS));
 	}
 	
 	private String saveFileDialog() {

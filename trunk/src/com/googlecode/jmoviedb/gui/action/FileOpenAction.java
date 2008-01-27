@@ -35,7 +35,7 @@ public class FileOpenAction extends Action {
 	public FileOpenAction() {
 		setText("Open...");
 		setToolTipText("Open");
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_OPEN));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_OPEN));
 	}
 	
 	private String openFileDialog() {

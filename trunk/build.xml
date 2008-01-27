@@ -9,7 +9,7 @@
 	<property name="res.dir"          value="resources"/>
 	<property name="dl.dir"           value="download"/>
 	<property name="temp.dir"         value="jar-temp"/>
-	<property name="url"              value="http://jmoviedb.googlecode.com/files/"/>
+	<property name="url"              value="http://jmoviedb.googlecode.com/files"/>
 	<property name="url.browser"      value="BrowserLauncher2-1_3.jar"/>
 	<property name="url.glazed"       value="glazedlists-1.7.0_java15.jar"/>
 	<property name="url.derby"        value="db-derby-10.3.2.1.jar"/>
@@ -26,9 +26,9 @@
 	
 	<target name="clean">
 		<delete dir="${compile.dir}"/>
-		<delete dir="${jar.dir}"/>
 		<delete dir="${temp.dir}"/>
 		<delete dir="${unzip.dir}"/>
+		<delete dir="${jar.dir}"/>
 	</target>
 
 	
@@ -51,9 +51,9 @@
 		<unjar src="${dl.dir}/${url.glazed}" dest="${temp.dir}" overwrite="false">
 			<patternset><include name="**/*.class"/></patternset></unjar>
 		<unjar src="${dl.dir}/${url.derby}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
+			<patternset><include name="**/*.class"/><include name="org/**/*.properties"/></patternset></unjar>
 		<unjar src="${dl.dir}/${url.jface}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
+			<patternset><include name="**/*.class"/><include name="org/**/*.properties"/></patternset></unjar>
 		<unjar src="${dl.dir}/${url.eequinox}" dest="${temp.dir}" overwrite="false">
 			<patternset><include name="**/*.class"/></patternset></unjar>
 		<unjar src="${dl.dir}/${url.eecore}" dest="${temp.dir}" overwrite="false">
@@ -64,13 +64,35 @@
 	<target name="compile" depends="download">
 		<path id="classpath">
 			<fileset dir="${dl.dir}">
-				<include name="**/*.jar"/>
+				<include name="**"/>
 			</fileset>
 		</path>
 		<mkdir dir="${compile.dir}"/>
 		<javac source="1.5" target="1.5" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}" classpathref="classpath"/>
 	</target>
 	
+	<target name="jar-universal" depends="compile, extract">
+		<mkdir dir="${jar.dir}"/>
+		
+		<copy todir="${temp.dir}">
+			<fileset dir="${compile.dir}"/>
+		</copy>
+		
+		<classfileset id="requiredClasses" dir="${temp.dir}">
+			<root classname="${main-class}"/>
+		</classfileset>
+		
+		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-universal.jar">
+			<fileset refid="requiredClasses"/>
+			<fileset dir="." includes="${res.dir}/"/>
+			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
+			<fileset dir="${temp.dir}" includes="**/*.properties"/>
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+				<attribute name="Class-Path" value="./swt.jar"/>
+			</manifest>
+		</jar>
+	</target>
 	
 	<target name="jar-win32" depends="compile, extract">
 		<mkdir dir="${jar.dir}"/>
@@ -78,6 +100,10 @@
 		<copy todir="${temp.dir}">
 			<fileset dir="${compile.dir}"/>
 		</copy>
+		
+		<classfileset id="requiredClasses" dir="${temp.dir}">
+			<root classname="${main-class}"/>
+		</classfileset>		
 		
 		<get dest="${dl.dir}/${swt.win32}" src="${url}/${swt.win32}" verbose="true" usetimestamp="true"/>
 		<unjar src="${dl.dir}/${swt.win32}" dest="${temp.dir}" overwrite="true">
@@ -87,37 +113,62 @@
 			</patternset>
 		</unjar>
 		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<!--<manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}-${buildversion}-win-x86.jar">
-			<classpath>
-				<dirset dir="lib">
-					<include name="**/*.jar"/>
-				</dirset>
-			</classpath>
-		</manifestclasspath>-->
-		
 		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-win-x86.jar">
 			<fileset refid="requiredClasses"/>
-			<fileset dir="${temp.dir}" includes="**/*.dll"/>
 			<fileset dir="." includes="${res.dir}/"/>
+			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
+			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
+			<fileset dir="${temp.dir}" includes="**/*.properties"/>
+			<fileset dir="${temp.dir}" includes="**/*.dll"/>
 			<manifest>
 				<attribute name="Main-Class" value="${main-class}"/>
-				<!--<attribute name="Class-Path" value="${jar.classpath}"/>-->
 			</manifest>
 		</jar>
 		
 		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/swt"/>
+			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
 			<fileset dir="${temp.dir}" includes="**/*.dll"/>
-			<fileset dir="${temp.dir}" includes="**/*.so"/>
-			<fileset dir="${temp.dir}" includes="**/*.jnilib"/>
 		</delete>
 	</target>
 	
-	<target name="jar-all" depends="jar-win32"/>
+	<target name="jar-win64" depends="compile, extract">
+		<mkdir dir="${jar.dir}"/>
+		
+		<copy todir="${temp.dir}">
+			<fileset dir="${compile.dir}"/>
+		</copy>
+		
+		<classfileset id="requiredClasses" dir="${temp.dir}">
+			<root classname="${main-class}"/>
+		</classfileset>		
+		
+		<get dest="${dl.dir}/${swt.win64}" src="${url}/${swt.win64}" verbose="true" usetimestamp="true"/>
+		<unjar src="${dl.dir}/${swt.win64}" dest="${temp.dir}" overwrite="true">
+			<patternset>
+				<include name="**/*.class"/>
+				<include name="**/*.dll"/>
+			</patternset>
+		</unjar>
+		
+		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-win-x86_64.jar">
+			<fileset refid="requiredClasses"/>
+			<fileset dir="." includes="${res.dir}/"/>
+			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
+			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
+			<fileset dir="${temp.dir}" includes="**/*.properties"/>
+			<fileset dir="${temp.dir}" includes="**/*.dll"/>
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+			</manifest>
+		</jar>
+		
+		<delete>
+			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
+			<fileset dir="${temp.dir}" includes="**/*.dll"/>
+		</delete>
+	</target>
+	
+	<target name="jar-all" depends="jar-universal, jar-win32, jar-win64"/>
 </project>
 <!--<manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}.jar">
 <classpath refid="classpath" />

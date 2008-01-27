@@ -32,7 +32,7 @@ public class FileNewAction extends Action {
 	public FileNewAction() {
 		setText("New");
 		setToolTipText("New"); 
-		setImageDescriptor(ImageDescriptor.createFromFile(null, CONST.ICON_NEW));
+		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_NEW));
 	}
 	
 	public void run() {
