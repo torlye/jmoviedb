@@ -15,7 +15,7 @@ An internet connection is not required to run the program but is recommended in 
 
 CPU and memory requirements are unknown, but JMoviedb will probably work satisfactorily on any system capable of running Windows 2000 or newer.
 
-JMoviedb requires less than 5 MB of hard drive space.
+JMoviedb requires less than 10 MB of hard drive space.
 
 JMoviedb will only be tested on a few operating systems and architectures, namely the following:
   * Windows - x86 and x86-64
