@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.movietype.Film;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,10 +41,8 @@ import com.csvreader.CsvReader;
 public class CSVimport implements IRunnableWithProgress {
 	
 	private String filePath;
-	private MainWindow window;
 	private int read;
 	private int skipped;
-	private Moviedb db;
 	
 	/**
 	 * The default constructor.
@@ -53,7 +50,6 @@ public class CSVimport implements IRunnableWithProgress {
 	 */
 	CSVimport(String filePath) {
 		this.filePath = filePath;
-		this.window = MainWindow.getMainWindow();
 	}
 	
 	/**
