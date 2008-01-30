@@ -79,6 +79,7 @@ public class ImdbWorker implements IRunnableWithProgress {
 				return movie;
 			}
 			
+			//Run search with progress bar
 			try {
 				new ProgressMonitorDialog(parentShell).run(true, false, new ImdbSearcher());
 			} catch (InvocationTargetException e) {
@@ -92,8 +93,11 @@ public class ImdbWorker implements IRunnableWithProgress {
 				MessageDialog.openInformation(parentShell, "No search results", "The search returned no results.");
 				return movie;
 			}
-
-			int selection = new SearchResultDialog(parentShell, searchResults).open();
+			
+			//Show a list of search results and let the user choose
+			SearchResultDialog dialog = new SearchResultDialog(parentShell, searchResults);
+			int selection = dialog.open();
+			dialog.dispose();
 
 			//The search result dialog was cancelled
 			if(selection == -1)

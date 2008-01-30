@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
@@ -56,6 +57,7 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	private ScrollBar hBar;
 	private ScrollBar vBar;
 	private Button[] buttons;
+	private ArrayList<Image> imageList = new ArrayList<Image>();
 	
 	public SearchResultDialog(Shell parentShell, ImdbSearchResult[] resultSet) {
 		super(parentShell);
@@ -68,7 +70,6 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	}
 	
 	protected Control createDialogArea(Composite parent) {
-//		Composite container = (Composite) super.createDialogArea(parent);
 		container = new Composite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
 		GridLayout containerLayout = new GridLayout();
 		containerLayout.marginHeight = 0;
@@ -81,7 +82,6 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 		hBar.addListener(SWT.Selection, this);
 		vBar = container.getVerticalBar ();
 		vBar.addListener(SWT.Selection, this);
-//		container.addListener (SWT.Resize, this);
 		getShell().addListener (SWT.Resize, this);
 		
 		contents = new Composite(container, SWT.NONE);
@@ -123,6 +123,8 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 			if(imgData != null) {
 				Image img = new Image(Display.getCurrent(), imgData);
 				imageLabel.setImage(img);
+				//add image to a private list so that it can be disposed later
+				imageList.add(img);
 				if(CONST.DEBUG_MODE)
 					System.out.println("Image: " + img.getImageData().width + "x" + img.getImageData().height);
 			}
@@ -236,5 +238,13 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	public void widgetSelected(SelectionEvent e) {
 		System.out.println(e.text);
 		MainWindow.getMainWindow().launchBrowser(e.text);
+	}
+	
+	/**
+	 * Dispose images in order to release their resources
+	 */
+	public void dispose() {
+		for(Image img : imageList)
+			img.dispose();
 	}
 }
