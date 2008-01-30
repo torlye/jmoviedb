@@ -40,4 +40,8 @@ public class Person {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public boolean equals(Object o) {
+		return this.ID.equals(((Person)o).ID);
+	}
 }

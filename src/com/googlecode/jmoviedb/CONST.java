@@ -51,14 +51,14 @@ public class CONST {
 	 * The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int MINOR_VERSION = 1;
+	public static final int MINOR_VERSION = 0;
 	
 	/**
 	 * The "release" part of the current version number. Changes to this
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 0;
+	public static final int RELEASE_VERSION = 1;
 	
 	/**
 	 * The current development stage expressed as a string.
@@ -372,6 +372,11 @@ public class CONST {
 	 * Exclamation mark icon
 	 */
 	public static final URL ICON_EXCLAMATION = ClassLoader.getSystemResource("resources/icon-silk/exclamation.png");
+	
+	/**
+	 * The image to display when the movie has no associated cover image.
+	 */
+	public static final URL NO_COVER_IMAGE = ClassLoader.getSystemResource("resources/nocover.png");
 
 //	/**
 //	 * Icon file for the "" action
@@ -380,6 +385,16 @@ public class CONST {
 	
 	//TODO move this
 	public static final String RECENT_FILES_PROPERTY_NAME = "RecentFiles";
+	
+	/**
+	 * Timeout when downloading files from the internet (seconds)
+	 */
+	public static final int DOWNLOAD_TIMEOUT = 5;
+	
+	/**
+	 * Number of times to retry a failed download
+	 */
+	public static final int DOWNLOAD_RETRY_COUNT = 3;
 	
 	/**
 	 * Converts a boolean to an int.

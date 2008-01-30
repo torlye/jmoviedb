@@ -20,7 +20,6 @@
 package com.googlecode.jmoviedb.gui;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
@@ -29,7 +28,6 @@ import com.googlecode.jmoviedb.net.ImdbSearchResult;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -50,8 +48,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 
-import edu.stanford.ejalbert.BrowserLauncher;
-
 public class SearchResultDialog extends Dialog implements Listener, SelectionListener {
 
 	private ImdbSearchResult[] resultSet;
@@ -59,24 +55,13 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	private Composite contents;
 	private ScrollBar hBar;
 	private ScrollBar vBar;
-	private BrowserLauncher launcher;
-	private boolean useBrowserLauncher;
-	private HashMap<Button, String> radioButtons;
+	private Button[] buttons;
 	
-	public SearchResultDialog(IShellProvider shell, ImdbSearchResult[] resultSet) {
-		super(shell);
-		setShellStyle(getShellStyle() | SWT.RESIZE);
-		useBrowserLauncher = true;
-		radioButtons = new HashMap<Button, String>();
-
-		//TODO put this somewhere else (Mainwindow, for example)
-		try {
-			launcher = new BrowserLauncher();
-		} catch (Exception e) {
-			useBrowserLauncher = false;
-		}
+	public SearchResultDialog(Shell parentShell, ImdbSearchResult[] resultSet) {
+		super(parentShell);
 		
 		this.resultSet = resultSet;
+		buttons = new Button[resultSet.length];
 		
 		//if the dialog is killed, the return code should be -1 
 		setReturnCode(-1);
@@ -149,7 +134,6 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 //			textLayout.widthHint = 500;
 //			textLayout.heightHint = 50;
 			
-			if(useBrowserLauncher) {
 				Link title = new Link(contents, SWT.NONE);
 				title.setLayoutData(textLayout);
 				title.setText("<A HREF=\"" + Settings.getSettings().getImdbUrl() + resultSet[i].getImdbId() + "\">" + resultSet[i].getTitle() + " (" + resultSet[i].getYear() + ")</A>");
@@ -168,28 +152,10 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 					}
 					title.setText(title.getText() + akaString); 
 				}
-			} else {
-				Label title = new Label(contents, SWT.LEFT);
-				title.setLayoutData(textLayout);
-				title.setText(resultSet[i].getTitle() + " (" + resultSet[i].getYear() + ")");
-				
-				if(resultSet[i].getType() != MovieType.film)
-					title.setText(title.getText() + " - " + resultSet[i].getType().toString());
-				
-				String akaString = "";
-				if(resultSet[i].getAltTitles() != null) {
-					int j=0;
-					for(String t : resultSet[i].getAltTitles()) {
-						akaString += "\naka " + t;
-						j++;
-						System.out.println(j + " alt title(s)");
-					}
-					title.setText(title.getText() + akaString); 
-				}
-			}
 			
-			radioButtons.put(radio, resultSet[i].getImdbId());
-		}
+			
+			buttons[i] = radio;
+		}//end for
 		
 		container.setSize(contents.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
@@ -213,9 +179,9 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	}
 	
 	private int getSelectedItem() {
-		for(Button b : radioButtons.keySet()) {
-			if(b.getSelection()) {
-				return Integer.parseInt(radioButtons.get(b));
+		for(int i=0; i<buttons.length; i++) {
+			if(buttons[i].getSelection()) {
+				return i;
 			}
 		}
 		return -1;
@@ -269,6 +235,6 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	 */
 	public void widgetSelected(SelectionEvent e) {
 		System.out.println(e.text);
-		launcher.openURLinBrowser(e.text);
+		MainWindow.getMainWindow().launchBrowser(e.text);
 	}
 }

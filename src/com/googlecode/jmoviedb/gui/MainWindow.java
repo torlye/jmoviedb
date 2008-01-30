@@ -21,6 +21,7 @@ package com.googlecode.jmoviedb.gui;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -29,6 +30,8 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.swt.EventKTableModel;
 import ca.odell.glazedlists.swt.EventListViewer;
 
 import com.googlecode.jmoviedb.CONST;
@@ -41,11 +44,17 @@ import com.googlecode.jmoviedb.gui.action.sort.YearSorter;
 import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
+import de.kupzog.ktable.KTable;
+import de.kupzog.ktable.KTableCellDoubleClickListener;
+import de.kupzog.ktable.SWTX;
+
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
+import edu.stanford.ejalbert.launching.IBrowserLaunching;
 
 import org.apache.derby.iapi.services.stream.HeaderPrintWriter;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -53,7 +62,10 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;//Do not remove
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.jface.preference.PreferenceDialog;//Do not remove
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -66,6 +78,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -74,8 +87,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.omg.CORBA.UNKNOWN;
 
 public class MainWindow extends ApplicationWindow implements IPropertyChangeListener {
+	private String[] cmdLineArgs;
 	
 	//setup
 	private static final int coolBarStyle = SWT.FLAT;
@@ -120,23 +135,26 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private MenuManager fileMenu;
 	
 	private Moviedb currentlyOpenDb;
-	private List list;
-	private EventListViewer viewer;
+//	private List list;
+//	private EventListViewer viewer;
 	private SortedList<AbstractMovie> sortedList;
-	private FilterList<AbstractMovie> filteredList;
+	public FilterList<AbstractMovie> filteredList;
+	private KTable table;
+	private EventKTableModel viewer;
 	
 	private SearchField searchField;
-	private ClearSearchfieldAction clearSearchfieldAction;
+//	private ClearSearchfieldAction clearSearchfieldAction;
 	
 	private StatusLineThreadManager statusLine;
 	
 	private ExceptionHandler exceptionHandler;
 	private BrowserLauncher browserLauncher;
 
-	public MainWindow() {
+	public MainWindow(String[] args) {
 		super(null);
-		
 		instance = this;
+		
+		cmdLineArgs = args;
 		Settings.getSettings().addListener(this);
 		exceptionHandler = new ExceptionHandler();
 		setExceptionHandler(exceptionHandler);
@@ -146,8 +164,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			 * If one of the following exceptions are thrown and caught,
 			 * the system will not be able to open browsers. 
 			 */
-		} catch (BrowserLaunchingInitializingException e) {
-		} catch (UnsupportedOperatingSystemException e) {}
+		} catch (BrowserLaunchingInitializingException e) {handleException(e);
+		} catch (UnsupportedOperatingSystemException e) {handleException(e);}
 		
 		setDefaultImages(new Image[]{
 				ImageDescriptor.createFromURL(CONST.ICON_MAIN_16).createImage(), 
@@ -174,10 +192,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		sortByRatingAction = new SortParameterAction(CONST.SORT_BY_RATING);
 		helpHelpAction = new HelpHelpAction();
 		helpAboutAction = new HelpAboutAction(this);
-		helpHelpAction.setEnabled(false);
 		printAction.setEnabled(false);
 		searchField = new SearchField();
-		clearSearchfieldAction = new ClearSearchfieldAction(searchField);
+//		clearSearchfieldAction = new ClearSearchfieldAction(searchField);
 		
 		addFilmAction = new AddMovieAction(CONST.MOVIETYPE_FILM);
 		addMovieSerialAction = new AddMovieAction(CONST.MOVIETYPE_MOVIESERIAL);
@@ -242,6 +259,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		menuManager.add(sortMenu);
 		
 		MenuManager actionMenu = new MenuManager("&Action");
+		actionMenu.add(new MassUpdateAction());
 		actionMenu.add(addFilmAction);
 		actionMenu.add(addVideomovieAction);
 		actionMenu.add(addTvMovieAction);
@@ -317,9 +335,19 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 
 	protected Control createContents(Composite parent) {
-		list = new List(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		list.addKeyListener(new KeyListener(){
-			//TODO fix cases where Enter keypresses lead to both widgetDefaultSelected and keyPressed calls.
+		table = new KTable(parent, SWT.V_SCROLL|SWTX.FILL_WITH_LASTCOL|SWT.BORDER|SWT.FULL_SELECTION);
+		table.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
+		table.addCellDoubleClickListener(new KTableCellDoubleClickListener(){
+			public void cellDoubleClicked(int col, int row, int statemask) {
+				try {
+					openMovieDialog(null);
+				} catch (Exception ex) {
+					handleException(ex);
+				}	
+			}
+			public void fixedCellDoubleClicked(int col, int row, int statemask) {}
+		});
+		table.addKeyListener(new KeyListener(){
 			public void keyPressed(KeyEvent e) {
 				if(e.character=='\r')
 					try {
@@ -331,24 +359,23 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			public void keyReleased(KeyEvent e) {
 				//Do nothing
 			}});
-		list.addSelectionListener(new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent e) {
-				try {
-					openMovieDialog(null);	
-				} catch (Exception ex) {
-					handleException(ex);
-				}
-			}
-			public void widgetSelected(SelectionEvent e) {
-				//Do nothing
-			}});
+		
 		try {
-			setDB(new Moviedb(null));
+			if(cmdLineArgs.length>0) {
+				File f = new File(cmdLineArgs[0]);
+				if(f.canRead())
+					openDB(cmdLineArgs[0]);
+				else {
+					openDB(null);
+				}
+			} else {
+				openDB(null);
+			}
 		} catch(Exception e) {
 			handleException(e);
 		}
 		
-		return list;
+		return table;
 	}
 
 	/**
@@ -405,43 +432,74 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	
 	/**
 	 * Opens a new database in the main window
-	 * @param db
+	 * @param path to the database, or null
+	 * @throws IOException 
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public void setDB(Moviedb db) {
-		if(sortedList!=null)
-			sortedList.dispose();
-		if(filteredList!=null) {
-			filteredList.dispose();
+	public void openDB(String path) throws ClassNotFoundException, SQLException, IOException {
+		try {
+			new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
+			table.setModel(viewer);
+			Settings.getSettings().updateRecentFiles(path);
+			updateShellText();
+			if(currentlyOpenDb.getMovieCount()>0)
+				setStatusLineMessage("Opened "+currentlyOpenDb.getMovieCount()+" movies");
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if(viewer!=null)
-			viewer.dispose();
-		if(currentlyOpenDb!=null) {
-			currentlyOpenDb.removeListener(this);
-			currentlyOpenDb.closeDatabase();
-			currentlyOpenDb = null;
+	}
+
+	private class OpenDBWorker implements IRunnableWithProgress {
+		private String path;
+		public OpenDBWorker(String path) {
+			this.path = path;
 		}
-		
-		sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
-		filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
-		viewer = new EventListViewer(filteredList, list, new LabelProvider());
-		filteredList.addListEventListener(
-				new ListEventListener<AbstractMovie>() {
-					public void listChanged(ListEvent<AbstractMovie> arg0) {
-						if(filteredList.size() != currentlyOpenDb.getMovieCount())
-							setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
-						else
-							setStatusLineMessage(filteredList.size()+" movies");
-					}
-				});
-		//TODO make a new label provider for advanced list view
-		
-		currentlyOpenDb = db;
-		currentlyOpenDb.addListener(this);
-		updateShellText();
-		fileSaveAction.setEnabled(false);
-		
-		if(db.getMovieCount()>0)
-			setStatusLineMessage("Opened "+db.getMovieCount()+" movies");
+
+		public void run(IProgressMonitor monitor) throws InvocationTargetException {
+			try {
+
+
+				monitor.beginTask("Loading database", IProgressMonitor.UNKNOWN);
+				if(currentlyOpenDb != null) {
+					monitor.subTask("Closing previous database");
+					sortedList.dispose();
+					filteredList.dispose();
+					currentlyOpenDb.removeListener(MainWindow.getMainWindow());
+					currentlyOpenDb.closeDatabase();
+					currentlyOpenDb = null;
+				}
+				monitor.subTask("Opening database");
+				Moviedb db = new Moviedb(path);
+
+				monitor.subTask("Importing data");
+				sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
+				filteredList = new FilterList<AbstractMovie>(sortedList, /*(MatcherEditor<AbstractMovie>)*/searchField.getMatcherEditor()); //TODO how do I fix this?
+				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
+
+				filteredList.addListEventListener(
+						new ListEventListener<AbstractMovie>() {
+							public void listChanged(ListEvent<AbstractMovie> arg0) {
+								if(filteredList.size() != currentlyOpenDb.getMovieCount())
+									setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
+								else
+									setStatusLineMessage(filteredList.size()+" movies");
+							}
+						});
+
+				currentlyOpenDb = db;
+				currentlyOpenDb.addListener(MainWindow.getMainWindow());
+				fileSaveAction.setEnabled(false);
+			} catch (Exception e) {
+				throw new InvocationTargetException(e);
+			} finally {
+				monitor.done();
+			}
+		}
 	}
 	
 	/**
@@ -519,9 +577,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		AbstractMovie liteMovie = null;
 		
 		if(movie==null) {
-			if(list.getSelectionIndex() < 0)
+			if(table.getRowSelection().length <= 0)
 				return;
-			liteMovie = filteredList.get(list.getSelectionIndex());
+			liteMovie = filteredList.get(table.getRowSelection()[0]);
 			movie=currentlyOpenDb.getMovie(liteMovie.getID());
 		}
 		
@@ -530,7 +588,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 		switch (returnCode) {
 		case IDialogConstants.OK_ID:
-			getDB().saveMovie(d.getModel(), liteMovie);
+			getDB().saveMovie(d.getModel(), liteMovie);//TODO maybe use movie instead of getModel
 			break;
 		case IDialogConstants.ABORT_ID:
 			//TODO MainWindow.getMainWindow().getDB().deleteMovie();
@@ -589,18 +647,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			fileSaveAction.run();
 		else if(saveAnswer == CONST.ANSWER_CANCEL)
 			return;
-		
 		saveSettings();
 		close();
-		
-		// Shut down Derby
-		try {
-			DriverManager.getConnection("jdbc:derby:;shutdown=true");
-		} catch (SQLException e) {
-			//SQLException is always thrown on successful shutdown
-			if(CONST.DEBUG_MODE)
-				System.out.println("Derby was shut down");
-		}
+		getDB().closeDatabase();
 	}
 	
 	/**
@@ -668,10 +717,15 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 */
 	public void launchBrowser(String url) {
 		System.out.println("Browse to " + url);
-		if(browserLauncher!=null)
+		if(browserLauncher!=null) {
+			System.out.println(browserLauncher.getBrowserList().get(0));
+			System.out.println(browserLauncher.getBrowserList().get(1));
+			System.out.println(IBrowserLaunching.BROWSER_DEFAULT);
 			browserLauncher.openURLinBrowser(url);
-//		else
-//			ErrorDialog.openError(this.getShell(), "BrowserLauncher error!", "", null);//TODO needs more work
+		}
+		else
+			MessageDialog.openError(this.getShell(), "Browser error!", 
+					"Unable to open a web browser on this platform. Please browse to " + url + " manually.");
 	}
 
 	public void propertyChange(PropertyChangeEvent pce) {
@@ -740,7 +794,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		System.getProperties().put("derby.stream.error.file", "");
 		
 		settings = Settings.getSettings();
-		MainWindow m = new MainWindow();
+		
+		MainWindow m = new MainWindow(new String[0]);
+
+//		MessageDialog.openInformation(m.getShell(), "LOL", "LOL HAI LOL\nDis is a test bild, so dnt take sriusly plz!");
 		m.run();
 		
 		

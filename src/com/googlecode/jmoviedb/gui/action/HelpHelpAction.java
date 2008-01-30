@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.gui.MainWindow;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -29,5 +30,9 @@ public class HelpHelpAction extends Action {
 		setText("Help");
 		setToolTipText("Help");
 		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_HELP));
+	}
+	
+	public void run() {
+		MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE);
 	}
 }

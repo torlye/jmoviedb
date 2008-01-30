@@ -30,6 +30,8 @@ import com.googlecode.jmoviedb.net.ImdbWorker;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -466,23 +468,25 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		
 		else if(buttonId == IDialogConstants.OK_ID) {
 			if(titleText.getText().length() == 0)
-				//TODO cant save a movie without a title
-				System.out.println("error");
+				MessageDialog.openInformation(this.getShell(), "No title", "You can't save a movie without a title!");
 			else {
 				save();
-			
 				close();
 			}
 		}
 		
 		else if(buttonId == IDialogConstants.DETAILS_ID) {
 			try {
-				movie = ImdbWorker.update(this, movie);
+				save();
+				movie = new ImdbWorker(getShell(), movie).update();
 				setModel(movie);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				MainWindow.getMainWindow().handleException(e);
 			}
+		}
+		
+		else if(buttonId == IDialogConstants.ABORT_ID) {
+			MessageDialog.openInformation(this.getShell(), "Oops", "That button doesn't do anyting yet");
 		}
 	}
 	
@@ -491,7 +495,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		System.out.println("Selection: " + MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())));
 		if(!MovieType.objectToEnum(movie).equals(MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())))) {
 			AbstractMovie newMovie = MovieType.intToAbstractMovie(typeCombo.getSelectionIndex());
-			System.out.println("_old id " + movie.getID());
+			System.out.println("_old id " + movie.getID()); //TODO whats going on here?
 			newMovie.setID(movie.getID());
 			System.out.println("_new id " + newMovie.getID());
 			movie = newMovie;

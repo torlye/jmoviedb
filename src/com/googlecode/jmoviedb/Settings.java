@@ -193,8 +193,12 @@ public class Settings {
 				dSettings.getSection(SECTION_RECENT).get(FILE4)};
 	}
 	
+	/**
+	 * Update the recent file list when opening a new file.
+	 * @param filePath the path to the new file, or null.
+	 */
 	public void updateRecentFiles(String filePath) {
-		if(dSettings.getSection(SECTION_RECENT).get(FILE1).equals(filePath))
+		if(filePath == null || dSettings.getSection(SECTION_RECENT).get(FILE1).equals(filePath))
 			return;
 		else { 
 			if(dSettings.getSection(SECTION_RECENT).get(FILE2).equals(filePath)) {
