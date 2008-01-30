@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -709,7 +710,7 @@ public abstract class AbstractMovie implements Cloneable {
 	
 	public ImageData getImageData() {
 		if(imageBytes==null)
-			return null;
+			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData();
 		try {
 			return new ImageData(new ByteArrayInputStream(imageBytes));
 		} catch(SWTException e) {//Invalid or unsupported image data

@@ -20,10 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.gui.ExceptionHandler;
 import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.model.Moviedb;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -55,9 +52,7 @@ public class FileOpenAction extends Action {
 			String openFile = openFileDialog();
 			if(openFile == null)
 				return;
-			Moviedb db = new Moviedb(openFile);
-			Settings.getSettings().updateRecentFiles(openFile);
-			MainWindow.getMainWindow().setDB(db);
+			MainWindow.getMainWindow().openDB(openFile);
 		} catch (Exception e) {
 			MainWindow.getMainWindow().handleException(e);
 		}

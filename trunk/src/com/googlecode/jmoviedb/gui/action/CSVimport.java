@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.gui.MainWindow;
@@ -63,7 +64,7 @@ public class CSVimport implements IRunnableWithProgress {
 	 * acknowledged by throwing InterruptedException.
 	 * 
 	 * @param progressMonitor - the progress monitor to use to display progress 
-	 * and receive requests for cancelation
+	 * and receive requests for cancellation
 	 * 
 	 * @throws InvocationTargetException - if the run method must propagate a checked 
 	 * exception, it wraps it inside an InvocationTargetException
@@ -74,6 +75,8 @@ public class CSVimport implements IRunnableWithProgress {
 	 */
 	public void run(IProgressMonitor progressMonitor) throws InvocationTargetException, InterruptedException {
 		try {
+			progressMonitor.beginTask("Scanning CSV file", IProgressMonitor.UNKNOWN);
+			
 			CsvReader reader1 = new CsvReader(filePath);
 			CsvReader reader2 = new CsvReader(filePath);
 			
@@ -83,15 +86,12 @@ public class CSVimport implements IRunnableWithProgress {
 				numRecords++;
 			reader1 = null;
 			
-			progressMonitor.beginTask("CSV import", numRecords+2);
-			progressMonitor.subTask("Creating database...");
-			progressMonitor.worked(1);
+			progressMonitor.subTask("Importing");
 			
 			read = 0;
 			skipped = 0;
-			db = new Moviedb(null);
 			
-			progressMonitor.worked(1);
+			ArrayList<Film> importedFilms = new ArrayList<Film>();
 			
 			while(reader2.readRecord()) {
 				
@@ -104,31 +104,30 @@ public class CSVimport implements IRunnableWithProgress {
 					if(CONST.DEBUG_MODE)
 						System.out.println("Skipping record with ID " + 
 								reader2.get(0) + ", " + skipped + "so far");
-				} 
-				
+				}
 				else {
 					Film f = new Film(reader2.get(0), reader2.get(1), reader2.get(2), reader2.get(3), reader2.get(4), 
 							reader2.get(5), reader2.get(6), reader2.get(7), reader2.get(8), reader2.get(9),
 							reader2.get(10), reader2.get(11), reader2.get(12), reader2.get(13));
+					progressMonitor.subTask(reader2.get(1));
 					System.out.println(reader2.get(0));
 					read++;
-//					db.saveMovieWithoutSorting(f); //TODO
-					progressMonitor.subTask(reader2.get(1));
+					importedFilms.add(f);
 				}
-				
 				progressMonitor.worked(1);
 			}
 			
 			reader2.close();
 			reader2 = null;
 			
-			progressMonitor.subTask("Sorting...");
-//			db.sort(); //TODO
+			progressMonitor.subTask("Adding movies to database");
+			for(Film f : importedFilms) {
+				MainWindow.getMainWindow().getDB().saveMovie(f, null);
+				progressMonitor.worked(1);
+			}
 			
 			progressMonitor.done();
 			
-			//TODO move this somewhere else maybe?
-			window.setDB(db); //TODO InvocationTargetException
 		} 
 		/* Because the last catch clause should catch any exception other than
 		 * InterruptedException, any InterruptedExceptions have to be caught and
@@ -159,14 +158,5 @@ public class CSVimport implements IRunnableWithProgress {
 	 */
 	public int getNumberOfSkippedRecords() {
 		return skipped;
-	}
-	
-	/**
-	 * Returns the Moviedb instance that was generated in the run method, or null if it
-	 * has not yet been run.
-	 * @return the Moviedb instance that was generated in the run method
-	 */
-	public Moviedb getGeneratedMoviedb() {
-		return db;
 	}
 }

@@ -50,9 +50,6 @@ public class FileImportAction extends Action {
 				messageBox.setMessage(importWorker.getNumberOfReadRecords() + " records read successfully, " + importWorker.getNumberOfSkippedRecords() + " were skipped");
 				messageBox.open();
 				
-				//Open the generated DB in the main window.
-				MainWindow.getMainWindow().setDB(importWorker.getGeneratedMoviedb());
-				
 				importWorker = null;
 				
 			} catch (InvocationTargetException e) {

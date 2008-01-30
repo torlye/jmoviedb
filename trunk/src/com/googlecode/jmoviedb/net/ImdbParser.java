@@ -19,15 +19,9 @@
 
 package com.googlecode.jmoviedb.net;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.*;
 import java.util.*;
 import java.util.regex.*;
-
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.ImageData;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.Country;
@@ -42,7 +36,7 @@ public class ImdbParser {
 	private String html;
 	
 	/**
-	 * The default contstructor
+	 * The default constructor
 	 * @param html - a HTML document 
 	 */
 	protected ImdbParser(String html) {
@@ -67,13 +61,30 @@ public class ImdbParser {
 	 * @return the movie title
 	 */
 	protected String getTitle() {
-		Pattern patternTitle = Pattern.compile("<h1>([^<]+)<span>");
+		/*
+		 * Examples:
+		 * <h1>The Arrival <span>(<a href="/Sections/Years/1996">1996</a>)</span></h1>
+		 * <h1>Mazes and Monsters <span>(<a href="/Sections/Years/1982">1982</a>) (TV)</span></h1>
+		 * <h1>Clone Wars: Bridging the Saga <span>(<a href="/Sections/Years/2005">2005</a>) (V)</span></h1>
+		 * <h1>&#34;The Simpsons&#34; <span>(<a href="/Sections/Years/1989">1989</a>)<span>TV series&#160;1989-????</span></span></h1>
+		 * <h1>&#34;Star Trek&#34; <span>(<a href="/Sections/Years/1973">1973</a>)<span>TV series&#160;1973-1975</span></span></h1>
+		 * <h1>&#34;Star Trek&#34;<br><span><em>The Cage</em> (1966)</span></h1>
+		 */
+		Pattern patternTitle = Pattern.compile("<h1>([^<]+)(?:<br>)?<span>(?:<em>)?([^<]+)?(?:</em>)?\\s?\\(");
 		Matcher matcherTitle = patternTitle.matcher(html);
 		if (matcherTitle.find()) {
-//			String title = matcherTitle.group(1);
-//			if(title.endsWith(" "))
-//				title.toupp
-			return matcherTitle.group(1).trim();
+			String title = CONST.fixHtmlCharacters(matcherTitle.group(1).trim());
+			
+			//Remove quote at beginning and end of title for TV-series
+			if(title.startsWith("\"") && title.endsWith("\""))
+				title = title.substring(1, title.length()-1);
+			
+			//Add "sub" title, as at http://www.imdb.com/title/tt0059753/
+			System.out.println("group count! "+matcherTitle.groupCount());
+			if(matcherTitle.group(2) != null)
+				title += ": "+CONST.fixHtmlCharacters(matcherTitle.group(2).trim());
+			
+			return title;
 		}
 		return null;
 	}
@@ -216,13 +227,17 @@ public class ImdbParser {
 	
 	/**
 	 * Returns the URL for the movie's poster image, if the open document is a movie page.
-	 * @return the image URL
+	 * @return the image URL, or null if no image was found.
 	 */
-	protected String getImageURL() {
+	protected URL getImageURL() {
 		Pattern pattern = Pattern.compile("<a name=\"poster\"[^>]+><img[^>]+src=\"(\\S+)\"[^>]+>");
 		Matcher matcher = pattern.matcher(html);
 		if (matcher.find()) {
-			return matcher.group(1);
+			try {
+				return new URL(matcher.group(1));
+			} catch (MalformedURLException e) {
+				return null;
+			}
 		}
 		return null;
 	}
@@ -232,37 +247,42 @@ public class ImdbParser {
 	 * @return image data
 	 * @throws IOException
 	 */
-	protected byte[] getImageData() throws IOException {
-		String url = getImageURL();
-		
-		if(url == null)
-			return null;
-		
-		//Read the image into a byte array
-		InputStream stream = new URL(url).openStream();
-		byte[] imageBytes = new byte[0];
-		while(stream.available() > 0) { //loop while there is more data to read
-			
-			//how much data is ready right now?
-			int readLength = stream.available();
-			
-			//create a new array that contains the bytes read until now, but with
-			//free space for more
-			byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
-			
-			//read the new bytes into the empty part of the newly created array
-			stream.read(newBytes, imageBytes.length, readLength);
-			
-			//replace the "old" byte array with the new one
-			imageBytes = newBytes;
-		}
-		stream.close();
-		
-		// Check for valid data
-		if(CONST.isValidImage(imageBytes))
-			return imageBytes;
-		return null;			
-	}
+//	protected byte[] getImageData() throws IOException {
+//		String url = getImageURL();
+//		
+//		if(url == null)
+//			return null;
+//		
+//		//Read the image into a byte array
+//		URLConnection connection = new URL(url).openConnection();
+//		int fileSize = connection.getContentLength();
+//		BufferedInputStream stream = new BufferedInputStream(connection.getInputStream());
+//		
+//		byte[] imageBytes = new byte[0];
+//		int c = 0;
+////		while(stream.available() > 0) { //loop while there is more data to read
+//		while(imageBytes.length<fileSize) {
+//			c++;
+//			//how much data is ready right now?
+//			int readLength = stream.available();
+//			System.out.println("--Downloading "+readLength+" bytes");
+//			//create a new array that contains the bytes read until now, but with
+//			//free space for more
+//			byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
+//			
+//			//read the new bytes into the empty part of the newly created array
+//			stream.read(newBytes, imageBytes.length, readLength);
+//			
+//			//replace the "old" byte array with the new one
+//			imageBytes = newBytes;
+//		}
+//		stream.close();
+//		System.out.println("--Downloaded "+imageBytes.length+" bytes using "+c+" loops.");
+//		// Check for valid data
+//		if(CONST.isValidImage(imageBytes))
+//			return imageBytes;
+//		return null;		
+//	}
 	
 	/**
 	 * Returns the movie's actors, if the open document is a movie page.
@@ -271,7 +291,8 @@ public class ImdbParser {
 	protected ArrayList<ActorInfo> getActors() {
 		//TODO the following does not work:
 		//<td class="char"><a href="/character/ch0008987/">Nick</a> (as Nephi Pomaikai Brown)</td>
-		Pattern pattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(<a href=\"[^\"]+\">)?([^<>]+)(</a>)?</td>");
+		//<td class="char"><a href="/character/ch0001439/">Mr. Spock</a> (80&#160;episodes, 1966-1969)</td>
+		Pattern pattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(<a href=\"[^\"]+\">)?([^<]+)(</a>)?([^<]+)?</td>");
 		Matcher matcher = pattern.matcher(html);
 		ArrayList<ActorInfo> templist = new ArrayList<ActorInfo>();
 		int counter = 0;
@@ -298,7 +319,9 @@ public class ImdbParser {
 			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
 			Matcher personMatcher = personPattern.matcher(matcher.group(1));
 			while(personMatcher.find()) {
-				personArray.add(new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2))));
+				Person p = new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2)));
+				if(!personArray.contains(p))
+					personArray.add(p);
 			}
 		}
 		
@@ -317,7 +340,9 @@ public class ImdbParser {
 			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
 			Matcher personMatcher = personPattern.matcher(matcher.group(2));
 			while(personMatcher.find()) {
-				personArray.add(new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2))));
+				Person p = new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2)));
+				if(!personArray.contains(p))
+					personArray.add(p);
 			}
 		}
 
@@ -327,7 +352,7 @@ public class ImdbParser {
 	/**
 	 * This method is called when a search result page should be parsed.
 	 * This method will call the necessary private helper methods. 
-	 * @return An array of search results
+	 * @return An array of search results, or null if no results were found.
 	 */
 	protected ImdbSearchResult[] getSearchResults() {
 		

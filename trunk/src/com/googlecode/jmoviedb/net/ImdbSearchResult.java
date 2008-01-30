@@ -19,6 +19,7 @@
 
 package com.googlecode.jmoviedb.net;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -72,12 +73,9 @@ public class ImdbSearchResult {
 	public ImageData getImageData() throws IOException {
 		if(imageURL == null || imageURL.equals(""))
 			return null;
-		
-		if(CONST.DEBUG_MODE)
-			System.out.println("Downloading image from " + imageURL);
-		InputStream stream = new URL(imageURL).openStream();
-		ImageData id = new ImageData(stream);
-		stream.close();
+		URL url = new URL(imageURL);
+		byte[] bytes = new DownloadWorker(url).downloadBytes();
+		ImageData id = new ImageData(new ByteArrayInputStream(bytes));
 		
 		return id;
 	}

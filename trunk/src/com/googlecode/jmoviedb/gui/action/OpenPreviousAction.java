@@ -20,20 +20,15 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.gui.ExceptionHandler;
 import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.model.Moviedb;
 
 import org.eclipse.jface.action.Action;
 
 public class OpenPreviousAction extends Action {
 
-	private Action fileSaveAction;
 	private String filePath;
 	
 	public OpenPreviousAction(int number, String filePath, Action fileSaveAction) {
-		this.fileSaveAction = fileSaveAction;
 		this.filePath = filePath;
 		setText(number + " " + generateDisplayName(filePath));
 	}
@@ -49,11 +44,7 @@ public class OpenPreviousAction extends Action {
 		
 		//open the new file
 		try {
-			Moviedb db = new Moviedb(filePath);
-			Settings.getSettings().updateRecentFiles(filePath);
-			MainWindow.getMainWindow().setDB(db);
-		} catch (java.io.FileNotFoundException e) {
-			//TODO sensible error dialog
+			MainWindow.getMainWindow().openDB(filePath);
 		} catch (Exception e) {
 			MainWindow.getMainWindow().handleException(e);
 		}

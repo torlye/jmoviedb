@@ -34,7 +34,6 @@ import com.googlecode.jmoviedb.storage.ZipWorker;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.swt.widgets.Listener;
 
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
@@ -117,12 +116,13 @@ public class Moviedb {
 	 * @throws IOException
 	 */
 	public void save(String file) throws ClassNotFoundException, SQLException, IOException {
-		if(database == null) {//TODO move this somewhere else. 
-			database = new Database(dbTempPath);
-		}//TODO close and re-open database (create new database instance)
-		database.save(this);
+		System.out.println("shutdown");
+		database.shutdown();
+		System.out.println("zip");
 		new ZipWorker(file, dbTempPath).compress();
 		setSaved(true);
+		System.out.println("open");
+		database = new Database(dbTempPath);
 	}
 	
 	public String getTitle() {
@@ -143,22 +143,22 @@ public class Moviedb {
 	 * Stores a movie in the database. If the movie's getID() returns -1,
 	 * the movie is added as a new element in the database. If not, the existing
 	 * movie element is updated.
-	 * @param fullMovie the full movie instance to save.
-	 * @param liteMovie the movie instance used as a list item. null if a new movie is to be added.
+	 * @param savedMovie the full movie instance to save.
+	 * @param listMovieInstance the movie instance used as a list item. null if a new movie is to be added.
 	 * @throws SQLException
 	 */
-	public void saveMovie(AbstractMovie fullMovie, AbstractMovie liteMovie) throws SQLException, IOException {
-		int movieID = fullMovie.getID();
+	public void saveMovie(AbstractMovie savedMovie, AbstractMovie listMovieInstance) throws SQLException, IOException {
+		int movieID = savedMovie.getID();
 		
 		if(CONST.DEBUG_MODE)
 			System.out.println("MODEL: saveMovie ID " + movieID);
 		
-		database.saveMovie(fullMovie);
-		if(liteMovie==null && movieID<0)
-			movies.add(fullMovie);
-		else if(liteMovie!=null && movieID>=0) {
-			movies.remove(liteMovie);
-			movies.add(database.getMovieLite(fullMovie.getID()));
+		database.saveMovie(savedMovie);
+		
+		if(listMovieInstance==null && movieID<0) //new movie added
+			movies.add(savedMovie);
+		else if(listMovieInstance!=null && movieID>=0) {//existing movie updated
+			movies.set(movies.indexOf(listMovieInstance), savedMovie);
 		}
 		
 		setSaved(false);
@@ -235,6 +235,7 @@ public class Moviedb {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		database=null;
 		recursiveDeleteDirectory(new File(dbTempPath));
 	}
 	
@@ -247,6 +248,7 @@ public class Moviedb {
 				else
 					files[i].delete();
 			}
+			path.delete();
 		}
 	}
 }

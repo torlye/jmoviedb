@@ -20,9 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.gui.ExceptionHandler;
 import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.model.Moviedb;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -41,7 +39,7 @@ public class FileNewAction extends Action {
 			return;
 		
 		try {
-			MainWindow.getMainWindow().setDB(new Moviedb(null));
+			MainWindow.getMainWindow().openDB(null);
 		} catch (Exception e) {
 			MainWindow.getMainWindow().handleException(e);
 		}
