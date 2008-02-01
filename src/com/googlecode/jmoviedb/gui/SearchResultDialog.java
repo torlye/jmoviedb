@@ -206,8 +206,8 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 			vBar.setThumb (Math.min (contentSize.y, rectangle.height));
 			int hPage = contentSize.x - rectangle.width;
 			int vPage = contentSize.y - rectangle.height;
-			int hSelection = hBar.getSelection ();
-			int vSelection = vBar.getSelection ();
+			int hSelection = hBar.getSelection();
+			int vSelection = vBar.getSelection();
 			Point location = contents.getLocation ();
 			System.out.println("old "+location);
 			if (hSelection >= hPage) {
