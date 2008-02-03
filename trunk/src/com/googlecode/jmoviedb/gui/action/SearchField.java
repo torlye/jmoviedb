@@ -44,7 +44,7 @@ public class SearchField extends ControlContribution implements SelectionListene
 
 	/**
 	 * Called whenever enter is pressed in the search field.
-	 * Results in clearing the search field.
+	 * This will clear the search field.
 	 */
 	public void widgetDefaultSelected(SelectionEvent arg0) {
 		clear();
@@ -53,6 +53,8 @@ public class SearchField extends ControlContribution implements SelectionListene
 	/**
 	 * Not used
 	 */
-	public void widgetSelected(SelectionEvent arg0) {}
+	public void widgetSelected(SelectionEvent arg0) {
+		System.out.println("Searchfield selected "+arg0);
+	}
 
 }

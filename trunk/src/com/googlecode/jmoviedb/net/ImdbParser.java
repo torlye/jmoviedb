@@ -475,13 +475,13 @@ public class ImdbParser {
 	 * @return an array of alternative titles
 	 */
 	private String[] altTitleSearchResult(String group) {
-		System.out.println(group);
+//		System.out.println(group);
 		String[] titles = group.split("<br>&#160;aka\\s*<em>");
 		
 		ArrayList<String> templist = new ArrayList<String>(); 
 		
 		for(String title : titles) {
-			System.out.println("title: "+title);
+//			System.out.println("title: "+title);
 			title = title.replaceAll("<em>", "");
 			title = title.replaceAll("</em>", "");
 			title = CONST.fixHtmlCharacters(title);

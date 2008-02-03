@@ -167,6 +167,27 @@ public class Moviedb {
 			System.out.println("Total number of movies is now " + getMovieCount());
 	}
 	
+	/**
+	 * Saves a movie to the database without notifying the model layer. Used when mass-updating or mass-adding movies.
+	 * updateModel() should be called when saving is complete.
+	 * @param movie
+	 * @throws SQLException 
+	 */
+	public void saveBackground(AbstractMovie movie) throws SQLException {
+		database.saveMovie(movie);
+	}
+	
+	/**
+	 * Reloads all data from the database store into the model layer. To be used when the database has been modified without notifying the model layer.
+	 * @throws SQLException
+	 * @throws IOException
+	 */
+	public void updateModel() throws SQLException, IOException {
+		movies.clear();
+		movies.addAll(database.getMovieList());
+		setSaved(false);
+	}
+	
 	public int getMovieCount() {
 		System.out.println("GETTING MOVIE COUNT: " + movies.size());
 		return movies.size();

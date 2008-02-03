@@ -478,7 +478,8 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		else if(buttonId == IDialogConstants.DETAILS_ID) {
 			try {
 				save();
-				movie = new ImdbWorker(getShell(), movie).update();
+				ImdbWorker w = new ImdbWorker();
+				movie = w.update(movie, getShell());
 				setModel(movie);
 			} catch (Exception e) {
 				MainWindow.getMainWindow().handleException(e);

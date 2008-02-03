@@ -60,21 +60,21 @@ public class ImdbWizard extends Wizard {
 		return false;
 	}
 	
-//	private class WizardPage1 extends WizardPage {
-//		public WizardPage1() {
-//			super("IMDb download");
-//			setTitle(getName());
-//			setPageComplete(true);
-//		}
-//		public void createControl(Composite parent) {
-//			c0 =  new Composite(parent, SWT.BORDER);
-//			c0.setLayout(new GridLayout());
-//			label0 = new Label(c0, SWT.BORDER);
-//			label0.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL|GridData.FILL_BOTH));
-//			
-//			setControl(c0);
-//		}
-//	}
+	public boolean getKeepTitles() {
+		return check1.getSelection();
+	}
+	
+	public boolean getSkipSearching() {
+		return check2.getSelection();
+	}
+	
+	public boolean getSkipUpdatedMovies() {
+		return check3.getSelection();
+	}
+	
+	private Button check1;
+	private Button check2;
+	private Button check3;
 	
 	private class WizardPage2 extends WizardPage {
 		public WizardPage2() {
@@ -87,11 +87,12 @@ public class ImdbWizard extends Wizard {
 			GridLayout gl = new GridLayout(2, false);
 			c.setLayout(gl);
 			
-			Button check1 = new Button(c, SWT.CHECK);
+			check1 = new Button(c, SWT.CHECK);
+			check1.setSelection(true);
 			Label l2 = new Label(c, SWT.NONE);
 			l2.setText("Keep titles");
 			Label l4 = new Label(c, SWT.WRAP);
-			l4.setText("If a movie's title is different from the title used at IMDb, your custom title will be copied to the custom title field while the new title will be stored in the title field. This prevents a movie like \"Seven Samurai\" from being renamed to \"Shichinin no samurai\" (IMDb uses the movie's title in the original language). If the box is unchecked, all titles are overwritten with IMDb's titles.");
+			l4.setText("If a movie's title is different from the title used at IMDb, your custom title will be copied to the custom title field while the new title will be stored in the title field. This prevents a movie like \"Seven Samurai\" from being renamed to \"Shichinin no samurai\" (IMDb uses the movie's title in the original language). If the box is unchecked, all titles will be overwritten with IMDb's titles.");
 			GridData gd1 = new GridData(labelWidth, SWT.DEFAULT);
 			gd1.grabExcessVerticalSpace = true;
 			gd1.horizontalSpan = 2;
@@ -99,18 +100,20 @@ public class ImdbWizard extends Wizard {
 			l4.setLayoutData(gd1);
 			
 			
-			Button check2 = new Button(c, SWT.CHECK);
+			check2 = new Button(c, SWT.CHECK);
+			check2.setSelection(true);
 			Label l3 = new Label(c, SWT.NONE);
 			l3.setText("Skip movies with no IMDb URL");
 			Label l5 = new Label(c, SWT.WRAP);
-			l5.setText("If this box is unckecked, JMoviedb will try to search for blah blah blah....");
+			l5.setText("If this box is unckecked, JMoviedb will try to search for blah blah blah...");
 			GridData gd2 = new GridData(labelWidth, SWT.DEFAULT);
 			gd2.grabExcessVerticalSpace = true;
 			gd2.horizontalSpan = 2;
 			gd2.verticalAlignment = SWT.TOP;
 			l5.setLayoutData(gd2);
 			
-			Button check3 = new Button(c, SWT.CHECK);
+			check3 = new Button(c, SWT.CHECK);
+			check3.setSelection(true);
 			Label l6 = new Label(c, SWT.NONE);
 			l6.setText("Skip movies that have been updated before");
 			Label l1 = new Label(c, SWT.WRAP);

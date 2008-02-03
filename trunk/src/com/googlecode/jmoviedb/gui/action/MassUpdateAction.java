@@ -1,74 +1,66 @@
 package com.googlecode.jmoviedb.gui.action;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IPageChangedListener;
-import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
-import org.eclipse.jface.dialogs.PageChangingEvent;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 
 import com.googlecode.jmoviedb.gui.ImdbWizard;
 import com.googlecode.jmoviedb.gui.MainWindow;
+import com.googlecode.jmoviedb.net.ImdbWorker;
 
 public class MassUpdateAction extends Action {
 	
 	private ImdbWizardDialog wd;
 	private boolean hasRun;
-	private static final int MIN_DIALOG_WIDTH = 350;
+	private ImdbWizard wizard;
 	
+	/**
+	 * Default constructor
+	 */
 	public MassUpdateAction() {
 		setText("Update all movies");
 		setToolTipText("Update all movies with information from IMDb");
 		setImageDescriptor(null);
 	}
 	
-	ImdbWizard wizard = new ImdbWizard();
 	public void run() {
+		wizard = new ImdbWizard();
 		hasRun = false;
 		wd = new ImdbWizardDialog(MainWindow.getMainWindow().getShell(), wizard);
-//		wd.configureShell()
-//		wd.setPageSize(450, SWT.DEFAULT);
-//				wd.setPageSize(500, SWT.DEFAULT);
 		wd.addPageChangedListener(new IPageChangedListener() {
 			public void pageChanged(PageChangedEvent evt) {
-				for(IWizardPage page : wizard.getPages())
-//					page.getControl().setSize(page.getControl().computeSize(500, SWT.DEFAULT));
-				
-//				wd.setShellWidth(500);
-//				wd.getShell().setSize(500, wd.getShell().getSize().y);
 				try {
 					if(wd.getCurrentPage().getTitle().equals("Downloading...") && hasRun==false) {
-						wd.run(true, true, new Foo());
+						ImdbWorker w = new ImdbWorker();
+						wd.run(true, true, w.new ImdbMultiDownloader(wd.getShell(), wizard.getKeepTitles(), wizard.getSkipSearching(), wizard.getSkipUpdatedMovies()));
 						hasRun = true;
 					}
-//					System.out.println("shell bounds "+wizard.getShell().getBounds());
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+					try {
+						MainWindow.getMainWindow().getDB().updateModel();
+					} catch (Exception e) {
+						MainWindow.getMainWindow().handleException(e);
+					}					
 				}
 			}
 		});
-//		wd.initializeDialogUnits(wd.get);
-//		System.out.println("page size blir "+wd.convertHorizontalDLUsToPixels(MIN_DIALOG_WIDTH));
-//		wd.setPageSize(400, SWT.DEFAULT);
 		wd.open();
 		wd = null;
 	}

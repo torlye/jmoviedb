@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import ca.odell.glazedlists.swt.AbstractKTableFormat;
 import de.kupzog.ktable.KTableCellEditor;
 import de.kupzog.ktable.KTableCellRenderer;
+import de.kupzog.ktable.renderers.DefaultCellRenderer;
 import de.kupzog.ktable.renderers.TextCellRenderer;
 
 public class MovieTableFormat extends AbstractKTableFormat {
@@ -19,7 +20,7 @@ public class MovieTableFormat extends AbstractKTableFormat {
 	}
 
 	public KTableCellRenderer getColumnRenderer(Object arg0, int arg1) {
-		return new MovieTableCellRenderer(SWT.NONE);
+		return new MovieTableCellRenderer(DefaultCellRenderer.STYLE_PUSH);
 	}
 
 	public int getColumnCount() {

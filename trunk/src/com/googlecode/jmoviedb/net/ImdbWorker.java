@@ -22,15 +22,16 @@ package com.googlecode.jmoviedb.net;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-
-import javax.management.monitor.Monitor;
+import java.sql.SQLException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import ca.odell.glazedlists.EventList;
@@ -47,23 +48,7 @@ import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.Person;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
-public class ImdbWorker implements IRunnableWithProgress {
-	private AbstractMovie movie;
-	private Shell parentShell;
-	private ImdbSearchResult[] searchResults;
-
-	public ImdbWorker(Shell parentShell, AbstractMovie movie)  {
-		this.movie = movie;
-		this.parentShell = parentShell;
-	}
-
-	public void run(IProgressMonitor arg0) throws InvocationTargetException, InterruptedException {
-		try {
-			this.movie = update();
-		} catch (IOException e) {
-			throw new InvocationTargetException(e);
-		}
-	}
+public class ImdbWorker {
 
 	/**
 	 * Updates the given movie with new data from IMDb. Presents search results (if any) in a nice dialog. 
@@ -72,7 +57,7 @@ public class ImdbWorker implements IRunnableWithProgress {
 	 * @return the updated movie
 	 * @throws IOException
 	 */
-	public AbstractMovie update() throws IOException { //TODO dialog instead of throwing an exception
+	public AbstractMovie update(AbstractMovie movie, Shell parentShell) throws IOException { //TODO dialog instead of throwing an exception
 		if(!movie.isImdbUrlValid()) {
 			/*
 			 * We end up here if the movie doesn't have an IMDb URL yet, or if it is malformed.
@@ -85,13 +70,15 @@ public class ImdbWorker implements IRunnableWithProgress {
 			}
 
 			//Run search with progress bar
+			ImdbSearcher searcher = new ImdbSearcher(movie);
 			try {
-				new ProgressMonitorDialog(parentShell).run(true, false, new ImdbSearcher());
+				new ProgressMonitorDialog(parentShell).run(true, false, searcher);
 			} catch (InvocationTargetException e) {
 				// handle exception
 			} catch (InterruptedException e) {
 				// handle cancellation
 			}
+			ImdbSearchResult[] searchResults = searcher.getSearchResults();
 
 			//No search results found!
 			if(searchResults == null) {
@@ -100,10 +87,9 @@ public class ImdbWorker implements IRunnableWithProgress {
 			}
 
 			//Show a list of search results and let the user choose
-			SearchResultDialog dialog = new SearchResultDialog(parentShell, searchResults);
+			SearchResultDialog dialog = new SearchResultDialog(parentShell, searchResults, movie.getTitle());
 			int selection = dialog.open();
 			dialog.dispose();
-
 			//The search result dialog was cancelled
 			if(selection == -1)
 				return movie;
@@ -114,7 +100,7 @@ public class ImdbWorker implements IRunnableWithProgress {
 
 		//At this point we have a valid IMDb URL
 		try {
-			new ProgressMonitorDialog(parentShell).run(true, false, new ImdbDownloader());
+			new ProgressMonitorDialog(parentShell).run(true, false, new ImdbDownloader(movie));
 		} catch (InvocationTargetException e) {
 			// handle exception
 		} catch (InterruptedException e) {
@@ -124,7 +110,14 @@ public class ImdbWorker implements IRunnableWithProgress {
 	}
 
 	private class ImdbSearcher implements IRunnableWithProgress {
+		private ImdbSearchResult[] searchResults;
+		private AbstractMovie movie;
+		public ImdbSearcher(AbstractMovie m) {
+			movie = m;
+		}
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+			if(CONST.DEBUG_MODE)
+				System.out.println("Searching for "+movie.getTitle());
 			try {
 				monitor.beginTask("IMDb search", IProgressMonitor.UNKNOWN);
 				String searchURL = Settings.getSettings().getImdbSearchUrl();
@@ -136,19 +129,27 @@ public class ImdbWorker implements IRunnableWithProgress {
 			} finally {
 				monitor.done();
 			}
-
+		}
+		public ImdbSearchResult[] getSearchResults() {
+			return searchResults;
 		}
 	}
 
 	private class ImdbDownloader implements IRunnableWithProgress {
+		private AbstractMovie movie;
+		public ImdbDownloader(AbstractMovie m) {
+			movie = m;
+		}
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			try {
 				monitor.beginTask("Importing information from IMDb", IProgressMonitor.UNKNOWN);
 				URL url = new URL(movie.getImdbUrl());
 
 				monitor.subTask("Downloading");
-				ImdbParser parser = new ImdbParser(new DownloadWorker(url).downloadHtml());
-
+				DownloadWorker downloader = new DownloadWorker(url);
+				ImdbParser parser = new ImdbParser(downloader.downloadHtml());
+				downloader = null;
+				
 				monitor.subTask("Importing data");
 				movie.setTitle(parser.getTitle());
 				movie.setYear(parser.getYear());
@@ -210,17 +211,18 @@ public class ImdbWorker implements IRunnableWithProgress {
 					System.out.println(actors + "\n");
 
 					System.out.println("Image URL: " + parser.getImageURL());
-					try{
-						ImageData data = movie.getImageData();
-						System.out.println("Image size: " + data.width + "x" + data.height);
-					} catch(NullPointerException e) {
-						System.out.println("No image!");
-					}
+//					try{
+//						ImageData data = movie.getImageData();
+//						System.out.println("Image size: " + data.width + "x" + data.height);
+//					} catch(NullPointerException e) {
+//						System.out.println("No image!");
+//					}
 
 					System.out.println("------- END IMDB DATA DUMP -------");
 					System.out.println("");
+					parser = null;
 				}
-
+			
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			} finally {
@@ -230,72 +232,112 @@ public class ImdbWorker implements IRunnableWithProgress {
 	}
 
 	public class ImdbMultiDownloader implements IRunnableWithProgress {
+		private Shell parentShell;
+		private int numberOfMovies;
+		private int skippedError;
+		private int skippedNoResult;
+		private int skippedExists;
+		private boolean skipMoviesWithNoURL;
+		private boolean keepTitles;
+		private boolean skipUpdatedMovies;
+		public ImdbMultiDownloader(Shell parentShell, boolean keepTitles, boolean skipMoviesWithNoURL, boolean skipUpdatedMovies) {
+			this.parentShell = parentShell;
+			this.skipMoviesWithNoURL = skipMoviesWithNoURL;
+			this.skipUpdatedMovies = skipUpdatedMovies;
+			this.keepTitles = keepTitles;
+			skippedError = 0;
+			skippedNoResult = 0;
+			skippedExists = 0;
+		}
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			Moviedb db = MainWindow.getMainWindow().getDB();
-			EventList<AbstractMovie> list = db.getMovieList();
-			int numberOfMovies = list.size();
-			boolean doSearch = false;
-			monitor.beginTask("Updating movies", numberOfMovies);
-			AbstractMovie movie2;
+			try {
+				EventList<AbstractMovie> list = db.getMovieList();
+				numberOfMovies = list.size();
+				Object[] list2 = list.toArray();
+				list.clear();
+				System.out.println("------------------------------------ "+list.size());
+				
+				monitor.beginTask("Updating movies...", numberOfMovies);
 
-			for(int i=0; i<numberOfMovies; i++) {
-				movie = list.get(i);
-				movie2 = list.get(i);
-				if(!movie.isImdbUrlValid() && doSearch) {
-					//Can't search if the movie has no title
-					if(movie.getTitle() == null || movie.getTitle().length() == 0) {
-						//TODO skip + statistics
+				for(int i=0; i<numberOfMovies; i++) {
+					if(monitor.isCanceled())
+						throw new InterruptedException(); //TODO Study the behaviour of this
+//					AbstractMovie movie = list.get(i);
+					AbstractMovie movie = (AbstractMovie)(list2[i]);
+					if(skipUpdatedMovies && (movie.getActors().size()>0 || movie.getDirectors().size()>0 || movie.getWriters().size()>0 
+							|| movie.getGenres().size()>0 || movie.getCountries().size()>0 || movie.getLanguages().size()>0)) {
+						skippedExists++;
+						continue;
 					}
+					
+					monitor.subTask(movie.getDisplayTitle());
+					if(!movie.isImdbUrlValid()) {
+						if(skipMoviesWithNoURL) {
+							skippedNoResult++;
+							continue;
+						}	
+						
+						//Can't search if the movie has no title
+						if(movie.getTitle() == null || movie.getTitle().length() == 0) {
+							skippedError++;
+							continue;
+						}
 
-					//Run search with progress bar
-					try {
-						new ImdbSearcher().run(new NullProgressMonitor());
-					} catch (InvocationTargetException e) {
-						// handle exception
-					} catch (InterruptedException e) {
-						// handle cancellation
-					}
+						//Run search without progress bar
+						ImdbSearcher searcher = new ImdbSearcher(movie);
+						searcher.run(new NullProgressMonitor());
+						ImdbSearchResult[] searchResults = searcher.getSearchResults();
+						searcher = null;
 
-					//No search results found!
-					if(searchResults == null) {
-						//TODO skip + statistics
-					}
+						//No search results found!
+						if(searchResults == null) {
+							skippedNoResult++;
+							continue;
+						}
 
-					//Show a list of search results and let the user choose
-					SearchResultDialog dialog = new SearchResultDialog(parentShell, searchResults);
-					int selection = dialog.open();
-					dialog.dispose(); //TODO is disposed already?
+						//Show a list of search results and let the user choose
+						SearchResultDialog dialog = new SearchResultDialog(parentShell, searchResults, movie.getTitle());
+						int selection = dialog.open();
+						dialog.dispose();
+						dialog = null;
 
-					//The search result dialog was cancelled
-					if(selection == -1)
-						//TODO skip + statistics
+						//The search result dialog was cancelled
+						if(selection == -1) {
+							skippedNoResult++;
+							continue;
+						}
 
 						//Update the movie with the new ID
 						movie.setImdbID(searchResults[selection].getImdbId());
-				}//if
+					}//if
 
-				//At this point we have a valid IMDb URL
-				try {
-					new ImdbDownloader().run(new NullProgressMonitor());
-				} catch (InvocationTargetException e) {
-					// handle exception
-				} catch (InterruptedException e) {
-					//Not used
-				}
-				
-				db.saveMovie(movie, movie2);
-				//TODO statistics
-				
-				monitor.worked(1);
-				
-				/*
-				 * Idea: could exceptions be used to pass statistics to the monitor?
-				 * nah, better use local variables+getters instead.
-				 * 
-				 * all of these methods might be converted to static.
-				 */
-				
-			}//for
+					//At this point we have a valid IMDb URL
+					
+					String oldTitle = null;
+					if(keepTitles)
+						oldTitle = movie.getTitle();
+					
+					ImdbDownloader downloader = new ImdbDownloader(movie);
+					downloader.run(new NullProgressMonitor());
+					downloader = null;
+					
+					if(keepTitles && !movie.getTitle().equals(oldTitle)) {
+						movie.setCustomTitle(oldTitle);
+					}
+
+//					db.saveBackground(movie);
+					movie=null;
+					
+//					System.gc();
+
+					monitor.worked(1);
+				}//for
+			} catch (Exception e) {
+				throw new InvocationTargetException(e);
+			} finally {
+				monitor.done();
+			}
 		}//run
 	}//class
 }

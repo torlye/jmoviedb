@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Genre;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
@@ -19,8 +20,12 @@ import de.kupzog.ktable.renderers.DefaultCellRenderer;
 
 public class MovieTableCellRenderer extends DefaultCellRenderer implements KTableCellRenderer {
 	
-	private static Color NOT_SEEN_COLOR = new Color(Display.getCurrent(), 250, 247, 221);
-	private static Color DEFAULT_COLOR = new Color(Display.getCurrent(), 221, 247, 250);
+	private static Color SELECTED_COLOR = new Color(Display.getCurrent(), 255, 159, 117); //ff9f75
+	private static Color NOT_SEEN_COLOR = new Color(Display.getCurrent(), 250, 247, 221); //faf7dd
+	private static Color DEFAULT_COLOR = new Color(Display.getCurrent(), 221, 247, 250); //ddf7fa
+	private static Color DVD_COLOR = new Color(Display.getCurrent(), 220, 128, 128); //dc8080
+	private static Color VCD_COLOR = new Color(Display.getCurrent(), 240, 221, 250); //f0ddfa
+	private static Color SVCD_COLOR = new Color(Display.getCurrent(), 250, 221, 240); //faddf0
 	
 	private static Font FONT = new Font(Display.getCurrent(), 
 			Display.getCurrent().getSystemFont().getFontData()[0].getName(), 10, SWT.BOLD);
@@ -50,8 +55,15 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 			actors += ", "+movie.getActors().get(1).getPerson().getName();
 		if(movie.getActors().size()>2)
 			actors += ", "+movie.getActors().get(2).getPerson().getName();
-		String rating = movie.getRating() + "";
-		String runtime = movie.getRunTime()+"m";
+		String rating = "";
+		if(movie.getRating()!=0.0)
+			rating += movie.getRating();
+		String runtime = "";
+		if(movie.getRunTime()!=0)
+			runtime = movie.getRuntimeAsHourMinuteString();
+		String format = "";
+		if(movie.getFormat() != FormatType.other)
+			format = movie.getFormat().getShortName();
 		
 		int leftColumn = rect.x+72;
 		int rightColumn = rect.width-50;
@@ -60,20 +72,31 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		int secondRow = firstRow+rowSpacing;
 		int thirdRow = secondRow+rowSpacing;
 		
-		if(!movie.isSeen())
+		//Configure table cell background color
+		if(focus)
+			gc.setBackground(SELECTED_COLOR);
+		else if(!movie.isSeen())
 			gc.setBackground(NOT_SEEN_COLOR);
+		else if(movie.getFormat() == FormatType.dvd)
+			gc.setBackground(DVD_COLOR);
+		else if(movie.getFormat() == FormatType.vcd)
+			gc.setBackground(VCD_COLOR);
+		else if(movie.getFormat() == FormatType.svcd)
+			gc.setBackground(SVCD_COLOR);
 		else
 			gc.setBackground(DEFAULT_COLOR);
+		
 		gc.setForeground(COLOR_TEXT);
 		gc.fillRectangle(rect);
 		gc.drawRectangle(rect);
 		gc.drawImage(image, rect.x+10, rect.y+10);
 		gc.setFont(FONT);
-		gc.drawText(title, leftColumn, firstRow);
-		gc.drawText(genre, leftColumn, secondRow);
-		gc.drawText(actors, leftColumn, thirdRow);
-		gc.drawText(rating, rightColumn, secondRow);
-		gc.drawText(runtime, rightColumn, thirdRow);
+		gc.drawString(title, leftColumn, firstRow);
+		gc.drawString(genre, leftColumn, secondRow);
+		gc.drawString(actors, leftColumn, thirdRow);
+		gc.drawString(format, rightColumn, firstRow);
+		gc.drawString(rating, rightColumn, secondRow);
+		gc.drawString(runtime, rightColumn, thirdRow);
 		
 		//release resources
 		image.dispose();
