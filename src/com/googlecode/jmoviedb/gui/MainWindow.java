@@ -81,11 +81,14 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.omg.CORBA.UNKNOWN;
 
@@ -138,7 +141,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //	private List list;
 //	private EventListViewer viewer;
 	private SortedList<AbstractMovie> sortedList;
-	public FilterList<AbstractMovie> filteredList;
+	private FilterList<AbstractMovie> filteredList;
 	private KTable table;
 	private EventKTableModel viewer;
 	
@@ -309,8 +312,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 					new ControlContribution("searchLabel")  {
 						@Override
 						protected Control createControl(Composite parent) {
-							Label label = new Label(parent, SWT.NONE);
-							label.setText("Search");
+//							Composite c = new Composite(parent, SWT.NONE);
+//							c.setLayout(new FillLayout());
+							Label label = new Label(parent, SWT.CENTER);
+							label.setText("Search ");
+//							label.setLayoutData();
 							return label;
 						}
 					});
@@ -335,6 +341,24 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 
 	protected Control createContents(Composite parent) {
+		
+//Bug id 1796283 in sourceforge
+//		private int getFullyVisibleRowCount(int fixedHeight) {
+//			Rectangle rect = getClientArea();
+//			ScrollBar sb = getHorizontalBar();
+//			if (sb != null)
+//			rect.height-=sb.getSize().y;
+//
+//			int count = 0;
+//			int heightSum = fixedHeight;
+//			heightSum+=m_Model.getRowHeight(m_TopRow);
+//			for (int i=m_TopRow + 1; heightSum<rect.height; i++) {
+//			count++;
+//			heightSum+=m_Model.getRowHeight(i);
+//			}
+//			return count;
+//			}
+		
 		table = new KTable(parent, SWT.V_SCROLL|SWTX.FILL_WITH_LASTCOL|SWT.BORDER|SWT.FULL_SELECTION);
 		table.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		table.addCellDoubleClickListener(new KTableCellDoubleClickListener(){
@@ -484,10 +508,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 				filteredList.addListEventListener(
 						new ListEventListener<AbstractMovie>() {
 							public void listChanged(ListEvent<AbstractMovie> arg0) {
-								if(filteredList.size() != currentlyOpenDb.getMovieCount())
-									setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
-								else
-									setStatusLineMessage(filteredList.size()+" movies");
+//								if(filteredList.size() != currentlyOpenDb.getMovieCount())
+//									setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
+//								else
+//									setStatusLineMessage(filteredList.size()+" movies");
 							}
 						});
 

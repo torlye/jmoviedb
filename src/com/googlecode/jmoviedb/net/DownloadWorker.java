@@ -22,6 +22,7 @@ package com.googlecode.jmoviedb.net;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -45,12 +46,15 @@ public class DownloadWorker {
 	 */
 	public String downloadHtml() throws IOException {
 		String html = "";
-		BufferedReader in;
-		in = new BufferedReader(new InputStreamReader(url.openStream()));
+		InputStream is = url.openStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader in = new BufferedReader(isr);
 		String inputLine;
 		while ((inputLine = in.readLine()) != null)
 			html = html+" "+inputLine;
 		in.close();
+		isr.close();
+		is.close();
 		return html;
 	}
 

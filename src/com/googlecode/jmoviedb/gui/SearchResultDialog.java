@@ -32,6 +32,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
@@ -58,10 +60,12 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	private ScrollBar vBar;
 	private Button[] buttons;
 	private ArrayList<Image> imageList = new ArrayList<Image>();
+	private String title;
 	
-	public SearchResultDialog(Shell parentShell, ImdbSearchResult[] resultSet) {
+	public SearchResultDialog(Shell parentShell, ImdbSearchResult[] resultSet, String title) {
 		super(parentShell);
 		
+		this.title = title;
 		this.resultSet = resultSet;
 		buttons = new Button[resultSet.length];
 		
@@ -97,6 +101,15 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 		radioLayout.verticalSpan = 1;
 		radioLayout.horizontalAlignment = SWT.CENTER;
 		radioLayout.verticalAlignment = SWT.CENTER;
+		
+		//Create a header
+		Label header = new Label(contents, SWT.WRAP);
+		header.setText("Search results for: "+this.title);
+		FontData defaultFontData = header.getFont().getFontData()[0];
+		header.setFont(new Font(Display.getCurrent(), defaultFontData.getName(), defaultFontData.getHeight()+2, SWT.BOLD));
+		GridData headerGD = new GridData();
+		headerGD.horizontalSpan = gridLayout.numColumns;
+		header.setLayoutData(headerGD);
 		
 		for(int i = 0; i < resultSet.length; i++) {
 			Button radio = new Button(contents, SWT.RADIO);
@@ -187,6 +200,11 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 			}
 		}
 		return -1;
+	}
+	
+	public void handleShellCloseEvent() {
+		setReturnCode(-1);
+		close();
 	}
 
 	public void handleEvent(Event event) {

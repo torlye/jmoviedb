@@ -276,12 +276,12 @@ public class CONST {
 	/**
 	 * Icon file for the main tab of the movie dialog
 	 */
-	public static final URL ICON_MOVIEDIALOG_MAINTAB = ClassLoader.getSystemResource("resources/icon_placeholder.png");
+	public static final URL ICON_MOVIEDIALOG_MAINTAB = ClassLoader.getSystemResource("resources/icon-silk/film.png");
 	
 	/**
 	 * Icon file for the tagline/plot tab of the movie dialog
 	 */
-	public static final URL ICON_MOVIEDIALOG_TAGLINEPLOTTAB = ClassLoader.getSystemResource("resources/icon_placeholder.png");
+	public static final URL ICON_MOVIEDIALOG_TAGLINEPLOTTAB = ClassLoader.getSystemResource("resources/icon-silk/page_white_text.png");
 	
 	/**
 	 * Icon file for the actors tab of the movie dialog
@@ -474,7 +474,7 @@ public class CONST {
 		string = string.replace("&#46;", ".");
 		string = string.replace("&#47;", "/");
 		
-		//48-57 is 0-9
+		//48-57 are digits 0-9
 
 		string = string.replace("&#58;", ":");
 		string = string.replace("&#59;", ";");
@@ -484,7 +484,7 @@ public class CONST {
 		string = string.replace("&#63;", "?");
 		
 		string = string.replace("&#64;", "@");
-		//65-90 are A-Z
+		//65-90 are letters A-Z
 		string = string.replace("&#91;", "[");
 		string = string.replace("&#92;", "\\");
 		string = string.replace("&#93;", "]");
@@ -492,7 +492,7 @@ public class CONST {
 		string = string.replace("&#95;", "_");
 		
 		string = string.replace("&#96;", "`");
-		//97-122 are a-z
+		//97-122 are letters a-z
 		string = string.replace("&#123;", "{");
 		string = string.replace("&#124;", "|");
 		string = string.replace("&#125;", "}");

@@ -480,6 +480,12 @@ public abstract class AbstractMovie implements Cloneable {
 			setRunTime(0);
 		}
 	}
+	
+	public String getRuntimeAsHourMinuteString() {
+		if(runTime>60)
+			return runTime/60 + "h " + runTime%60 + "m";
+		return runTime%60 + "m";
+	}
 
 	public boolean isSeen() {
 		return seen;
