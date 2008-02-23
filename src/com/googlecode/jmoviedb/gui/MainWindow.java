@@ -22,7 +22,6 @@ package com.googlecode.jmoviedb.gui;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
 
@@ -30,9 +29,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.EventKTableModel;
-import ca.odell.glazedlists.swt.EventListViewer;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
@@ -53,9 +50,7 @@ import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 import edu.stanford.ejalbert.launching.IBrowserLaunching;
 
-import org.apache.derby.iapi.services.stream.HeaderPrintWriter;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -63,34 +58,22 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.dialogs.TitleAreaDialog;//Do not remove
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.operation.ModalContext;
-import org.eclipse.jface.preference.PreferenceDialog;//Do not remove
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.jface.wizard.Wizard;//Do not remove
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
-import org.omg.CORBA.UNKNOWN;
 
 public class MainWindow extends ApplicationWindow implements IPropertyChangeListener {
 	private String[] cmdLineArgs;
@@ -197,7 +180,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		helpAboutAction = new HelpAboutAction(this);
 		printAction.setEnabled(false);
 		searchField = new SearchField();
-//		clearSearchfieldAction = new ClearSearchfieldAction(searchField);
 		
 		addFilmAction = new AddMovieAction(CONST.MOVIETYPE_FILM);
 		addMovieSerialAction = new AddMovieAction(CONST.MOVIETYPE_MOVIESERIAL);
@@ -308,18 +290,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			toolBarManager.add(new TestAction("Crash!", true));
 			break;
 		case 2:
-			toolBarManager.add(
-					new ControlContribution("searchLabel")  {
-						@Override
-						protected Control createControl(Composite parent) {
-//							Composite c = new Composite(parent, SWT.NONE);
-//							c.setLayout(new FillLayout());
-							Label label = new Label(parent, SWT.CENTER);
-							label.setText("Search ");
-//							label.setLayoutData();
-							return label;
-						}
-					});
 			toolBarManager.add(searchField);
 			break;
 		}
@@ -502,7 +472,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 				monitor.subTask("Importing data");
 				sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
-				filteredList = new FilterList<AbstractMovie>(sortedList, /*(MatcherEditor<AbstractMovie>)*/searchField.getMatcherEditor()); //TODO how do I fix this?
+				filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
 				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
 
 				filteredList.addListEventListener(
@@ -821,7 +791,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		
 		MainWindow m = new MainWindow(new String[0]);
 
-//		MessageDialog.openInformation(m.getShell(), "LOL", "LOL HAI LOL\nDis is a test bild, so dnt take sriusly plz!");
+		MessageDialog.openInformation(m.getShell(), "Warning", 
+				"This is a very early test version of JMoviedb. " +
+				"It has lots of errors and missing features. " +
+				"It is meant for testing only!");
 		m.run();
 		
 		

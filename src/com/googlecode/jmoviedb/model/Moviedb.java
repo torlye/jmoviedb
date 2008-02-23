@@ -93,11 +93,11 @@ public class Moviedb {
 	    return fullpath;
 	}
 	
-	private void newEmpty() throws ClassNotFoundException, SQLException {
+	private synchronized void newEmpty() throws ClassNotFoundException, SQLException {
 		database = new Database(dbTempPath);
 	}
 	
-	private void open(String file) throws ClassNotFoundException, SQLException, IOException {
+	private synchronized void open(String file) throws ClassNotFoundException, SQLException, IOException {
 		new ZipWorker(file, dbTempPath).extract();
 		database = new Database(dbTempPath);
 		movies.addAll(database.getMovieList());
@@ -115,7 +115,7 @@ public class Moviedb {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	public void save(String file) throws ClassNotFoundException, SQLException, IOException {
+	public synchronized void save(String file) throws ClassNotFoundException, SQLException, IOException {
 		System.out.println("shutdown");
 		database.shutdown();
 		System.out.println("zip");
@@ -134,7 +134,7 @@ public class Moviedb {
 		setSaved(false);
 	}
 
-	public AbstractMovie getMovie(int movieID) throws SQLException, IOException {
+	public synchronized AbstractMovie getMovie(int movieID) throws SQLException, IOException {
 //		int movieID = sortedMovieList[listID];
 		return database.getMovieFull(movieID);
 	}
@@ -147,7 +147,7 @@ public class Moviedb {
 	 * @param listMovieInstance the movie instance used as a list item. null if a new movie is to be added.
 	 * @throws SQLException
 	 */
-	public void saveMovie(AbstractMovie savedMovie, AbstractMovie listMovieInstance) throws SQLException, IOException {
+	public synchronized void saveMovie(AbstractMovie savedMovie, AbstractMovie listMovieInstance) throws SQLException, IOException {
 		int movieID = savedMovie.getID();
 		
 		if(CONST.DEBUG_MODE)
@@ -173,7 +173,7 @@ public class Moviedb {
 	 * @param movie
 	 * @throws SQLException 
 	 */
-	public void saveBackground(AbstractMovie movie) throws SQLException {
+	public synchronized void saveBackground(AbstractMovie movie) throws SQLException {
 		database.saveMovie(movie);
 	}
 	
@@ -182,7 +182,7 @@ public class Moviedb {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	public void updateModel() throws SQLException, IOException {
+	public synchronized void updateModel() throws SQLException, IOException {
 		movies.clear();
 		movies.addAll(database.getMovieList());
 		setSaved(false);
@@ -249,7 +249,7 @@ public class Moviedb {
 		this.saveFile = saveFile;
 	}
 	
-	public void closeDatabase() {
+	public synchronized void closeDatabase() {
 		try {
 			database.shutdown();
 		} catch (SQLException e) {

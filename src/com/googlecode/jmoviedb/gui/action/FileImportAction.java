@@ -43,7 +43,7 @@ public class FileImportAction extends Action {
 			try {
 				//Create and run a dialog with a progress monitor
 				CSVimport importWorker = new CSVimport(filePath);
-				new ProgressMonitorDialog(MainWindow.getMainWindow().getShell()).run(true, true, importWorker);
+				new ProgressMonitorDialog(MainWindow.getMainWindow().getShell()).run(false, false, importWorker);
 				
 				// Display message box to show how the operation went
 				MessageBox messageBox = new MessageBox(MainWindow.getMainWindow().getShell(), SWT.ICON_INFORMATION | SWT.OK);
@@ -53,8 +53,7 @@ public class FileImportAction extends Action {
 				importWorker = null;
 				
 			} catch (InvocationTargetException e) {
-				System.out.println("general exception");
-				e.printStackTrace();
+				MainWindow.getMainWindow().handleException(e);
 			} catch (InterruptedException e) {
 				//The cancel button was pressed.
 			}

@@ -47,6 +47,7 @@ import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.Person;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
+import com.googlecode.jmoviedb.model.movietype.TVseries;
 
 public class ImdbWorker {
 
@@ -136,7 +137,7 @@ public class ImdbWorker {
 	}
 
 	private class ImdbDownloader implements IRunnableWithProgress {
-		private AbstractMovie movie;
+		protected AbstractMovie movie;
 		public ImdbDownloader(AbstractMovie m) {
 			movie = m;
 		}
@@ -146,11 +147,10 @@ public class ImdbWorker {
 				URL url = new URL(movie.getImdbUrl());
 
 				monitor.subTask("Downloading");
-				DownloadWorker downloader = new DownloadWorker(url);
-				ImdbParser parser = new ImdbParser(downloader.downloadHtml());
-				downloader = null;
+				ImdbParser parser = new ImdbParser(new DownloadWorker(url).downloadHtml());
 				
 				monitor.subTask("Importing data");
+
 				movie.setTitle(parser.getTitle());
 				movie.setYear(parser.getYear());
 				movie.setRunTime(parser.getRuntime());
@@ -169,59 +169,51 @@ public class ImdbWorker {
 				monitor.subTask("Downloading cover image");
 				movie.setImageBytes(new DownloadWorker(parser.getImageURL()).downloadBytes());
 
-				if(CONST.DEBUG_MODE) {
-					System.out.println("");
-					System.out.println("------- BEGIN IMDB DATA DUMP -------");
-					System.out.println("Title: " + parser.getTitle());
-					System.out.println("Year: " + parser.getYear());
-					System.out.println("Runtime: " + parser.getRuntime());
-					System.out.println("Rating: " + parser.getRating());
-					System.out.println("Color: " + parser.isColor());
-					System.out.println("Tagline: " + parser.getTagline());
-					System.out.println("Plot outline: " + parser.getPlot());
-
-					String languages = "Languages:";
-					for(Language l : parser.getLanguages())
-						languages += " " + l.getName();
-					System.out.println(languages);
-
-					String countries = "Countries:";
-					for(Country c : parser.getCountries())
-						countries += " " + c.getName();
-					System.out.println(countries);
-
-					String genres = "Genres:";
-					for(Genre g : parser.getGenres())
-						genres += " " + g;
-					System.out.println(genres);			
-
-					String directors = "Directors:";
-					for(Person d : parser.getDirectors())
-						directors += " " + d.getName();
-					System.out.println(directors);
-
-					String writers = "Writers:";
-					for(Person w : parser.getWriters())
-						writers += " " + w.getName();
-					System.out.println(writers);
-
-					String actors = "\nActors:";
-					for(ActorInfo a : parser.getActors())
-						actors += "\n" + a.toString();
-					System.out.println(actors + "\n");
-
-					System.out.println("Image URL: " + parser.getImageURL());
-//					try{
-//						ImageData data = movie.getImageData();
-//						System.out.println("Image size: " + data.width + "x" + data.height);
-//					} catch(NullPointerException e) {
-//						System.out.println("No image!");
-//					}
-
-					System.out.println("------- END IMDB DATA DUMP -------");
-					System.out.println("");
-					parser = null;
-				}
+//				if(CONST.DEBUG_MODE) {
+//					System.out.println("");
+//					System.out.println("------- BEGIN IMDB DATA DUMP -------");
+//					System.out.println("Title: " + parser.getTitle());
+//					System.out.println("Year: " + parser.getYear());
+//					System.out.println("Runtime: " + parser.getRuntime());
+//					System.out.println("Rating: " + parser.getRating());
+//					System.out.println("Color: " + parser.isColor());
+//					System.out.println("Tagline: " + parser.getTagline());
+//					System.out.println("Plot outline: " + parser.getPlot());
+//
+//					String languages = "Languages:";
+//					for(Language l : parser.getLanguages())
+//						languages += " " + l.getName();
+//					System.out.println(languages);
+//
+//					String countries = "Countries:";
+//					for(Country c : parser.getCountries())
+//						countries += " " + c.getName();
+//					System.out.println(countries);
+//
+//					String genres = "Genres:";
+//					for(Genre g : parser.getGenres())
+//						genres += " " + g;
+//					System.out.println(genres);			
+//
+//					String directors = "Directors:";
+//					for(Person d : parser.getDirectors())
+//						directors += " " + d.getName();
+//					System.out.println(directors);
+//
+//					String writers = "Writers:";
+//					for(Person w : parser.getWriters())
+//						writers += " " + w.getName();
+//					System.out.println(writers);
+//
+//					String actors = "\nActors:";
+//					for(ActorInfo a : parser.getActors())
+//						actors += "\n" + a.toString();
+//					System.out.println(actors + "\n");
+//
+//					System.out.println("Image URL: " + parser.getImageURL());
+//					System.out.println("------- END IMDB DATA DUMP -------");
+//					System.out.println("");
+//				}
 			
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
@@ -233,7 +225,6 @@ public class ImdbWorker {
 
 	public class ImdbMultiDownloader implements IRunnableWithProgress {
 		private Shell parentShell;
-		private int numberOfMovies;
 		private int skippedError;
 		private int skippedNoResult;
 		private int skippedExists;
@@ -252,19 +243,17 @@ public class ImdbWorker {
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			Moviedb db = MainWindow.getMainWindow().getDB();
 			try {
-				EventList<AbstractMovie> list = db.getMovieList();
-				numberOfMovies = list.size();
-				Object[] list2 = list.toArray();
-				list.clear();
-				System.out.println("------------------------------------ "+list.size());
-				
-				monitor.beginTask("Updating movies...", numberOfMovies);
+				EventList<AbstractMovie> list = db.getMovieList();				
+				monitor.beginTask("Updating movies...", list.size());
 
-				for(int i=0; i<numberOfMovies; i++) {
+				while(list.size()>0) {
 					if(monitor.isCanceled())
 						throw new InterruptedException(); //TODO Study the behaviour of this
-//					AbstractMovie movie = list.get(i);
-					AbstractMovie movie = (AbstractMovie)(list2[i]);
+					
+					list.getReadWriteLock().readLock().lock();
+					AbstractMovie movie = list.remove(0);
+					list.getReadWriteLock().readLock().unlock();
+					
 					if(skipUpdatedMovies && (movie.getActors().size()>0 || movie.getDirectors().size()>0 || movie.getWriters().size()>0 
 							|| movie.getGenres().size()>0 || movie.getCountries().size()>0 || movie.getLanguages().size()>0)) {
 						skippedExists++;
@@ -319,7 +308,9 @@ public class ImdbWorker {
 						oldTitle = movie.getTitle();
 					
 					ImdbDownloader downloader = new ImdbDownloader(movie);
+					//TODO fork=false? can it affect synchronisation/memory leak?
 					downloader.run(new NullProgressMonitor());
+					downloader.movie = null;
 					downloader = null;
 					
 					if(keepTitles && !movie.getTitle().equals(oldTitle)) {
@@ -327,12 +318,9 @@ public class ImdbWorker {
 					}
 
 //					db.saveBackground(movie);
-					movie=null;
-					
-//					System.gc();
-
+					movie = null;
 					monitor.worked(1);
-				}//for
+				}//while
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
 			} finally {
