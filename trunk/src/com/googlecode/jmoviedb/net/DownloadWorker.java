@@ -46,15 +46,11 @@ public class DownloadWorker {
 	 */
 	public String downloadHtml() throws IOException {
 		String html = "";
-		InputStream is = url.openStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader in = new BufferedReader(isr);
+		BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 		String inputLine;
 		while ((inputLine = in.readLine()) != null)
 			html = html+" "+inputLine;
 		in.close();
-		isr.close();
-		is.close();
 		return html;
 	}
 

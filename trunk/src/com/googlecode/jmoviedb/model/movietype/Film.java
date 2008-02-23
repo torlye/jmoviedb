@@ -146,8 +146,10 @@ public class Film extends AbstractMovie {
 		} else if(format.toLowerCase().contains("ratdvd")) {
 			setFormat(FormatType.file);
 			setContainer(ContainerFormat.ratdvd);
+		} else if(format.toLowerCase().contains("h264")) {
+			setVideo(VideoCodec.h264);
 		} else {
-			System.out.println("Did not recognise format " + format);
+			System.out.println("Did not recognise format \"" + format + "\"");
 		}
 		
 		//parse subtitles
@@ -160,7 +162,8 @@ public class Film extends AbstractMovie {
 				else
 					addSubtitle(new SubtitleTrack(aLanguage, SubtitleFormat.other, false, false));
 			} else {
-				System.out.println("Did not recognise language " + subtitleLanguages[i]);
+				if(subtitleLanguages[i].length() > 0)
+					System.out.println("Did not recognise language \"" + subtitleLanguages[i] + "\"");
 			}
 		}
 	}

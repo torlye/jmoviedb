@@ -71,7 +71,6 @@ public class CSVimport implements IRunnableWithProgress {
 	 */
 	public void run(IProgressMonitor progressMonitor) throws InvocationTargetException, InterruptedException {
 		try {
-			progressMonitor.beginTask("Scanning CSV file", IProgressMonitor.UNKNOWN);
 			
 			CsvReader reader1 = new CsvReader(filePath);
 			CsvReader reader2 = new CsvReader(filePath);
@@ -82,7 +81,7 @@ public class CSVimport implements IRunnableWithProgress {
 				numRecords++;
 			reader1 = null;
 			
-			progressMonitor.subTask("Importing");
+			progressMonitor.beginTask("Importing", numRecords*2);
 			
 			read = 0;
 			skipped = 0;
@@ -118,11 +117,11 @@ public class CSVimport implements IRunnableWithProgress {
 			
 			progressMonitor.subTask("Adding movies to database");
 			for(Film f : importedFilms) {
-				MainWindow.getMainWindow().getDB().saveMovie(f, null);
+				MainWindow.getMainWindow().getDB().saveBackground(f);
 				progressMonitor.worked(1);
 			}
 			
-			progressMonitor.done();
+			MainWindow.getMainWindow().getDB().updateModel();
 			
 		} 
 		/* Because the last catch clause should catch any exception other than
@@ -135,6 +134,8 @@ public class CSVimport implements IRunnableWithProgress {
 		// Any other exceptions should spawn an InvocationTargetException.
 		catch (Exception e) {
 			throw new InvocationTargetException(e);
+		} finally {
+			progressMonitor.done();
 		}
 	}
 	
