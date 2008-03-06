@@ -107,7 +107,13 @@ public class ImdbParser {
 	 * @return an array of genres, or an empty array if none were found.
 	 */
 	protected ArrayList<Genre> getGenres() {
-		Pattern patternGenre = Pattern.compile("<a\\shref=\"/Sections/Genres/[a-zA-Z]+/\">([a-zA-Z]+)</a>");
+		/*
+		 * Examples:
+		 * <a href="/Sections/Genres/Crime/">Crime</a>
+		 * <a href="/Sections/Genres/Film-Noir/">Film-Noir</a> 
+		 * <a href="/Sections/Genres/Thriller/">Thriller</a>
+		 */
+		Pattern patternGenre = Pattern.compile("<a href=\"/Sections/Genres/[^/]+/\">([^<]+)</a>");
 		Matcher matcherGenre = patternGenre.matcher(html);
 		ArrayList<Genre> temp = new ArrayList<Genre>();
 		while (matcherGenre.find()) {
