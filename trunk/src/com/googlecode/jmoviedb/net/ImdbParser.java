@@ -167,7 +167,7 @@ public class ImdbParser {
 	 * @return runtime
 	 */
 	protected int getRuntime() {
-		Pattern patternRuntime = Pattern.compile("<h5>Runtime:</h5>\\s*([0-9]+)\\smin\\s+</div>");
+		Pattern patternRuntime = Pattern.compile("<h5>Runtime:</h5>\\s*([0-9]+)\\smin");
 		Matcher matcherRuntime = patternRuntime.matcher(html);
 		if(matcherRuntime.find())
 			return Integer.valueOf(matcherRuntime.group(1));
