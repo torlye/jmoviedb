@@ -1,0 +1,15 @@
+INCOMPLETE FEATURES
+-------------------
+Complete MovieDialog - More specifically: Add TV-series support, complete the final two tabs, fix many idiosyncracies
+In the MovieDialog, move 'writers' and 'directors' to the 'actors' tab - and rename the tab to something that fits. Possibly "Cast and Crew" or "People" 
+Improve various GUIs, prevent dialog boxes from resizing depending on contents
+Improve model layer, it is currently poorly designed. Could possibly read data directly from database instead of storing it temporarily in the model layer classes 
+Some of the enum types are incomplete
+GuiLanguage classes are a joke. Remove or redesign.
+Tweak MovieTableCell behaviour when resizing
+
+BUGS
+----
+Find and plug memory leak in IMDB mass update feature
+Fix the bug in KTable that makes the last item in the movie list behave strangely
+
