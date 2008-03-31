@@ -24,53 +24,53 @@ import java.net.URL;
 import com.googlecode.jmoviedb.CONST;
 
 public enum ContainerFormat {
-	other(0, "Other/unknown", "", null, null, new VideoCodec[]{VideoCodec.other}, new AudioCodec[]{AudioCodec.other}, null),
-	medianative(1, "Media native", "", null, null, null, null, null),
-	vob(2, "VOB", "", null, null, 
-			new VideoCodec[]{
-					VideoCodec.mpeg2}, 
-			new AudioCodec[]{AudioCodec.ac3, 
-					AudioCodec.dts, 
-					AudioCodec.mp2, 
-					AudioCodec.pcm}, 
-			new SubtitleFormat[]{
-					SubtitleFormat.medianative, 
-					SubtitleFormat.cc, 
-					SubtitleFormat.burnt_in}),
-	avi(3, "AVI", "Audio Video Interleave", null, null, null, null, null),
-	mpeg4(4, "MPEG-4", "MPEG-4 Part 14", null, null, new VideoCodec[]{VideoCodec.mpeg4, VideoCodec.h264}, new AudioCodec[]{AudioCodec.aac}, new SubtitleFormat[]{SubtitleFormat.mpeg4}),
-	mpeg(5, "MPEG-1/2", "", null, null, new VideoCodec[]{VideoCodec.mpeg1, VideoCodec.mpeg2}, null, null),
-	matroska(6, "Matroska", "", null, null, null, null, null),
-	asf(7, "Asf", "Asf/Windows Media", null, null, new VideoCodec[]{VideoCodec.wmv}, new AudioCodec[]{AudioCodec.wma}, null),
-	divx(8, "DivX DMF", "DivX Media Container", null, null, new VideoCodec[]{VideoCodec.divx}, null, new SubtitleFormat[]{SubtitleFormat.xsub}),
-	ogm(9, "Ogg Media", "", null, null, null, new AudioCodec[]{AudioCodec.ogg}, new SubtitleFormat[]{SubtitleFormat.ogg}),
-	quicktime(10, "QuickTime", "", null, null, null, null, null),
-	real(11, "RealMedia", "", null, null, new VideoCodec[]{VideoCodec.real}, new AudioCodec[]{AudioCodec.real}, null),
-	nut(12, "Nut", "", null, null, null, null, null),
-	ratdvd(13, "ratDVD", "", null, null, null, null, null);
+	other(0, "Other/unknown", "", null, null),
+	medianative(1, "Media native", "", null, null),
+	vob(2, "VOB", "", null, null),
+	avi(3, "AVI", "Audio Video Interleave", null, null),
+	mpeg4(4, "MPEG-4", "MPEG-4 Part 14", null, null),
+	mpeg(5, "MPEG-1/2", "", null, null),
+	matroska(6, "Matroska", "", null, null),
+	asf(7, "Asf", "Asf/Windows Media", null, null),
+	divx(8, "DivX DMF", "DivX Media Container", null, null),
+	ogm(9, "Ogg Media", "", null, null),
+	quicktime(10, "QuickTime", "", null, null),
+	real(11, "RealMedia", "", null, null),
+	nut(12, "Nut", "", null, null),
+	ratdvd(13, "ratDVD", "", null, null);
 	
 	private int id;
 	private String shortName;
 	private String longName;
 	private String description;
-	private URL url;
-	private VideoCodec[] videoCodecs;
-	private AudioCodec[] audioCodecs;
-	private SubtitleFormat[] subFormats;
+	private URL url;	
 	
-	private static VideoCodec[] AVI_LIKE_VIDEO_SUPPORT = new VideoCodec[]{VideoCodec.xvid, VideoCodec.divx, VideoCodec.h264, VideoCodec.mpeg4, VideoCodec.other};
-	private static AudioCodec[] AVI_LIKE_AUDIO_SUPPORT = new AudioCodec[]{AudioCodec.mp3, AudioCodec.ac3, AudioCodec.dts, AudioCodec.pcm, AudioCodec.other};
-	
-	
-	private ContainerFormat(int id, String shortName, String longName, String description, URL url, VideoCodec[] videoCodecs, AudioCodec[] audioCodecs, SubtitleFormat[] subFormats) {
+	public int getId() {
+		return id;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public String getLongName() {
+		return longName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public URL getUrl() {
+		return url;
+	}
+
+	private ContainerFormat(int id, String shortName, String longName, String description, URL url) {
 		this.id = id;
 		this.shortName = shortName;
 		this.longName = longName;
 		this.description = description;
 		this.url = url;
-		this.videoCodecs = videoCodecs;
-		this.audioCodecs = audioCodecs;
-		this.subFormats = subFormats;
 	}
 	
 	/**

@@ -103,4 +103,8 @@ public enum AudioCodec {
 			System.out.println("Unrecognised audio codec ID: " + id);
 		return null;
 	}
+
+	public URL getUrl() {
+		return url;
+	}
 }
