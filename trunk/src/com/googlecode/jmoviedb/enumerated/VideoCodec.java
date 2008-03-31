@@ -35,8 +35,10 @@ public enum VideoCodec {
 	mpeg4(6, "MPEG-4", "Generic MPEG-4 video", Settings.getSettings().getLanguageClass().VIDEO_MPEG4_DESCRIPTION, null),
 	wmv(7, "WMV", "Windows Media Video", null, null),
 	vc1(8, "VC-1", "VC-1", Settings.getSettings().getLanguageClass().VIDEO_VC1_DESCRIPTION, null),
-	real(9, "RealVideo", "", Settings.getSettings().getLanguageClass().VIDEO_REAL_DESCRIPTION, null),
-	analog(10, "Analog video", "", "", null),
+	theora(9, "Theora", "Ogg Theora", null, null),
+	dirac(10, "Dirac", "Dirac", null, null),
+	real(11, "RealVideo", "", Settings.getSettings().getLanguageClass().VIDEO_REAL_DESCRIPTION, null),
+	analog(99, "Analog video", "", "", null),
 	other(0, "Other/unknown", "", null, null);
 	
 	private int id;
@@ -96,5 +98,9 @@ public enum VideoCodec {
 
 	public int getID() {
 		return id;
+	}
+
+	public URL getUrl() {
+		return url;
 	}
 }

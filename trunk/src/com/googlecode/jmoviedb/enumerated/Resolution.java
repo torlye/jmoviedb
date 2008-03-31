@@ -23,11 +23,11 @@ import com.googlecode.jmoviedb.CONST;
 
 public enum Resolution {
 	unspecified(0, "Unspecified"), 
-	cif(1, ""), 
-	sd(2, ""),
-	p720(3, ""), 
-	i1080(4, ""), 
-	p1080(5, "");
+	cif(1, "CIF"), 
+	sd(2, "SD"),
+	p720(3, "720p"), 
+	i1080(4, "1080i"), 
+	p1080(5, "1080p");
 	
 	int id;
 	String name;

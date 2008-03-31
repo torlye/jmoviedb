@@ -48,8 +48,8 @@ public enum DiscType {
 	private String description;
 	
 //	Disc(int id, String name, String longName, String description) {
-//	
-//}
+//		
+//	}
 	
 	public String getDescription() {
 		return description;
