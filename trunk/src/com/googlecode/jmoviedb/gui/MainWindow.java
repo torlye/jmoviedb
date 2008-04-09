@@ -63,7 +63,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.ApplicationWindow;
-import org.eclipse.jface.wizard.Wizard;//Do not remove
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -77,7 +76,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class MainWindow extends ApplicationWindow implements IPropertyChangeListener {
 	private String[] cmdLineArgs;
-	
+        
 	//setup
 	private static final int coolBarStyle = SWT.FLAT;
 	private static final int toolBarStyle = SWT.FLAT;
@@ -129,8 +128,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private EventKTableModel viewer;
 	
 	private SearchField searchField;
+        private SearchDropDownMenu dropdownMenu;
 //	private ClearSearchfieldAction clearSearchfieldAction;
-	
+        
+        
 	private StatusLineThreadManager statusLine;
 	
 	private ExceptionHandler exceptionHandler;
@@ -139,7 +140,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public MainWindow(String[] args) {
 		super(null);
 		instance = this;
-		
 		cmdLineArgs = args;
 		Settings.getSettings().addListener(this);
 		exceptionHandler = new ExceptionHandler();
@@ -180,6 +180,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		helpAboutAction = new HelpAboutAction(this);
 		printAction.setEnabled(false);
 		searchField = new SearchField();
+                searchField.setEventReceiver(this); //MainWindow receives events from searchField
+                dropdownMenu = new SearchDropDownMenu();
+                dropdownMenu.setEventReceiver(searchField); //SearchWindow receives events from dropdownMenu  
 		
 		addFilmAction = new AddMovieAction(CONST.MOVIETYPE_FILM);
 		addMovieSerialAction = new AddMovieAction(CONST.MOVIETYPE_MOVIESERIAL);
@@ -196,7 +199,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		statusLine = new StatusLineThreadManager(getStatusLineManager());
 		
 		setSearchParameters();
-		
 	}
 
 	/**
@@ -291,6 +293,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			break;
 		case 2:
 			toolBarManager.add(searchField);
+                        toolBarManager.add(dropdownMenu);
 			break;
 		}
 		return toolBarManager;
@@ -447,6 +450,25 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			e.printStackTrace();
 		}
 	}
+        
+        /**
+         * Updates filteredList and sortedList, called when search-parameter is changed,
+         * is needed because filteredList needs to use new matcherEditor created in SearchField
+         */
+        public void updateLists() {
+          try {
+            //dbWorker.rebuildLists();
+            UpdateListsWorker updateWorker = new UpdateListsWorker();
+            new ProgressMonitorDialog(getShell()).run(true, false, updateWorker);
+            table.setModel(viewer);
+            
+          } catch (InvocationTargetException e) {
+            e.printStackTrace();
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
 
 	private class OpenDBWorker implements IRunnableWithProgress {
 		private String path;
@@ -456,8 +478,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 		public void run(IProgressMonitor monitor) throws InvocationTargetException {
 			try {
-
-
 				monitor.beginTask("Loading database", IProgressMonitor.UNKNOWN);
 				if(currentlyOpenDb != null) {
 					monitor.subTask("Closing previous database");
@@ -472,12 +492,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 				monitor.subTask("Importing data");
 				sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
-				filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
-				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
+                                filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
+                                viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
 
 				filteredList.addListEventListener(
 						new ListEventListener<AbstractMovie>() {
 							public void listChanged(ListEvent<AbstractMovie> arg0) {
+                                                            filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
 //								if(filteredList.size() != currentlyOpenDb.getMovieCount())
 //									setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
 //								else
@@ -493,8 +514,42 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			} finally {
 				monitor.done();
 			}
-		}
+		}                
 	}
+        
+        /**
+         * Used when the lists needs to be updated, and no new database needs to be loaded
+         */
+        private class UpdateListsWorker implements IRunnableWithProgress {
+		public UpdateListsWorker() {
+		}
+
+		public void run(IProgressMonitor monitor) throws InvocationTargetException {
+			try {   
+                                //Unregister listeners
+                                sortedList.dispose();
+                                filteredList.dispose();
+                          
+				monitor.subTask("Rebuilding lists");
+				sortedList = new SortedList<AbstractMovie>(currentlyOpenDb.getMovieList(), getComparator());
+                                filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
+                                viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
+                                
+                                //Register new event listener
+				filteredList.addListEventListener(
+						new ListEventListener<AbstractMovie>() {
+							public void listChanged(ListEvent<AbstractMovie> arg0) {
+                                                            filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
+							}
+						});
+				fileSaveAction.setEnabled(false);
+			} catch (Exception e) {
+				throw new InvocationTargetException(e);
+			} finally {
+				monitor.done();
+			}
+		}
+        }
 	
 	/**
 	 * Returns the currently open database
