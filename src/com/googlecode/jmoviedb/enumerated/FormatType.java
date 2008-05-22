@@ -25,24 +25,24 @@ import com.googlecode.jmoviedb.Settings;
 @SuppressWarnings("static-access")
 
 public enum FormatType {
-	file(0, "File", "Computer file", 
+	other(0, "Other/unknown", "", null, null),
+	file(1, "File", "Computer file", 
 			Settings.getSettings().getLanguageClass().FORMAT_FILE_DESCRIPTION, 
 			null),
-	dvd(1, "DVD", "Digital Versatile Disc", 
+	dvd(2, "DVD", "Digital Versatile Disc", 
 			Settings.getSettings().getLanguageClass().FORMAT_DVD_DESCRIPTION, 
 			Settings.getSettings().getLanguageClass().FORMAT_DVD_URL),
-	hddvd(2, "HD DVD", "High-Definition DVD", 
+	bluray(3, "Blu-Ray", "Blu-ray Disc", Settings.getSettings().getLanguageClass().FORMAT_BLURAY_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_BLURAY_URL),
+	hddvd(4, "HD DVD", "High-Definition DVD", 
 			Settings.getSettings().getLanguageClass().FORMAT_HDDVD_DESCRIPTION, 
 			Settings.getSettings().getLanguageClass().FORMAT_HDDVD_URL),
-	bluray(3, "Blu-Ray", "Blu-ray Disc", Settings.getSettings().getLanguageClass().FORMAT_BLURAY_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_BLURAY_URL),
-	vcd(4, "VCD", "Video CD", Settings.getSettings().getLanguageClass().FORMAT_VCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_VCD_URL),
-	svcd(5, "SVCD", "Super Video CD", Settings.getSettings().getLanguageClass().FORMAT_SVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_SVCD_URL),
+	vcd(5, "VCD", "Video CD", Settings.getSettings().getLanguageClass().FORMAT_VCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_VCD_URL),
+	svcd(6, "SVCD", "Super Video CD", Settings.getSettings().getLanguageClass().FORMAT_SVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_SVCD_URL),
 	xvcd(7, "XVCD", "Non-standard VCD", Settings.getSettings().getLanguageClass().FORMAT_XVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_XVCD_URL),
 	xsvcd(8, "XSVCD", "Non-standard SVCD", Settings.getSettings().getLanguageClass().FORMAT_XSVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_XSVCD_URL),
 	kvcd(9, "KVCD", "K Video Compression Dynamics", Settings.getSettings().getLanguageClass().FORMAT_KVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_KVCD_URL),
-	umd(6, "UMD", "", Settings.getSettings().getLanguageClass().FORMAT_UMD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_UMD_URL), 
-	laserdisc(7, "LaserDisc", "", "DESCRIPTION", null),
-	other(8, "Other/unknown", "", null, null);
+	umd(10, "UMD", "", Settings.getSettings().getLanguageClass().FORMAT_UMD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_UMD_URL), 
+	laserdisc(11, "LaserDisc", "", "DESCRIPTION", null);
 	
 	private int id;
 	private String shortName;

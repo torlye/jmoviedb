@@ -28,7 +28,7 @@ public enum MovieType {
 	videomovie(2, new VideoMovie().getClass(), GuiLanguage.TYPE_VIDEOMOVIE, GuiLanguage.TYPE_VIDEOMOVIE_DESCRIPTION),
 	tvseries(3, new TVseries().getClass(), GuiLanguage.TYPE_TVSERIES, GuiLanguage.TYPE_TVSERIES_DESCRIPTION),
 	miniseries(4, new MiniSeries().getClass(), GuiLanguage.TYPE_MINISERIES, GuiLanguage.TYPE_MINISERIES_DESCRIPTION),
-	webseries(5, null, GuiLanguage.TYPE_WEBSERIES, GuiLanguage.TYPE_WEBSERIES_DESCRIPTION),
+	webseries(5, new WebSeries().getClass(), GuiLanguage.TYPE_WEBSERIES, GuiLanguage.TYPE_WEBSERIES_DESCRIPTION),
 	movieserial(6, new MovieSerial().getClass(), GuiLanguage.TYPE_MOVIESERIAL, GuiLanguage.TYPE_MOVIESERIAL_DESCRIPTION);
 	
 	private int id;
@@ -99,6 +99,8 @@ public enum MovieType {
 			return new TVseries();
 		if(id == 4)
 			return new MiniSeries();
+		if(id == 5)
+			return new WebSeries();
 		if(id == 6)
 			return new MovieSerial();
 		return null;

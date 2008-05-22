@@ -462,7 +462,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 	
 	public void setRatingAsInt(int rating) {
-		this.rating = rating/10;
+		this.rating = (double)rating/10;
 	}
 
 	public int getRunTime() {

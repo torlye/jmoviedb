@@ -19,7 +19,7 @@
 
 package com.googlecode.jmoviedb.model;
 
-public class ActorInfo {
+public class ActorInfo implements Comparable<ActorInfo> {
 	private Person actor;
 	private int id;
 	private String character;
@@ -51,6 +51,10 @@ public class ActorInfo {
 	
 	public String toString() {
 		return actor.getName() + " as " + character;
+	}
+
+	public int compareTo(ActorInfo o) {
+		return this.id - o.id;
 	}
 	
 }
