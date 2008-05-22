@@ -30,7 +30,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
@@ -107,7 +107,7 @@ public class Database {
 			 */
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
-		}
+		}	
 		
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
@@ -141,7 +141,7 @@ public class Database {
 		clearGenres = connection.prepareStatement("DELETE FROM MOVIEGENRE WHERE MOVIEID = ?");
 		clearCountries = connection.prepareStatement("DELETE FROM MOVIECOUNTRY WHERE MOVIEID = ?");
 		clearLanguages = connection.prepareStatement("DELETE FROM MOVIELANGUAGE WHERE MOVIEID = ?");
-		addActor = connection.prepareStatement("INSERT INTO MOVIEACTOR VALUES (?, ?, ?)");
+		addActor = connection.prepareStatement("INSERT INTO MOVIEACTOR VALUES (?, ?, ?, ?)");
 		addDirector = connection.prepareStatement("INSERT INTO MOVIEDIRECTOR VALUES (?, ?, ?)");
 		addWriter = connection.prepareStatement("INSERT INTO MOVIEWRITER VALUES (?, ?, ?)");
 		addGenre = connection.prepareStatement("INSERT INTO MOVIEGENRE VALUES(?, ?)");
@@ -198,6 +198,7 @@ public class Database {
 		String movieActor = "CREATE TABLE MOVIEACTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
+				"CHARACTERNUMBER SMALLINT, " +
 				"CHARACTERDESCRIPTION VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
@@ -368,7 +369,7 @@ public class Database {
 		statement.setInt(25, m.getAspectRatio().getID());
 		
 		if(m.getImageBytes() != null)
-			statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()));
+			statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()), m.getImageBytes().length);
 		else
 			statement.setNull(26, Types.BLOB);
 		
@@ -430,12 +431,14 @@ public class Database {
 		clearActors.execute();
 		clearActors.clearParameters();
 		
-		for(ActorInfo a : m.getActors()) {
+		for(int i=0; i<m.getActors().size(); i++) {
+			ActorInfo a = m.getActors().get(i);
 			addOrUpdatePerson(a.getPerson());
 			
 			addActor.setInt(1, m.getID());
 			addActor.setString(2, a.getPerson().getID());
-			addActor.setString(3, a.getCharacter());
+			addActor.setInt(3, i);
+			addActor.setString(4, a.getCharacter());
 			addActor.execute();
 			addActor.clearParameters();
 		}
@@ -526,9 +529,9 @@ public class Database {
 				//how much data is ready right now?
 				int readLength = stream.available();
 
-				//create a new array that contains the bytes read until now, but with
-				//free space for more
-				byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
+				//create a new array that contains the bytes read until now, but with free space for more
+				byte[] newBytes = new byte[imageBytes.length+readLength];
+				System.arraycopy(imageBytes, 0, newBytes, 0, imageBytes.length);
 
 				//read the new bytes into the empty part of the newly created array
 				stream.read(newBytes, imageBytes.length, readLength);
@@ -548,13 +551,14 @@ public class Database {
 	
 	public AbstractMovie getMovieFull(int id) throws SQLException, IOException {
 		AbstractMovie m = getMovieLite(id);
-				
+		
 		getActors.setInt(1, id);
 		ResultSet rsA = getActors.executeQuery();
 		ArrayList<ActorInfo> actors = new ArrayList<ActorInfo>();
-		int counter = 0;
+		
 		while(rsA.next())
-			actors.add(new ActorInfo(counter, new Person(rsA.getString("PERSONID"), rsA.getString("NAME")), rsA.getString("CHARACTERDESCRIPTION")));
+			actors.add(new ActorInfo(rsA.getInt("CHARACTERNUMBER"), new Person(rsA.getString("PERSONID"), rsA.getString("NAME")), rsA.getString("CHARACTERDESCRIPTION")));
+		Collections.sort(actors);
 		m.setActors(actors);
 		rsA.close();
 		

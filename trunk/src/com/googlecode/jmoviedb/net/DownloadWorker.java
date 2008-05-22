@@ -82,9 +82,9 @@ public class DownloadWorker {
 				//how much data is ready right now?
 				int readLength = stream.available();
 
-				//create a new array that contains the bytes read until now, but with
-				//free space for more
-				byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
+				//create a new array that contains the bytes read until now, but with free space for more
+				byte[] newBytes = new byte[imageBytes.length+readLength];
+				System.arraycopy(imageBytes, 0, newBytes, 0, imageBytes.length);
 
 				//read the new bytes into the empty part of the newly created array
 				stream.read(newBytes, imageBytes.length, readLength);
