@@ -44,6 +44,19 @@ public enum Resolution {
 	public String getName() {
 		return name;
 	}
+	
+	public boolean isHD() {
+		if(id >= 3 && id <= 5)
+			return true;
+		return false;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[Resolution.values().length];
+		for(int i = 0; i < Resolution.values().length; i++)
+			strings[i] = Resolution.values()[i].getName();
+		return strings;
+	}
 
 	/**
 	 * Looks up the correct enum value from an int ID

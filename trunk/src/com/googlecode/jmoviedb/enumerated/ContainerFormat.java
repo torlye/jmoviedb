@@ -44,10 +44,6 @@ public enum ContainerFormat {
 	private String longName;
 	private String description;
 	private URL url;	
-	
-	public int getId() {
-		return id;
-	}
 
 	public String getShortName() {
 		return shortName;
@@ -71,6 +67,13 @@ public enum ContainerFormat {
 		this.longName = longName;
 		this.description = description;
 		this.url = url;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[ContainerFormat.values().length];
+		for(int i = 0; i < ContainerFormat.values().length; i++)
+			strings[i] = ContainerFormat.values()[i].getShortName();
+		return strings;
 	}
 	
 	/**

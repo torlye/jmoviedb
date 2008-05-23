@@ -77,6 +77,13 @@ public enum FormatType {
 	public String getUrl() {
 		return url;
 	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[FormatType.values().length];
+		for(int i = 0; i < FormatType.values().length; i++)
+			strings[i] = FormatType.values()[i].getShortName();
+		return strings;
+	}
 
 	/**
 	 * Looks up the correct enum value from an int ID

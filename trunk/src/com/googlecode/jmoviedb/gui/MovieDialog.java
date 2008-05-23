@@ -19,7 +19,6 @@
 
 package com.googlecode.jmoviedb.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
@@ -31,7 +30,6 @@ import com.googlecode.jmoviedb.net.ImdbWorker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -39,7 +37,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -92,6 +89,12 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	private TableColumn actorNameColumn;
 	private TableColumn asColumn;
 	private TableColumn characterNameColumn;
+	
+	private Combo formatCombo;
+	private Combo videoCodecCombo;
+	private Combo containerCombo;
+	private Combo resolutionCombo;
+	private Combo tvSystemCombo;
 	
 	private static final int MARGIN_WIDTH = 7;
 	private static final int MARGIN_HEIGHT = 7;
@@ -398,6 +401,52 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		CTabItem tab4 = new CTabItem(tabFolder, SWT.NULL);
 		tab4.setText("Format and video");
 		tab4.setImage(image);
+		
+		Composite c = new Composite(tabFolder, SWT.NULL);
+		GridLayout compositeLayout = new GridLayout(2, false);
+		c.setLayout(compositeLayout);
+		
+		Label formatLabel = new Label(c, SWT.CENTER);
+		formatLabel.setText("Format:");
+		formatCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+//		formatCombo.setLayoutData(longTextFieldLayout);
+		formatCombo.setItems(FormatType.getStringArray());
+		formatCombo.select(0);
+		formatCombo.setVisibleItemCount(FormatType.getStringArray().length); //make all items visible
+		
+		Label containerLabel = new Label(c, SWT.CENTER);
+		containerLabel.setText("Container format:");
+		containerCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+//		containerCombo.setLayoutData(longTextFieldLayout);
+		containerCombo.setItems(ContainerFormat.getStringArray());
+		containerCombo.select(0);
+		containerCombo.setVisibleItemCount(ContainerFormat.getStringArray().length); //make all items visible
+		
+		Label videoCodecLabel = new Label(c, SWT.CENTER);
+		videoCodecLabel.setText("Video format:");
+		videoCodecCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+//		videoCodecCombo.setLayoutData(longTextFieldLayout);
+		videoCodecCombo.setItems(VideoCodec.getStringArray());
+		videoCodecCombo.select(0);
+		videoCodecCombo.setVisibleItemCount(VideoCodec.getStringArray().length); //make all items visible
+		
+		Label resolutionLabel = new Label(c, SWT.CENTER);
+		resolutionLabel.setText("Video resolution:");
+		resolutionCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+//		resolutionCombo.setLayoutData(longTextFieldLayout);
+		resolutionCombo.setItems(Resolution.getStringArray());
+		resolutionCombo.select(0);
+		resolutionCombo.setVisibleItemCount(Resolution.getStringArray().length); //make all items visible
+		
+		Label tvSystemLabel = new Label(c, SWT.CENTER);
+		tvSystemLabel.setText("TV system:");
+		tvSystemCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+//		tvSystemCombo.setLayoutData(longTextFieldLayout);
+		tvSystemCombo.setItems(TVsystem.getStringArray());
+		tvSystemCombo.select(0);
+		tvSystemCombo.setVisibleItemCount(TVsystem.getStringArray().length); //make all items visible
+		
+		tab4.setControl(c);
 	}
 	
 	private void audioSubtitleTab(CTabFolder tabFolder) {
@@ -443,6 +492,13 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 			i.setText(1, "as");
 			i.setText(2, a.getCharacter());
 		}
+		
+		formatCombo.select(m.getFormat().getID());
+		containerCombo.select(m.getContainer().getID());
+		videoCodecCombo.select(m.getVideo().getID());
+		resolutionCombo.select(m.getResolution().getID());
+		tvSystemCombo.select(m.getTvSystem().getID());
+		
 		actorNameColumn.pack();
 		asColumn.pack();
 		characterNameColumn.pack();
@@ -513,6 +569,12 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 
 		movie.setTagline(taglineText.getText());
 		movie.setPlotOutline(plotText.getText());
+		
+		movie.setFormat(FormatType.intToEnum(formatCombo.getSelectionIndex()));
+		movie.setContainer(ContainerFormat.intToEnum(containerCombo.getSelectionIndex()));
+		movie.setVideo(VideoCodec.intToEnum(videoCodecCombo.getSelectionIndex()));
+		movie.setResolution(Resolution.intToEnum(resolutionCombo.getSelectionIndex()));
+		movie.setTvSystem(TVsystem.intToEnum(tvSystemCombo.getSelectionIndex()));
 	}
 	
 	public AbstractMovie getModel() {
