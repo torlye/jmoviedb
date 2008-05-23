@@ -6,6 +6,7 @@
  * [http://www.eclipse.org/swt/ Eclipse SWT + JFace]
  * [http://db.apache.org/derby/ Apache Derby]
  * [http://publicobject.com/glazedlists/ Glazed Lists]
+ * [http://sourceforge.net/projects/ktable KTable]
  * [http://browserlaunch2.sourceforge.net/ BrowserLauncher2]
  * [http://sourceforge.net/projects/javacsv Java CSV Library]
 
