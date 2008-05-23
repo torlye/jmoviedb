@@ -24,7 +24,8 @@ import com.googlecode.jmoviedb.CONST;
 public enum TVsystem {
 	none(0, "", ""),
 	ntsc(1, "NTSC", ""),
-	pal(2, "PAL", "");
+	pal(2, "PAL", ""),
+	film(3, "Film", "");
 	
 	private int id;
 	private String shortName;
@@ -46,6 +47,13 @@ public enum TVsystem {
 
 	public String getShortName() {
 		return shortName;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[TVsystem.values().length];
+		for(int i = 0; i < TVsystem.values().length; i++)
+			strings[i] = TVsystem.values()[i].getShortName();
+		return strings;
 	}
 	
 	/**

@@ -69,7 +69,7 @@ public class ZipWorker {
 		for(String file : files) {
 			FileInputStream inputStream = new FileInputStream(extractPath + fileSeparator + file);
 			
-			outputStream.putNextEntry(new ZipEntry(file));
+			outputStream.putNextEntry(new ZipEntry(file.replaceAll("\\\\", "/")));
 			
 			outputStream.write(buffer, 0, inputStream.read(buffer));
 			

@@ -27,6 +27,7 @@ import com.googlecode.jmoviedb.Settings;
 @SuppressWarnings("static-access")
 
 public enum VideoCodec {
+	other(0, "Other/unknown", "", null, null),
 	xvid(1, "XviD", "XviD", Settings.getSettings().getLanguageClass().VIDEO_XVID_DESCRIPTION, null),
 	divx(2, "DivX", "DivX 3/4/5/6", Settings.getSettings().getLanguageClass().VIDEO_DIVX_DESCRIPTION, null),
 	h264(3, "H.264", "H.264/AVC", Settings.getSettings().getLanguageClass().VIDEO_H264_DESCRIPTION, null),
@@ -38,8 +39,7 @@ public enum VideoCodec {
 	theora(9, "Theora", "Ogg Theora", null, null),
 	dirac(10, "Dirac", "Dirac", null, null),
 	real(11, "RealVideo", "", Settings.getSettings().getLanguageClass().VIDEO_REAL_DESCRIPTION, null),
-	analog(99, "Analog video", "", "", null),
-	other(0, "Other/unknown", "", null, null);
+	analog(99, "Analog video", "", "", null);
 	
 	private int id;
 	private String shortName;
@@ -102,5 +102,12 @@ public enum VideoCodec {
 
 	public URL getUrl() {
 		return url;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[VideoCodec.values().length];
+		for(int i = 0; i < VideoCodec.values().length; i++)
+			strings[i] = VideoCodec.values()[i].getShortName();
+		return strings;
 	}
 }

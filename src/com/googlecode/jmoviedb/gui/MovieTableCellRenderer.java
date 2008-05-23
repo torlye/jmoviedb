@@ -13,6 +13,10 @@ import org.eclipse.swt.widgets.Display;
 import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Genre;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
+import com.googlecode.jmoviedb.model.movietype.MiniSeries;
+import com.googlecode.jmoviedb.model.movietype.TVmovie;
+import com.googlecode.jmoviedb.model.movietype.TVseries;
+import com.googlecode.jmoviedb.model.movietype.VideoMovie;
 
 import de.kupzog.ktable.KTableCellRenderer;
 import de.kupzog.ktable.KTableModel;
@@ -42,6 +46,16 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		String title = movie.getDisplayTitle();
 		if(movie.getYear() != 0)
 			title += " ("+movie.getYear()+")";
+		if (movie instanceof VideoMovie)
+			title += " (V)";
+		else if(movie instanceof TVmovie)
+			title += " (TV)";
+		else if(movie instanceof MiniSeries)
+			title += " (mini)";
+		else if(movie instanceof TVseries)
+			title += " (TV-series)";
+		if(movie.getResolution().isHD())
+			title += " ["+movie.getResolution().getName()+"]";
 		String genre = "";
 		for(Genre g : movie.getGenres()) {
 			if(genre.length()>0)
