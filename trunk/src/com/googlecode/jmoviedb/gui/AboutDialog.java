@@ -81,6 +81,10 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 		glazedLink.setText("<A>Glazed Lists " + CONST.VERSION_GLAZED + "</A>");
 		glazedLink.addSelectionListener(this);
 		
+		Link ktableLink = new Link(c, SWT.NONE);
+		ktableLink.setText("<A>KTable " + CONST.VERSION_KTABLE + "</A>");
+		ktableLink.addSelectionListener(this);
+		
 		Link browserLink = new Link(c, SWT.NONE);
 		browserLink.setText("<A>BrowserLauncher2 " + CONST.VERSION_BROWSERLAUNCHER + "</A>");
 		browserLink.addSelectionListener(this);
@@ -158,6 +162,8 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_BROWSERLAUNCHER);
 		else if(e.getSource().toString().contains("CSV"))
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_CSV);
+		else if(e.getSource().toString().contains("KTable"))
+			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_KTABLE);
 		else if(e.getSource().toString().contains("Dropline"))
 			MainWindow.getMainWindow().launchBrowser("http://www.silvestre.com.ar/?p=5");
 		else if(e.getSource().toString().contains("Silk"))

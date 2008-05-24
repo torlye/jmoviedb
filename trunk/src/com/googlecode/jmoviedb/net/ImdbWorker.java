@@ -22,32 +22,21 @@ package com.googlecode.jmoviedb.net;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.sql.SQLException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.operation.ModalContext;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import ca.odell.glazedlists.EventList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.enumerated.Country;
-import com.googlecode.jmoviedb.enumerated.Genre;
-import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.SearchResultDialog;
-import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Moviedb;
-import com.googlecode.jmoviedb.model.Person;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
-import com.googlecode.jmoviedb.model.movietype.TVseries;
 
 public class ImdbWorker {
 

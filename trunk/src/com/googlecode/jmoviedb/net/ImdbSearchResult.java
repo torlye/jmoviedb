@@ -21,12 +21,10 @@ package com.googlecode.jmoviedb.net;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 
 import org.eclipse.swt.graphics.ImageData;
 
-import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.MovieType;
 
 public class ImdbSearchResult {

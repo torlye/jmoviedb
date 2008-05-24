@@ -19,8 +19,6 @@
 
 package com.googlecode.jmoviedb.gui;
 
-import java.util.ArrayList;
-
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.*;
 import com.googlecode.jmoviedb.model.*;
@@ -43,7 +41,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
@@ -95,6 +92,17 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	private Combo containerCombo;
 	private Combo resolutionCombo;
 	private Combo tvSystemCombo;
+	private Button r0;
+	private Button r1;
+	private Button r2;
+	private Button r3;
+	private Button r4;
+	private Button r5;
+	private Button r6;
+	private Button r7;
+	private Button r8;
+	private AudioSubtitleTable audioTable;
+	private AudioSubtitleTable subtitleTable;
 	
 	private static final int MARGIN_WIDTH = 7;
 	private static final int MARGIN_HEIGHT = 7;
@@ -381,6 +389,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		actorTable = new Table (c3, SWT.BORDER | SWT.MULTI | SWT.SINGLE); //TODO can be VIRTUAL
 		actorTable.setLayoutData(gdFill);
 		actorTable.setHeaderVisible(true);
+		actorTable.setLinesVisible(true);
 		actorNameColumn = new TableColumn(actorTable, SWT.NONE);
 		asColumn = new TableColumn(actorTable, SWT.NONE);
 		characterNameColumn = new TableColumn(actorTable, SWT.NONE);
@@ -403,13 +412,19 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		tab4.setImage(image);
 		
 		Composite c = new Composite(tabFolder, SWT.NULL);
-		GridLayout compositeLayout = new GridLayout(2, false);
+		GridLayout compositeLayout = new GridLayout(10, false);
+		compositeLayout.makeColumnsEqualWidth = false;
 		c.setLayout(compositeLayout);
+		
+		GridData comboLayout = new GridData();
+		comboLayout.horizontalSpan = 9;
+		comboLayout.horizontalAlignment = SWT.FILL;
+		comboLayout.grabExcessHorizontalSpace = true;
 		
 		Label formatLabel = new Label(c, SWT.CENTER);
 		formatLabel.setText("Format:");
 		formatCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-//		formatCombo.setLayoutData(longTextFieldLayout);
+		formatCombo.setLayoutData(comboLayout);
 		formatCombo.setItems(FormatType.getStringArray());
 		formatCombo.select(0);
 		formatCombo.setVisibleItemCount(FormatType.getStringArray().length); //make all items visible
@@ -417,7 +432,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		Label containerLabel = new Label(c, SWT.CENTER);
 		containerLabel.setText("Container format:");
 		containerCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-//		containerCombo.setLayoutData(longTextFieldLayout);
+		containerCombo.setLayoutData(comboLayout);
 		containerCombo.setItems(ContainerFormat.getStringArray());
 		containerCombo.select(0);
 		containerCombo.setVisibleItemCount(ContainerFormat.getStringArray().length); //make all items visible
@@ -425,7 +440,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		Label videoCodecLabel = new Label(c, SWT.CENTER);
 		videoCodecLabel.setText("Video format:");
 		videoCodecCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-//		videoCodecCombo.setLayoutData(longTextFieldLayout);
+		videoCodecCombo.setLayoutData(comboLayout);
 		videoCodecCombo.setItems(VideoCodec.getStringArray());
 		videoCodecCombo.select(0);
 		videoCodecCombo.setVisibleItemCount(VideoCodec.getStringArray().length); //make all items visible
@@ -433,7 +448,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		Label resolutionLabel = new Label(c, SWT.CENTER);
 		resolutionLabel.setText("Video resolution:");
 		resolutionCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-//		resolutionCombo.setLayoutData(longTextFieldLayout);
+		resolutionCombo.setLayoutData(comboLayout);
 		resolutionCombo.setItems(Resolution.getStringArray());
 		resolutionCombo.select(0);
 		resolutionCombo.setVisibleItemCount(Resolution.getStringArray().length); //make all items visible
@@ -441,10 +456,31 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		Label tvSystemLabel = new Label(c, SWT.CENTER);
 		tvSystemLabel.setText("TV system:");
 		tvSystemCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-//		tvSystemCombo.setLayoutData(longTextFieldLayout);
+		tvSystemCombo.setLayoutData(comboLayout);
 		tvSystemCombo.setItems(TVsystem.getStringArray());
 		tvSystemCombo.select(0);
 		tvSystemCombo.setVisibleItemCount(TVsystem.getStringArray().length); //make all items visible
+		
+		Label regionLabel = new Label(c, SWT.CENTER);
+		regionLabel.setText("Region:");
+		r0 = new Button(c, SWT.CHECK);
+		r0.setText("Region free");
+		r1 = new Button(c, SWT.CHECK);
+		r1.setText("R1");
+		r2 = new Button(c, SWT.CHECK);
+		r2.setText("R2");
+		r3 = new Button(c, SWT.CHECK);
+		r3.setText("R3");
+		r4 = new Button(c, SWT.CHECK);
+		r4.setText("R4");
+		r5 = new Button(c, SWT.CHECK);
+		r5.setText("R5");
+		r6 = new Button(c, SWT.CHECK);
+		r6.setText("R6");
+		r7 = new Button(c, SWT.CHECK);
+		r7.setText("R7");
+		r8 = new Button(c, SWT.CHECK);
+		r8.setText("R8");
 		
 		tab4.setControl(c);
 	}
@@ -455,9 +491,13 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		tab5.setText("Audio and subtitles");
 		tab5.setImage(image);
 		
-		Composite c5 = new Composite(tabFolder, SWT.NULL);
-		GridLayout compositeLayout = new GridLayout(2, false);
-		c5.setLayout(compositeLayout);
+		Composite c = new Composite(tabFolder, SWT.NULL);
+//		GridLayout compositeLayout = new GridLayout(2, false);
+//		c.setLayout(compositeLayout);
+		audioTable = new AudioSubtitleTable(c, true);
+//		subtitleTable = new AudioSubtitleTable(c, false);
+		
+		tab5.setControl(c);
 	}
 	
 	/**
@@ -498,10 +538,22 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		videoCodecCombo.select(m.getVideo().getID());
 		resolutionCombo.select(m.getResolution().getID());
 		tvSystemCombo.select(m.getTvSystem().getID());
+		r0.setSelection(m.getDvdRegion()[0]);
+		r1.setSelection(m.getDvdRegion()[1]);
+		r2.setSelection(m.getDvdRegion()[2]);
+		r3.setSelection(m.getDvdRegion()[3]);
+		r4.setSelection(m.getDvdRegion()[4]);
+		r5.setSelection(m.getDvdRegion()[5]);
+		r6.setSelection(m.getDvdRegion()[6]);
+		r7.setSelection(m.getDvdRegion()[7]);
+		r8.setSelection(m.getDvdRegion()[8]);
 		
 		actorNameColumn.pack();
 		asColumn.pack();
 		characterNameColumn.pack();
+		
+		audioTable.setAudioModel(movie.getAudioTracks());
+//		subtitleTable.setSubModel(movie.getSubtitles());
 		
 		if(movie.getImageData() != null)
 			imageArea.setBackgroundImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), movie.getImageData()));
@@ -570,11 +622,22 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		movie.setTagline(taglineText.getText());
 		movie.setPlotOutline(plotText.getText());
 		
-		movie.setFormat(FormatType.intToEnum(formatCombo.getSelectionIndex()));
-		movie.setContainer(ContainerFormat.intToEnum(containerCombo.getSelectionIndex()));
-		movie.setVideo(VideoCodec.intToEnum(videoCodecCombo.getSelectionIndex()));
-		movie.setResolution(Resolution.intToEnum(resolutionCombo.getSelectionIndex()));
-		movie.setTvSystem(TVsystem.intToEnum(tvSystemCombo.getSelectionIndex()));
+		movie.setFormat(FormatType.values()[formatCombo.getSelectionIndex()]);
+		movie.setContainer(ContainerFormat.values()[containerCombo.getSelectionIndex()]);
+		movie.setVideo(VideoCodec.values()[videoCodecCombo.getSelectionIndex()]);
+		movie.setResolution(Resolution.values()[resolutionCombo.getSelectionIndex()]);
+		movie.setTvSystem(TVsystem.values()[tvSystemCombo.getSelectionIndex()]);
+		movie.setDvdRegion(new boolean[]
+				{	r0.getSelection(), 
+					r1.getSelection(),
+					r2.getSelection(),
+					r3.getSelection(),
+					r4.getSelection(),
+					r5.getSelection(),
+					r6.getSelection(),
+					r7.getSelection(),
+					r8.getSelection(),
+				});
 	}
 	
 	public AbstractMovie getModel() {
@@ -589,93 +652,6 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 
 	public void widgetSelected(SelectionEvent e) {
 		rateText.setText((0.0 + rateScale.getSelection()) / 10 + "");
-	}
-	
-	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setText("New movie");
-		TVmovie f = new TVmovie();
-		f.setID(5);
-		f.setTitle("The Big Red One");
-		f.setCustomTitle("Tha Big Red One");
-		f.setFormat(FormatType.dvd);
-//		f.setImdbID("0080437");
-		f.setImdbID("0401792");
-		ArrayList<Genre> g = new ArrayList<Genre>();
-		g.add(Genre.war);
-		g.add(Genre.drama);
-		f.setGenres(g);
-		f.setTagline("This is a tagline");
-		f.setPlotOutline("This is a plot outline");
-		ArrayList<Country> c = new ArrayList<Country>();
-		c.add(Country.sweden);
-		f.setCountries(c);
-		ArrayList<Language> l = new ArrayList<Language>();
-		l.add(Language.english);
-		f.setLanguages(l);
-		f.setLegal(false);
-		f.setSeen(true);
-		f.setYear(1989);
-		f.setRunTime(140);
-		f.setRating(8.7);
-		f.setVersion(FilmVersion.directors);
-		f.setCustomVersion("omgz");
-		Person p1 = new Person("65465464", "Jean-Claude Van Damme");
-		Person p2 = new Person("65465474", "Bruce Willis");
-		Person p3 = new Person("23424", "Director 1");
-		Person p4 = new Person("3245345", "Director 2");
-		Person p5 = new Person("234234", "Writer 1");
-		Person p6 = new Person("32234234", "Writer 2");
-		ArrayList<ActorInfo> actors = new ArrayList<ActorInfo>();
-		actors.add(new ActorInfo(0, p1, "the Duke"));
-		actors.add(new ActorInfo(0, p2, "the Man"));
-		f.setActors(actors);
-		ArrayList<Person> directors = new ArrayList<Person>();
-		directors.add(p3);
-		directors.add(p4);
-		f.setDirectors(directors);
-		ArrayList<Person> writers = new ArrayList<Person>();
-		writers.add(p5);
-		writers.add(p6);
-		
-		f.setAspectRatio(AspectRatio.unspecified);
-		f.setFormat(FormatType.file);
-		f.setContainer(ContainerFormat.matroska);
-		f.setVideo(VideoCodec.h264);
-		AudioTrack t1 = new AudioTrack(Language.english, AudioCodec.ac3, false);
-		AudioTrack t2 = new AudioTrack(Language.finnish, AudioCodec.dts, false);
-		ArrayList<AudioTrack> audio = new ArrayList<AudioTrack>();
-		audio.add(t1);
-		audio.add(t2);
-		f.setAudioTracks(audio);
-		SubtitleTrack s1 = new SubtitleTrack(Language.norwegian, SubtitleFormat.subviewer, false, false);
-		SubtitleTrack s2 = new SubtitleTrack(Language.afrikaans, SubtitleFormat.subrip, false, true);
-		ArrayList<SubtitleTrack> subs = new ArrayList<SubtitleTrack>();
-		subs.add(s1);
-		subs.add(s2);
-		f.setSubtitles(subs);
-		f.setTvSystem(TVsystem.pal);
-		f.setSceneReleaseName("sceneReleaseName");
-		f.setColor(true);
-		f.setResolution(Resolution.p1080);
-		
-//		try {
-//			ImdbWorker.update(new MovieDialog(f, shell), f);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-//		new MovieDialog(f, shell).open();
-		
-		System.out.println(f.getTitle());
-		
-		
-//		while(!shell.isDisposed())
-//			if(!display.readAndDispatch())
-//				display.sleep();
-//		display.dispose();
 	}
 }
 
