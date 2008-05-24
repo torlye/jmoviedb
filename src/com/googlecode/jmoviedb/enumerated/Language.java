@@ -377,4 +377,11 @@ public enum Language {
 			System.out.println("Unrecognised language ID: " + id);
 		return null;
 	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[Language.values().length];
+		for(int i = 0; i < Language.values().length; i++)
+			strings[i] = Language.values()[i].getImdbID();
+		return strings;
+	}
 }

@@ -27,12 +27,13 @@ import com.googlecode.jmoviedb.Settings;
 @SuppressWarnings("static-access")
 
 public enum AudioCodec {
-	mp3(0, "MP3", "MPEG-1 Audio Layer 3", Settings.getSettings().getLanguageClass().AUDIO_MP3_DESCRIPTION, null), 
+	other(0, "", "", "", null),
+	mp3(4, "MP3", "MPEG-1 Audio Layer 3", Settings.getSettings().getLanguageClass().AUDIO_MP3_DESCRIPTION, null), 
 	ac3(1, "AC3", "Dolby Digital (AC3)", Settings.getSettings().getLanguageClass().AUDIO_AC3_DESCRIPTION, null), 
 	dts(2, "DTS", "Digital Theater Systems", Settings.getSettings().getLanguageClass().AUDIO_DTS_DESCRIPTION, null), 
 	mp2(3, "MP2", "MPEG-1 Audio Layer 2", Settings.getSettings().getLanguageClass().AUDIO_MP2_DESCRIPTION, null),
 	aac(5, "AAC", "AAC/MPEG-4 Part 3", Settings.getSettings().getLanguageClass().AUDIO_AAC_DESCRIPTION, null),
-	ddex(10, "DD EX", "Dolby Digital EX", null, null),
+	ddex(16, "DD EX", "Dolby Digital EX", null, null),
 	ddplus(11, "DD+", "Dolby Digital Plus (DD+/E-AC-3)", null, null),
 	dtruehd(12, "TrueHD", "Dolby TrueHD", null, null),
 	dts_hd_hra(13, "DTS-HD HRA", "DTS-HD High Resolution Audio", null, null),
@@ -41,7 +42,6 @@ public enum AudioCodec {
 	pcm(9, "PCM/LPCM", "Pulse-code modulation", Settings.getSettings().getLanguageClass().AUDIO_PCM_DESCRIPTION, null),
 	ogg(7, "Vorbis", "Vorbis, aka. Ogg Vorbis", Settings.getSettings().getLanguageClass().AUDIO_VORBIS_DESCRIPTION, null),
 	real(8, "RealAudio", "RealAudio", Settings.getSettings().getLanguageClass().AUDIO_REAL_DESCRIPTION, null),
-	other(9, "Other/unknown", "", "", null),
 	analog(10, "Analog audio", "", "", null),
 	atrac3plus(15, "ATRAC3plus", "", null, null);
 	
@@ -106,5 +106,12 @@ public enum AudioCodec {
 
 	public URL getUrl() {
 		return url;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[AudioCodec.values().length];
+		for(int i = 0; i < AudioCodec.values().length; i++)
+			strings[i] = AudioCodec.values()[i].getShortName();
+		return strings;
 	}
 }

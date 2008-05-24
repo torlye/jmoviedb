@@ -1,21 +1,16 @@
 package com.googlecode.jmoviedb.gui;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.wizard.ProgressMonitorPart;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-
-import com.googlecode.jmoviedb.gui.action.MassUpdateAction;
 
 public class ImdbWizard extends Wizard {
 	

@@ -19,8 +19,6 @@
 
 package com.googlecode.jmoviedb.model.movietype;
 
-import java.sql.Blob;
-
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
 import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Language;

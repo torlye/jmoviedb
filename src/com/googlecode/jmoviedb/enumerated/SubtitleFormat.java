@@ -21,31 +21,33 @@ package com.googlecode.jmoviedb.enumerated;
 
 import java.net.URL;
 
+import com.googlecode.jmoviedb.CONST;
+
 public enum SubtitleFormat {
-	other(),
-	medianative(),
-	vobsub(),
-	subrip(),
-	microdvd(),
-	mpeg4(),
-	ogg(),
-	ssa(),
-	subviewer(),
-	usf(),
-	xsub(),
-	aqt(),
-	jaco(),
-	mpsub(),
-	phoenix(),
-	powerdivx(),
-	real(),
-	sami(),
-	ssf(),
-	vplayer(),
-	svcd(),
-	cvd(),
-	cc(),
-	burnt_in();
+	other(0),
+	burnt_in(99),
+	medianative(1),
+	vobsub(2),
+	subrip(3),
+	microdvd(4),
+	mpeg4(5),
+	ogg(6),
+	ssa(7),
+	subviewer(8),
+	usf(9),
+	xsub(10),
+	aqt(11),
+	jaco(12),
+	mpsub(13),
+	phoenix(14),
+	powerdivx(15),
+	real(16),
+	sami(17),
+	ssf(18),
+	vplayer(19),
+	svcd(20),
+	cvd(21),
+	cc(22);
 	
 	private int ID;
 	private String shortName;
@@ -53,17 +55,41 @@ public enum SubtitleFormat {
 	private String description;
 	private URL url;
 	
+	private SubtitleFormat(int id) {
+		this.ID = id;
+	}
+	
+	public String getShortName() {
+		return shortName;
+	}
+
+	public String getLongName() {
+		return longName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public URL getUrl() {
+		return url;
+	}
+
+	public int getID() {
+		return ID;
+	}
+	
 	/**
 	 * Looks up the correct enum value from an int ID
 	 * @param i the ID to look up
 	 * @return the associated enum
 	 */
-//	public static SubtitleFormat intToEnum(int id) {
-//		for(SubtitleFormat s : SubtitleFormat.values())
-//			if(id == s.getID())
-//				return s;
-//		if(CONST.DEBUG_MODE)
-//			System.out.println("Unrecognised subtitle format ID: " + id);
-//		return null;
-//	}
+	public static SubtitleFormat intToEnum(int id) {
+		for(SubtitleFormat a : SubtitleFormat.values())
+			if(id == a.getID())
+				return a;
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised subtitle format ID: " + id);
+		return null;
+	}
 }

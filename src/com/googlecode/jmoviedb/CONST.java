@@ -70,12 +70,12 @@ public class CONST {
 	/**
 	 * SWT version number
 	 */
-	public static final String VERSION_SWT = "3.3.1.1";
+	public static final String VERSION_SWT = "3.3.2";
 	
 	/**
 	 * Apache Derby version number
 	 */
-	public static final String VERSION_DERBY = "10.3.2.1";
+	public static final String VERSION_DERBY = "10.3.3.0";
 	
 	/**
 	 * BrowserLauncher2 version number
@@ -91,6 +91,11 @@ public class CONST {
 	 * Glazed Lists version number
 	 */
 	public static final String VERSION_GLAZED = "1.7.0";
+	
+	/**
+	 * KTable version number
+	 */
+	public static final String VERSION_KTABLE = "2.1.3";
 	
 	/**
 	 * This program's website
@@ -122,6 +127,11 @@ public class CONST {
 	 * Java CSV website
 	 */
 	public static final String WEBSITE_CSV = "http://sourceforge.net/projects/javacsv";
+	
+	/**
+	 * KTable website
+	 */
+	public static final String WEBSITE_KTABLE = "http://sourceforge.net/projects/ktable";
 	
 	/**
 	 * Region 0/region free. Value is 1 &lt;&lt; 8. 
@@ -372,6 +382,11 @@ public class CONST {
 	 * Exclamation mark icon
 	 */
 	public static final URL ICON_EXCLAMATION = ClassLoader.getSystemResource("resources/icon-silk/exclamation.png");
+	
+	/**
+	 * Tick mark icon, 12x12 pixels
+	 */
+	public static final URL ICON_TICK12 = ClassLoader.getSystemResource("resources/icon-silk/tick12.png");
 	
 	/**
 	 * The image to display when the movie has no associated cover image.

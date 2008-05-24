@@ -24,12 +24,14 @@ import com.googlecode.jmoviedb.enumerated.*;
 public class AudioTrack {
 	private Language language;
 	private AudioCodec audio;
+	private AudioChannels channels;
 	private boolean commentary;
 	
-	public AudioTrack(Language language, AudioCodec audio, boolean commentary) {
+	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary) {
 		this.language = language;
 		this.audio = audio;
 		this.commentary = commentary;
+		this.channels = channels;
 	}
 
 	public AudioCodec getAudio() {
@@ -55,5 +57,14 @@ public class AudioTrack {
 	public void setLanguage(Language language) {
 		this.language = language;
 	}
+
+	public AudioChannels getChannels() {
+		return channels;
+	}
+
+	public void setChannels(AudioChannels channels) {
+		this.channels = channels;
+	}
+	
 	
 }

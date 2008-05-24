@@ -22,7 +22,6 @@ package com.googlecode.jmoviedb.enumerated;
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.language.GuiLanguage;
 
-@SuppressWarnings("static-access")
 
 public enum Genre {
 	action(0, "Action", GuiLanguage.GENRE_ACTION), 

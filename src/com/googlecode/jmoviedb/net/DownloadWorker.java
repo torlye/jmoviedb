@@ -22,12 +22,9 @@ package com.googlecode.jmoviedb.net;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
-
 import com.googlecode.jmoviedb.CONST;
 
 public class DownloadWorker {

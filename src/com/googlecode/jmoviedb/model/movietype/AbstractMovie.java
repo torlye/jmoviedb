@@ -674,8 +674,17 @@ public abstract class AbstractMovie implements Cloneable {
 		this.dvdRegion = dvdRegion;
 	}
 	
-	public void setDvdRegionAsInt(int dvdRegion) {
-		//TODO
+	public void setDvdRegionAsInt(int region) {
+//		System.out.println("SET "+region);
+		if((region & CONST.R0) == CONST.R0) dvdRegion[0] = true; else dvdRegion[0] = false;
+		if((region & CONST.R1) == CONST.R1) dvdRegion[1] = true; else dvdRegion[1] = false;
+		if((region & CONST.R2) == CONST.R2) dvdRegion[2] = true; else dvdRegion[2] = false;
+		if((region & CONST.R3) == CONST.R3) dvdRegion[3] = true; else dvdRegion[3] = false;
+		if((region & CONST.R4) == CONST.R4) dvdRegion[4] = true; else dvdRegion[4] = false;
+		if((region & CONST.R5) == CONST.R5) dvdRegion[5] = true; else dvdRegion[5] = false;
+		if((region & CONST.R6) == CONST.R6) dvdRegion[6] = true; else dvdRegion[6] = false;
+		if((region & CONST.R7) == CONST.R7) dvdRegion[7] = true; else dvdRegion[7] = false;
+		if((region & CONST.R8) == CONST.R8) dvdRegion[8] = true; else dvdRegion[8] = false;
 	}
 	
 	/**
@@ -684,7 +693,7 @@ public abstract class AbstractMovie implements Cloneable {
 	 * @return all DVD regions encoded in an int
 	 */
 	public int getDvdRegionAsInt() {
-		int region = 0;;
+		int region = 0;
 		if(dvdRegion[0]) region += CONST.R0;
 		if(dvdRegion[1]) region += CONST.R1;
 		if(dvdRegion[2]) region += CONST.R2;
@@ -695,6 +704,7 @@ public abstract class AbstractMovie implements Cloneable {
 		if(dvdRegion[7]) region += CONST.R7;
 		if(dvdRegion[8]) region += CONST.R8;
 		
+//		System.out.println("GET "+region);
 		return region;
 	}
 
