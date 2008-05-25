@@ -33,6 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -57,9 +58,9 @@ import org.eclipse.swt.widgets.Text;
  * @author Tor Arne Lye
  *
  */
-public class MovieDialog extends Dialog implements org.eclipse.swt.events.SelectionListener {
+public class MovieDialog extends Dialog {
 	private AbstractMovie movie;
-	private Composite imageArea;
+	private Label imageArea;
 	private Combo typeCombo;
 	private Text imdbText;
 	private Text titleText;
@@ -110,15 +111,27 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	private static final int HORIZONTAL_SPACING = 6;
 	private static final int HEIGHT_HINT = 14;
 	
+	private Image mainTabIcon;
+	private Image taglineTabIcon;
+	private Image actorTabIcon;
+	private Image formatTabIcon;
+	private Image audioTabIcon;
+	
+	private final static int COVER_WIDTH = 100;
+	private final static int COVER_HEIGHT = 150;
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
-//	public MovieDialog(AbstractMovie movie, Shell shell) {
-//		super(shell);
+		
+		mainTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).createImage();
+		taglineTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).createImage();
+		actorTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).createImage();
+		formatTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).createImage();
+		audioTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB).createImage();
 		
 		this.movie = movie;
 		
-		//Sets keyboard focus to the save button
+		//TODO Sets keyboard focus to the save button
 //		saveButton.setFocus();
 	}
 	
@@ -150,6 +163,7 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		tabFolder.marginWidth = 0;
 		tabFolder.setBorderVisible(true);
 		tabFolder.setSingle(false);
+		tabFolder.setLayoutData(tabFolderGD);
 		
 		//Set tab colors to mimic Eclipse behavior
 		tabFolder.setSelectionForeground(this.getShell().getDisplay().getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
@@ -166,7 +180,6 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		formatVideoTab(tabFolder);
 		audioSubtitleTab(tabFolder);
 
-		tabFolder.setLayoutData(tabFolderGD);
 		tabFolder.setSelection(0); //select the first tab
 
 		if(movie != null)
@@ -178,59 +191,30 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	}
 	
 	private void MainTab(CTabFolder tabFolder) {
-		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).getImageData());
-		
 		CTabItem tab1 = new CTabItem(tabFolder, SWT.NULL);
-		tab1.setText("Main    ");
-		tab1.setImage(image);
+		tab1.setText("Main   ");
+		tab1.setImage(mainTabIcon);
 		
 		Composite c1 = new Composite(tabFolder, SWT.NULL);
 		
+		GridLayout gridLayout = new GridLayout(5, true);
+		gridLayout.marginHeight = MARGIN_HEIGHT;
+		gridLayout.marginWidth = MARGIN_WIDTH;
+		gridLayout.verticalSpacing = VERTICAL_SPACING;
+		gridLayout.horizontalSpacing = HORIZONTAL_SPACING;
+		c1.setLayout(gridLayout);
 		
-		
-		GridLayout gridLayout1 = new GridLayout(5, true);
-		c1.setLayout(gridLayout1);
-		gridLayout1.marginHeight = MARGIN_HEIGHT;
-		gridLayout1.marginWidth = MARGIN_WIDTH;
-		gridLayout1.verticalSpacing = VERTICAL_SPACING;
-		gridLayout1.horizontalSpacing = HORIZONTAL_SPACING;
-
-		GridData imageLayout = new GridData();
-		imageLayout.verticalSpan = 14;
-		imageLayout.horizontalAlignment = SWT.CENTER;
-		imageLayout.verticalAlignment = SWT.CENTER;
-//		imageGD.minimumWidth = 1000; //doesn't work
-		imageLayout.widthHint = 100;
-		imageLayout.heightHint = 150;
-
-		GridData longTextFieldLayout = new GridData();
-		longTextFieldLayout.horizontalSpan = 3;
-		longTextFieldLayout.horizontalAlignment = SWT.FILL;
-//		longTextFieldLayout.heightHint = HEIGHT_HINT;
-		
-		GridData shortTextFieldLayout = new GridData();
-		shortTextFieldLayout.horizontalSpan = 1;
-		shortTextFieldLayout.horizontalAlignment = SWT.LEFT;
-//		shortTextFieldLayout.heightHint = HEIGHT_HINT;
-		shortTextFieldLayout.widthHint = 50;
-		
-		GridData scaleLayout = new GridData();
-		scaleLayout.horizontalSpan = 2;
-		scaleLayout.horizontalAlignment = SWT.FILL;
-		
-		GridData fillerLayout1 = new GridData();
-		fillerLayout1.horizontalSpan = longTextFieldLayout.horizontalSpan - shortTextFieldLayout.horizontalSpan;
-		fillerLayout1.verticalAlignment = SWT.CENTER;
-		fillerLayout1.heightHint = 1;
-		
-
-		imageArea = new Composite(c1, SWT.BORDER);
-		imageArea.setLayoutData(imageLayout);
+		imageArea = new Label(c1, SWT.NONE);
+		GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 14);
+		gridData.widthHint = COVER_WIDTH;
+		gridData.heightHint = COVER_HEIGHT;
+		imageArea.setLayoutData(gridData);
+		imageArea.setAlignment(SWT.CENTER);
 		
 		Label typeLabel = new Label(c1, SWT.CENTER);
 		typeLabel.setText("Type:");
 		typeCombo = new Combo(c1, SWT.DROP_DOWN|SWT.READ_ONLY);
-		typeCombo.setLayoutData(longTextFieldLayout);
+		typeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		typeCombo.setItems(MovieType.getStringArray());
 		typeCombo.select(0);
 		typeCombo.setVisibleItemCount(7); //make all items visible
@@ -238,86 +222,84 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		Label titleLabel = new Label(c1, SWT.CENTER);
 		titleLabel.setText("Title:");
 		titleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		titleText.setToolTipText("The title of the movie.");
-		//System.out.println(titleText.getLineHeight());
-		titleText.setLayoutData(longTextFieldLayout);
+		titleText.setToolTipText("The title of the movie. If this field is changed, it will be overwritten " +
+				"on the next IMDb update. If you want to use a custom title, pleas use the \"display title\" field.");
+		titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		
 		Label altTitleLabel = new Label(c1, SWT.CENTER);
 		altTitleLabel.setText("Display title:");
 		altTitleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		altTitleText.setToolTipText("If empty, title is displayed.");
-		altTitleText.setLayoutData(longTextFieldLayout);
+		altTitleText.setToolTipText("This is the title that will be shown in the movie list. If empty, " +
+				"the main title will be show instead. The display title will not be overwritten on IMDb updates.");
+		altTitleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		
 		Label yearLabel = new Label(c1, SWT.CENTER);
 		yearLabel.setText("Year:");
 		yearText = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		yearText.setTextLimit(4);
-		yearText.setLayoutData(shortTextFieldLayout);
-		Composite yearFiller = new Composite(c1, SWT.NONE);
-		yearFiller.setLayoutData(fillerLayout1);
-		
-		Label directorLabel = new Label(c1, SWT.CENTER);
-		directorLabel.setText("Directed by:");
-		directorText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		directorText.setLayoutData(longTextFieldLayout);
-		
-		Label writerLabel = new Label(c1, SWT.CENTER);
-		writerLabel.setText("Written by:");
-		writerText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		writerText.setLayoutData(longTextFieldLayout);
+		yearText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
 		
 		Label genreLabel = new Label(c1, SWT.CENTER);
-		genreLabel.setText("Genres:");
+		genreLabel.setText("Genre:");
 		genreText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		genreText.setLayoutData(longTextFieldLayout);
+		genreText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		
 		Label countryLabel = new Label(c1, SWT.CENTER);
 		countryLabel.setText("Country:");
 		countryText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		countryText.setLayoutData(longTextFieldLayout);
+		countryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		
 		Label languageLabel = new Label(c1, SWT.CENTER);
 		languageLabel.setText("Language:");
 		languageText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		languageText.setLayoutData(longTextFieldLayout);
+		languageText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		
 		Label runtimeLabel = new Label(c1, SWT.CENTER);
 		runtimeLabel.setText("Runtime:");
 		runtimeText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		runtimeText.setLayoutData(shortTextFieldLayout);
-		Composite runtimeFiller = new Composite(c1, SWT.NONE);
-		runtimeFiller.setLayoutData(fillerLayout1);
+		runtimeText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+		runtimeText.setToolTipText("This field will be overwritten by IMDb updates!");
 		
 		Label rateLabel = new Label(c1, SWT.CENTER);
 		rateLabel.setText("Rate:");
 		rateScale = new Scale(c1, SWT.HORIZONTAL);
-		rateScale.setLayoutData(scaleLayout);
+		rateScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		rateScale.setIncrement(1);
 		rateScale.setMinimum(0);
 		rateScale.setMaximum(100);
-		rateScale.addSelectionListener(this);
+		rateScale.setToolTipText("The rating will be overwritten by IMDb updates!");
+		rateScale.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				//Updates the text in rateText when the slider is moved
+				rateText.setText((0.0 + rateScale.getSelection()) / 10 + "");
+			}
+		});
 		rateText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		rateText.setLayoutData(shortTextFieldLayout);
+		rateText.setLayoutData(new GridData());
 		rateText.setEditable(false);
 		
 		Label seenLabel = new Label(c1, SWT.CENTER);
 		seenLabel.setText("I have seen this movie");
 		seenCheck = new Button(c1, SWT.CHECK);
-		Composite seenFiller = new Composite(c1, SWT.NONE);
-		seenFiller.setLayoutData(fillerLayout1);
+		seenCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
 		
 		Label imdbLabel = new Label(c1, SWT.CENTER);
 		imdbLabel.setText("IMDb address:");
 		imdbText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		//		imdbText.setSize(200, 50); //fungerer ikke
-		imdbText.setToolTipText("An 8-digit ID number. You can also paste the IMDb URL here");
-		imdbText.setLayoutData(shortTextFieldLayout);
+		imdbText.setToolTipText("If a valid IMDb URL is present, you won't have to select the correct movie " +
+				"when running IMDb updates.");
+		imdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		Button imdbGotoButton = new Button(c1, SWT.PUSH);
 		imdbGotoButton.setText("Go to website");
+		imdbGotoButton.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				MainWindow.getMainWindow().launchBrowser(imdbText.getText());
+			}
+		});
 		
 //		Disable widgets until their respective functions are implememnted.
-		directorText.setEditable(false);
-		writerText.setEditable(false);
 		genreText.setEditable(false);
 		countryText.setEditable(false);
 		languageText.setEditable(false);
@@ -328,69 +310,70 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	
 	
 	private void TaglinePlotTab(CTabFolder tabFolder) {
-		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).getImageData());
-		
 		CTabItem tab2 = new CTabItem(tabFolder, SWT.NULL);
-		tab2.setText("Tagline / plot");
-		tab2.setImage(image);
+		tab2.setText("Tagline and plot");
+		tab2.setImage(taglineTabIcon);
 		
 		Composite c2 = new Composite(tabFolder, SWT.NULL);
-		
 		GridLayout gridLayout2 = new GridLayout(2, false);
-		c2.setLayout(gridLayout2);
 		gridLayout2.marginHeight = MARGIN_HEIGHT;
 		gridLayout2.marginWidth = MARGIN_WIDTH;
 		gridLayout2.verticalSpacing = VERTICAL_SPACING;
 		gridLayout2.horizontalSpacing = HORIZONTAL_SPACING;
-		
-		GridData gdFill = new GridData();
-		gdFill.verticalAlignment = SWT.FILL;
-		gdFill.horizontalAlignment = SWT.FILL;
-		gdFill.grabExcessHorizontalSpace = true;
-		gdFill.grabExcessVerticalSpace = true;
-		
-		GridData gd3 = new GridData();
-		gd3.verticalAlignment = SWT.TOP;
-		gd3.horizontalAlignment = SWT.LEFT;
-		gd3.widthHint = 70;
+		c2.setLayout(gridLayout2);
 		
 		Label taglineLabel = new Label(c2, SWT.LEFT);
 		taglineLabel.setText("Tagline:");
-		taglineLabel.setLayoutData(gd3);
+		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		gd.widthHint = 70;
+		taglineLabel.setLayoutData(gd);
 		taglineText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
 		//taglineText.setSize(100, 100);
-		taglineText.setLayoutData(gdFill);
+		taglineText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		Label plotLabel = new Label(c2, SWT.LEFT);
 		plotLabel.setText("Plot outline:");
-		plotLabel.setLayoutData(gd3);
+		gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		gd.widthHint = 70;
+		plotLabel.setLayoutData(gd);
 		plotText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		plotText.setLayoutData(gdFill);
+		plotText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		tab2.setControl(c2);
 	}
 	
 	private void ActorsTab(CTabFolder tabFolder) {
-		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).getImageData());
 		CTabItem tab3 = new CTabItem(tabFolder, SWT.NULL);
-		tab3.setText("Actors");
-		tab3.setImage(image);
+		tab3.setText("Actors, directors and writers");
+		tab3.setImage(actorTabIcon);
 		
 		Composite c3 = new Composite(tabFolder, SWT.NULL);
 		GridLayout compositeLayout = new GridLayout(2, false);
 		c3.setLayout(compositeLayout);
 		
-		GridData gdFill = new GridData();
-		gdFill.verticalAlignment = SWT.FILL;
-		gdFill.horizontalAlignment = SWT.FILL;
-		gdFill.grabExcessHorizontalSpace = true;
-		gdFill.grabExcessVerticalSpace = true;
+		Label directorLabel = new Label(c3, SWT.CENTER);
+		directorLabel.setText("Directed by:");
+		directorText = new Text(c3, SWT.SINGLE|SWT.BORDER);
+		directorText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
-		actorTable = new Table (c3, SWT.BORDER | SWT.MULTI | SWT.SINGLE); //TODO can be VIRTUAL
-		actorTable.setLayoutData(gdFill);
+		Label writerLabel = new Label(c3, SWT.CENTER);
+		writerLabel.setText("Written by:");
+		writerText = new Text(c3, SWT.SINGLE|SWT.BORDER);
+		writerText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+		actorTable = new Table (c3, SWT.BORDER | SWT.MULTI | SWT.SINGLE);
+		actorTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 2, 1));
 		actorTable.setHeaderVisible(true);
 		actorTable.setLinesVisible(true);
-		actorNameColumn = new TableColumn(actorTable, SWT.NONE);
+		actorTable.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				MessageDialog.openInformation(MovieDialog.this.getShell(), "Unimplemented feature!",
+				"The completed version will do something cool when selecting an actor name, like " +
+				"opening the actor's IMDb page or maybe displaying other movies with the same actor.");
+			}
+		});
+		actorNameColumn = new TableColumn(actorTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		asColumn = new TableColumn(actorTable, SWT.NONE);
 		characterNameColumn = new TableColumn(actorTable, SWT.NONE);
 		actorNameColumn.setText("Actor");
@@ -402,14 +385,16 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 //		asColumn.setResizable(false);
 //		characterNameColumn.setResizable(false);
 		
+		
+		directorText.setEditable(false);
+		writerText.setEditable(false);
 		tab3.setControl(c3);
 	}
 	
 	private void formatVideoTab(CTabFolder tabFolder) {
-		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).getImageData());
 		CTabItem tab4 = new CTabItem(tabFolder, SWT.NULL);
 		tab4.setText("Format and video");
-		tab4.setImage(image);
+		tab4.setImage(formatTabIcon);
 		
 		Composite c = new Composite(tabFolder, SWT.NULL);
 		GridLayout compositeLayout = new GridLayout(10, false);
@@ -486,10 +471,9 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	}
 	
 	private void audioSubtitleTab(CTabFolder tabFolder) {
-		Image image = new Image(null, ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB).getImageData());
 		CTabItem tab5 = new CTabItem(tabFolder, SWT.NULL);
 		tab5.setText("Audio and subtitles");
-		tab5.setImage(image);
+		tab5.setImage(audioTabIcon);
 		
 		Composite c = new Composite(tabFolder, SWT.NULL);
 //		GridLayout compositeLayout = new GridLayout(2, false);
@@ -555,10 +539,8 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		audioTable.setAudioModel(movie.getAudioTracks());
 //		subtitleTable.setSubModel(movie.getSubtitles());
 		
-		if(movie.getImageData() != null)
-			imageArea.setBackgroundImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), movie.getImageData()));
-		else
-			imageArea.setBackgroundImage(null);
+		imageArea.setImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), 
+				CONST.scaleImage(movie.getImageData(), false, COVER_WIDTH, COVER_HEIGHT)));
 		
 	}
 	
@@ -597,6 +579,23 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 		else if(buttonId == IDialogConstants.ABORT_ID) {
 			MessageDialog.openInformation(this.getShell(), "Oops", "That button doesn't do anyting yet");
 		}
+	}
+	
+	/**
+	 * Closes the window. Extended to dispose of certain additional resources.
+	 * @see org.eclipse.jface.dialogs.Dialog#close()
+	 */
+	public boolean close() {
+		if(imageArea.getImage() != null)
+			imageArea.getImage().dispose();
+		mainTabIcon.dispose();
+		taglineTabIcon.dispose();
+		actorTabIcon.dispose();
+		formatTabIcon.dispose();
+		audioTabIcon.dispose();
+		audioTable.dispose();
+//		subtitleTable.dispose();
+		return super.close();
 	}
 	
 	private void save() {
@@ -642,16 +641,6 @@ public class MovieDialog extends Dialog implements org.eclipse.swt.events.Select
 	
 	public AbstractMovie getModel() {
 		return movie;
-	}
-
-	/**
-	 * Is never called, but must remain for compatibility with the
-	 * SelectionListener interface
-	 */
-	public void widgetDefaultSelected(SelectionEvent e) {}
-
-	public void widgetSelected(SelectionEvent e) {
-		rateText.setText((0.0 + rateScale.getSelection()) / 10 + "");
 	}
 }
 
