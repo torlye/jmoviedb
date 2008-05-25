@@ -389,14 +389,26 @@ public class CONST {
 	public static final URL ICON_TICK12 = ClassLoader.getSystemResource("resources/icon-silk/tick12.png");
 	
 	/**
+	 * Icon for an "add" action
+	 */
+	public static final URL ICON_ADD = ClassLoader.getSystemResource("resources/icon-silk/add.png");
+	/**
+	 * Icon for a delete/remove action
+	 */
+	public static final URL ICON_DELETE = ClassLoader.getSystemResource("resources/icon-silk/delete.png");
+	/**
+	 * Icon with an arrow pointing up
+	 */
+	public static final URL ICON_UP = ClassLoader.getSystemResource("resources/icon-silk/arrow_up.png");
+	/**
+	 * Icon with an arrow pointing down
+	 */
+	public static final URL ICON_DOWN = ClassLoader.getSystemResource("resources/icon-silk/arrow_down.png");
+	
+	/**
 	 * The image to display when the movie has no associated cover image.
 	 */
 	public static final URL NO_COVER_IMAGE = ClassLoader.getSystemResource("resources/nocover.png");
-
-//	/**
-//	 * Icon file for the "" action
-//	 */
-//	public static final URL ICON_ = ClassLoader.getSystemResource("resources/icon-silk/");
 	
 	//TODO move this
 	public static final String RECENT_FILES_PROPERTY_NAME = "RecentFiles";
@@ -618,5 +630,28 @@ public class CONST {
 		string = string.replace("&#255;", "ÿ");
 		
 		return string;
+	}
+	
+	/**
+	 * Scales an image to the specified max size while keeping the original aspect ratio.
+	 * @param imageData the ImageData to scale 
+	 * @param enlarge whether or not to enlarge the image if it is smaller than the specified size
+	 * @param maxWidth the maximum width
+	 * @param maxHeight the maximum width
+	 * @return a scaled version of the image, in the form of an ImageData instance
+	 */
+	public static ImageData scaleImage(ImageData imageData, boolean enlarge, int maxWidth, int maxHeight) {
+		if(imageData.width==maxWidth || imageData.height==maxHeight)
+			return imageData;
+		if(enlarge || imageData.width-maxWidth > 0 || imageData.height-maxHeight > 0) {
+			float widthfactor = (float)maxWidth/(float)imageData.width;
+			float heightFactor = (float)maxHeight/(float)imageData.height;
+			if(widthfactor < heightFactor) {
+				return imageData.scaledTo(Math.round(imageData.width*widthfactor), Math.round(imageData.height*widthfactor));
+			} else {
+				return imageData.scaledTo(Math.round(imageData.width*heightFactor), Math.round(imageData.height*heightFactor));
+			}
+		}
+		return imageData;
 	}
 }

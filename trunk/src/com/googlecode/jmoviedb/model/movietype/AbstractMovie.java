@@ -372,6 +372,8 @@ public abstract class AbstractMovie implements Cloneable {
 	 * @param imdbID a string containing the IMDb ID
 	 */
 	public void setImdbID(String imdbID) {
+		if(imdbID == null || imdbID.length() == 0)
+			this.imdbID = "";
 		Matcher matcher = Pattern.compile("\\D*(\\d{7})\\D*").matcher(imdbID);
 		if(matcher.find())
 			this.imdbID = matcher.group(1);
@@ -724,14 +726,17 @@ public abstract class AbstractMovie implements Cloneable {
 		this.imageBytes = imageBytes;
 	}
 	
+	/**
+	 * Creates and returns the image data for this movie.
+	 * @return ImageData for cover image
+	 */
 	public ImageData getImageData() {
 		if(imageBytes==null)
 			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData();
 		try {
 			return new ImageData(new ByteArrayInputStream(imageBytes));
 		} catch(SWTException e) {//Invalid or unsupported image data
-			System.out.println("E R R O R " + e.getMessage());
-			return null;
+			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData();
 		}
 	}
 	

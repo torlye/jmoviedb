@@ -43,9 +43,21 @@ public class AudioSubtitleTable {
 
 	// column names
 	private String[] columnNames;
+	
+	private Image tickImage;
+	private Image addImage;
+	private Image removeImage;
+	private Image upImage;
+	private Image downImage;
 
 	public AudioSubtitleTable(Composite parent, boolean audio) {
 		this.audio = audio;
+		
+		tickImage = ImageDescriptor.createFromURL(CONST.ICON_TICK12).createImage();
+		addImage = ImageDescriptor.createFromURL(CONST.ICON_ADD).createImage();
+		removeImage = ImageDescriptor.createFromURL(CONST.ICON_DELETE).createImage();
+		upImage = ImageDescriptor.createFromURL(CONST.ICON_UP).createImage();
+		downImage = ImageDescriptor.createFromURL(CONST.ICON_DOWN).createImage();
 		
 		if(audio)
 			columnNames = new String[] {"Language","Commentary track","Format","Channels"};
@@ -56,7 +68,7 @@ public class AudioSubtitleTable {
 		parent.setLayoutData(gridData);
 
 		// Set numColumns to 3 for the buttons 
-		GridLayout layout = new GridLayout(3, false);
+		GridLayout layout = new GridLayout(4, false);
 		layout.marginWidth = 4;
 		parent.setLayout(layout);
 
@@ -89,6 +101,17 @@ public class AudioSubtitleTable {
 	public ArrayList<SubtitleTrack> getSubModel() {
 		return subModel;
 	}
+	
+	/**
+	 * Disposes of Image resources
+	 */
+	public void dispose() {
+		tickImage.dispose();
+		addImage.dispose();
+		removeImage.dispose();
+		upImage.dispose();
+		downImage.dispose();
+	}
 
 	
 	/**
@@ -102,7 +125,7 @@ public class AudioSubtitleTable {
 
 		GridData gridData = new GridData(GridData.FILL_BOTH);
 		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalSpan = 3;
+		gridData.horizontalSpan = 4;
 		table.setLayoutData(gridData);		
 
 		table.setLinesVisible(true);
@@ -164,42 +187,12 @@ public class AudioSubtitleTable {
 	 * @param parent the parent composite
 	 */
 	private void createButtons(Composite parent) {
-
-		// Create and configure the "Add" button
-		Button add = new Button(parent, SWT.PUSH | SWT.CENTER);
-		add.setText("Add");
-		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gridData.widthHint = 80;
-		add.setLayoutData(gridData);
-		add.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				audioModel.add(new AudioTrack(Language.english, AudioCodec.other, AudioChannels.stereo, false));
-				tableViewer.refresh();
-			}
-		});
-
-		//	Create and configure the "Delete" button
-		Button delete = new Button(parent, SWT.PUSH | SWT.CENTER);
-		delete.setText("Remove");
-		gridData = new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gridData.widthHint = 80; 
-		delete.setLayoutData(gridData); 
-		delete.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				AudioTrack track = (AudioTrack)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
-				if (track != null) {
-					audioModel.remove(track);
-					tableViewer.refresh();
-				}
-			}
-		});
 		
 		// Create and configure the "Up" button
 		Button up = new Button(parent, SWT.PUSH | SWT.CENTER);
-		up.setText("Move up");
+		up.setImage(upImage);
 
-		gridData = new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gridData.widthHint = 80;
+		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		up.setLayoutData(gridData);
 		up.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -218,10 +211,9 @@ public class AudioSubtitleTable {
 		
 		// Create and configure the "Down" button
 		Button down = new Button(parent, SWT.PUSH | SWT.CENTER);
-		down.setText("Move down");
+		down.setImage(downImage);
 
-		gridData = new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gridData.widthHint = 80;
+		gridData = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		down.setLayoutData(gridData);
 		down.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -238,9 +230,34 @@ public class AudioSubtitleTable {
 				}
 			}
 		});
-	}
+		
+		// Create and configure the "Add" button
+		Button add = new Button(parent, SWT.PUSH | SWT.CENTER);
+		add.setImage(addImage);
+		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
+		add.setLayoutData(gridData);
+		add.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				audioModel.add(new AudioTrack(Language.english, AudioCodec.other, AudioChannels.stereo, false));
+				tableViewer.refresh();
+			}
+		});
 
-	private static final Image tickImage = ImageDescriptor.createFromURL(CONST.ICON_TICK12).createImage();
+		//	Create and configure the "Delete" button
+		Button delete = new Button(parent, SWT.PUSH | SWT.CENTER);
+		delete.setImage(removeImage);
+		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
+		delete.setLayoutData(gridData); 
+		delete.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				AudioTrack track = (AudioTrack)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				if (track != null) {
+					audioModel.remove(track);
+					tableViewer.refresh();
+				}
+			}
+		});
+	}
 	
 	private class AudioLabelProvider extends LabelProvider implements ITableLabelProvider {
 		/**

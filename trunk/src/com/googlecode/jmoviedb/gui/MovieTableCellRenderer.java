@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
+import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Genre;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
@@ -22,12 +23,14 @@ import de.kupzog.ktable.renderers.DefaultCellRenderer;
 
 public class MovieTableCellRenderer extends DefaultCellRenderer implements KTableCellRenderer {
 	
-	private static Color SELECTED_COLOR = new Color(Display.getCurrent(), 255, 159, 117); //ff9f75
-	private static Color NOT_SEEN_COLOR = new Color(Display.getCurrent(), 250, 247, 221); //faf7dd
-	private static Color DEFAULT_COLOR = new Color(Display.getCurrent(), 221, 247, 250); //ddf7fa
-	private static Color DVD_COLOR = new Color(Display.getCurrent(), 220, 128, 128); //dc8080
-	private static Color VCD_COLOR = new Color(Display.getCurrent(), 240, 221, 250); //f0ddfa
-	private static Color SVCD_COLOR = new Color(Display.getCurrent(), 250, 221, 240); //faddf0
+	private final static Color SELECTED_COLOR = new Color(Display.getCurrent(), 255, 159, 117); //ff9f75
+	private final static Color NOT_SEEN_COLOR = new Color(Display.getCurrent(), 250, 247, 221); //faf7dd
+	private final static Color DEFAULT_COLOR = new Color(Display.getCurrent(), 221, 247, 250); //ddf7fa
+	private final static Color DVD_COLOR = new Color(Display.getCurrent(), 220, 128, 128); //dc8080
+	private final static Color VCD_COLOR = new Color(Display.getCurrent(), 240, 221, 250); //f0ddfa
+	private final static Color SVCD_COLOR = new Color(Display.getCurrent(), 250, 221, 240); //faddf0
+	private final static int IMAGE_WIDTH = 50;
+	private final static int IMAGE_HEIGHT = 70;
 	
 	private static Font FONT = new Font(Display.getCurrent(), 
 			Display.getCurrent().getSystemFont().getFontData()[0].getName(), 10, SWT.BOLD);
@@ -40,7 +43,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 	public void drawCell(GC gc, Rectangle rect, int col, int row, Object content,
 			boolean focus, boolean header, boolean clicked, KTableModel model) {
 		AbstractMovie movie = (AbstractMovie)content;
-		Image image = new Image(Display.getCurrent(), movie.getImageData().scaledTo(50, 70));
+		Image image = new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), false, IMAGE_WIDTH, IMAGE_HEIGHT));
 		String title = movie.getDisplayTitle();
 		if(movie.getYear() != 0)
 			title += " ("+movie.getYear()+")";
@@ -53,7 +56,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		else if(movie instanceof TVseries)
 			title += " (TV-series)";
 		if(movie.getResolution().isHD())
-			title += " ["+movie.getResolution().getName()+"]";
+			title += " "+movie.getResolution().getName();
 		String genre = "";
 		for(Genre g : movie.getGenres()) {
 			if(genre.length()>0)
@@ -101,7 +104,9 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		gc.setForeground(COLOR_TEXT);
 		gc.fillRectangle(rect);
 		gc.drawRectangle(rect);
-		gc.drawImage(image, rect.x+10, rect.y+10);
+		gc.drawImage(image, 
+				rect.x+10+(IMAGE_WIDTH-image.getBounds().width)/2, 
+				rect.y+10+(IMAGE_HEIGHT-image.getBounds().height)/2);
 		gc.setFont(FONT);
 		gc.drawString(title, leftColumn, firstRow);
 		gc.drawString(genre, leftColumn, secondRow);
