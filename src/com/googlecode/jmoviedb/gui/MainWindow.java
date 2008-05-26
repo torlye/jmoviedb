@@ -64,11 +64,13 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -130,7 +132,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private SearchField searchField;
         private SearchDropDownMenu dropdownMenu;
 //	private ClearSearchfieldAction clearSearchfieldAction;
-        
+private ScrolledComposite contentPane;
         
 	private StatusLineThreadManager statusLine;
 	
@@ -331,8 +333,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //			}
 //			return count;
 //			}
+		contentPane = new ScrolledComposite(parent, SWT.V_SCROLL|SWT.BORDER);
+		contentPane.setExpandHorizontal(true);
+		contentPane.setExpandVertical(true);
 		
-		table = new KTable(parent, SWT.V_SCROLL|SWTX.FILL_WITH_LASTCOL|SWT.BORDER|SWT.FULL_SELECTION);
+		table = new KTable(contentPane, SWTX.FILL_WITH_LASTCOL|SWT.FULL_SELECTION);
 		table.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		table.addCellDoubleClickListener(new KTableCellDoubleClickListener(){
 			public void cellDoubleClicked(int col, int row, int statemask) {
@@ -372,7 +377,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			handleException(e);
 		}
 		
-		return table;
+		contentPane.setContent(table);
+		
+		return contentPane;
 	}
 
 	/**
@@ -438,6 +445,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		try {
 			new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
 			table.setModel(viewer);
+			contentPane.setMinHeight(viewer.getRowHeightMinimum()*filteredList.size()+1);
 			Settings.getSettings().updateRecentFiles(path);
 			updateShellText();
 			if(currentlyOpenDb.getMovieCount()>0)
@@ -451,24 +459,29 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 	}
         
-        /**
-         * Updates filteredList and sortedList, called when search-parameter is changed,
-         * is needed because filteredList needs to use new matcherEditor created in SearchField
-         */
-        public void updateLists() {
-          try {
-            //dbWorker.rebuildLists();
-            UpdateListsWorker updateWorker = new UpdateListsWorker();
-            new ProgressMonitorDialog(getShell()).run(true, false, updateWorker);
-            table.setModel(viewer);
-            
-          } catch (InvocationTargetException e) {
-            e.printStackTrace();
-          } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-        }
+//	/**
+//	 * Updates filteredList and sortedList, called when search-parameter is changed,
+//	 * is needed because filteredList needs to use new matcherEditor created in SearchField
+//	 */
+//	public void updateLists() {
+//		try {
+//			if(CONST.DEBUG_MODE) System.out.println("updateLists()");
+////			dbWorker.rebuildLists();
+//			UpdateListsWorker updateWorker = new UpdateListsWorker();
+//			new ProgressMonitorDialog(getShell()).run(true, false, updateWorker);
+//			table.setModel(viewer);
+//
+//		} catch (InvocationTargetException e) {
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+////			TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public void updateSearchFilter() {
+		filteredList.setMatcherEditor(searchField.getMatcherEditor());
+	}
 
 	private class OpenDBWorker implements IRunnableWithProgress {
 		private String path;
@@ -492,17 +505,21 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 				monitor.subTask("Importing data");
 				sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
-                                filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
-                                viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
+				filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
+				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
 
 				filteredList.addListEventListener(
 						new ListEventListener<AbstractMovie>() {
 							public void listChanged(ListEvent<AbstractMovie> arg0) {
-                                                            filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
-//								if(filteredList.size() != currentlyOpenDb.getMovieCount())
-//									setStatusLineMessage("Showing "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
-//								else
-//									setStatusLineMessage(filteredList.size()+" movies");
+								if(CONST.DEBUG_MODE) System.out.println("ListChanged, new size "+filteredList.size());
+								contentPane.setMinHeight(viewer.getRowHeightMinimum()*filteredList.size()+1);
+								System.out.println("NEW HEIGHT: "+(viewer.getRowHeightMinimum()*filteredList.size()+1));
+								//filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO I don't need this, do I?
+								if(filteredList.size() != currentlyOpenDb.getMovieCount())
+								setStatusLineMessage("Displaying "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
+								else
+								setStatusLineMessage("Displaying "+filteredList.size()+" movies");
+								
 							}
 						});
 
@@ -517,39 +534,38 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}                
 	}
         
-        /**
-         * Used when the lists needs to be updated, and no new database needs to be loaded
-         */
-        private class UpdateListsWorker implements IRunnableWithProgress {
-		public UpdateListsWorker() {
-		}
-
-		public void run(IProgressMonitor monitor) throws InvocationTargetException {
-			try {   
-                                //Unregister listeners
-                                sortedList.dispose();
-                                filteredList.dispose();
-                          
-				monitor.subTask("Rebuilding lists");
-				sortedList = new SortedList<AbstractMovie>(currentlyOpenDb.getMovieList(), getComparator());
-                                filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
-                                viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
-                                
-                                //Register new event listener
-				filteredList.addListEventListener(
-						new ListEventListener<AbstractMovie>() {
-							public void listChanged(ListEvent<AbstractMovie> arg0) {
-                                                            filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
-							}
-						});
-				fileSaveAction.setEnabled(false);
-			} catch (Exception e) {
-				throw new InvocationTargetException(e);
-			} finally {
-				monitor.done();
-			}
-		}
-        }
+//        /**
+//         * Used when the lists needs to be updated, and no new database needs to be loaded
+//         */
+//	private class UpdateListsWorker implements IRunnableWithProgress {
+//		public UpdateListsWorker() {}
+//
+//		public void run(IProgressMonitor monitor) throws InvocationTargetException {
+//			try {   
+//				//Unregister listeners
+//				sortedList.dispose();
+//				filteredList.dispose();
+//
+//				monitor.subTask("Rebuilding lists");
+//				sortedList = new SortedList<AbstractMovie>(currentlyOpenDb.getMovieList(), getComparator());
+//				filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
+//				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
+//
+//				//Register new event listener
+//				filteredList.addListEventListener(
+//						new ListEventListener<AbstractMovie>() {
+//							public void listChanged(ListEvent<AbstractMovie> arg0) {
+//								filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor());
+//							}
+//						});
+//				fileSaveAction.setEnabled(false);
+//			} catch (Exception e) {
+//				throw new InvocationTargetException(e);
+//			} finally {
+//				monitor.done();
+//			}
+//		}
+//	}
 	
 	/**
 	 * Returns the currently open database
@@ -852,8 +868,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 		MessageDialog.openInformation(m.getShell(), "Warning", 
 				"This is a very early test version of JMoviedb. " +
-				"It has lots of errors and missing features. " +
-				"It is meant for testing only!");
+				"It has several errors and missing features. " +
+				"Use it for testing only!");
 		m.run();
 		
 		

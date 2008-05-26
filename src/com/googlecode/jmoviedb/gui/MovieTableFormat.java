@@ -24,12 +24,12 @@ public class MovieTableFormat extends AbstractKTableFormat {
 		return 1;
 	}
 
-	public String getColumnName(int arg0) {
+	public String getColumnName(int column) {
 		return null;
 	}
 
-	public Object getColumnValue(Object arg0, int arg1) {
-		return arg0;
+	public Object getColumnValue(Object baseObject, int column) {
+		return baseObject;
 	}
 	
 	public int getRowHeightMinimum() {
