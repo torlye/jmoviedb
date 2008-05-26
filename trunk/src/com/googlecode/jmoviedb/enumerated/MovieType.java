@@ -32,18 +32,18 @@ public enum MovieType {
 	movieserial(6, new MovieSerial().getClass(), GuiLanguage.TYPE_MOVIESERIAL, GuiLanguage.TYPE_MOVIESERIAL_DESCRIPTION);
 	
 	private int id;
-	private Class cl;
+	private Class<?> cl;
 	private String name;
 	private String description;
 	
-	private MovieType(int id, Class cl, String name, String description) {
+	private MovieType(int id, Class<?> cl, String name, String description) {
 		this.id = id;
 		this.cl = cl;
 		this.name = name;
 		this.description = description;
 	}
 
-	public Class getCl() {
+	public Class<?> getCl() {
 		return cl;
 	}
 
