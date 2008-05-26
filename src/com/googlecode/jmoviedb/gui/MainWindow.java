@@ -48,7 +48,6 @@ import de.kupzog.ktable.SWTX;
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
-import edu.stanford.ejalbert.launching.IBrowserLaunching;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.CoolBarManager;
@@ -64,13 +63,11 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -132,7 +129,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private SearchField searchField;
         private SearchDropDownMenu dropdownMenu;
 //	private ClearSearchfieldAction clearSearchfieldAction;
-private ScrolledComposite contentPane;
         
 	private StatusLineThreadManager statusLine;
 	
@@ -315,29 +311,8 @@ private ScrolledComposite contentPane;
 			getShell().setLocation(settings.getWindowPosition());
 	}
 
-	protected Control createContents(Composite parent) {
-		
-//Bug id 1796283 in sourceforge
-//		private int getFullyVisibleRowCount(int fixedHeight) {
-//			Rectangle rect = getClientArea();
-//			ScrollBar sb = getHorizontalBar();
-//			if (sb != null)
-//			rect.height-=sb.getSize().y;
-//
-//			int count = 0;
-//			int heightSum = fixedHeight;
-//			heightSum+=m_Model.getRowHeight(m_TopRow);
-//			for (int i=m_TopRow + 1; heightSum<rect.height; i++) {
-//			count++;
-//			heightSum+=m_Model.getRowHeight(i);
-//			}
-//			return count;
-//			}
-		contentPane = new ScrolledComposite(parent, SWT.V_SCROLL|SWT.BORDER);
-		contentPane.setExpandHorizontal(true);
-		contentPane.setExpandVertical(true);
-		
-		table = new KTable(contentPane, SWTX.FILL_WITH_LASTCOL|SWT.FULL_SELECTION);
+	protected Control createContents(Composite parent) {	
+		table = new KTable(parent, SWTX.FILL_WITH_LASTCOL|SWT.FULL_SELECTION|SWT.V_SCROLL|SWT.BORDER);
 		table.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		table.addCellDoubleClickListener(new KTableCellDoubleClickListener(){
 			public void cellDoubleClicked(int col, int row, int statemask) {
@@ -377,9 +352,7 @@ private ScrolledComposite contentPane;
 			handleException(e);
 		}
 		
-		contentPane.setContent(table);
-		
-		return contentPane;
+		return table;
 	}
 
 	/**
@@ -445,7 +418,6 @@ private ScrolledComposite contentPane;
 		try {
 			new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
 			table.setModel(viewer);
-			contentPane.setMinHeight(viewer.getRowHeightMinimum()*filteredList.size()+1);
 			Settings.getSettings().updateRecentFiles(path);
 			updateShellText();
 			if(currentlyOpenDb.getMovieCount()>0)
@@ -512,8 +484,6 @@ private ScrolledComposite contentPane;
 						new ListEventListener<AbstractMovie>() {
 							public void listChanged(ListEvent<AbstractMovie> arg0) {
 								if(CONST.DEBUG_MODE) System.out.println("ListChanged, new size "+filteredList.size());
-								contentPane.setMinHeight(viewer.getRowHeightMinimum()*filteredList.size()+1);
-								System.out.println("NEW HEIGHT: "+(viewer.getRowHeightMinimum()*filteredList.size()+1));
 								//filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO I don't need this, do I?
 								if(filteredList.size() != currentlyOpenDb.getMovieCount())
 								setStatusLineMessage("Displaying "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
