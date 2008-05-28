@@ -4,9 +4,12 @@ Complete MovieDialog - More specifically: Add TV-series support, rearrange contr
 Improve various GUIs, prevent dialogs from resizing depending on contents
 Improve model layer, it is currently poorly designed. Could possibly read data directly from database instead of storing it temporarily in the model layer classes 
 Some of the enum types are incomplete
-GuiLanguage classes are a joke. Remove or redesign.
+GuiLanguage classes are a joke. Remove or redesign. Probably use 'externalize strings' feature in eclipse
 Tweak MovieTableCell behaviour when resizing
+Show progress bar while saving
+Add sorting in Custom SQL Query result table
 
 BUGS
 ----
 Find and plug memory leak in IMDB mass update feature
+Recently files list isn't updated properly

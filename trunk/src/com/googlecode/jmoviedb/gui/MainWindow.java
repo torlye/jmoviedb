@@ -20,10 +20,12 @@
 package com.googlecode.jmoviedb.gui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.zip.ZipException;
 
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
@@ -288,6 +290,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			toolBarManager.add(addMovieDropdownMenu);
 			toolBarManager.add(new TestAction("Test!", false));
 			toolBarManager.add(new TestAction("Crash!", true));
+			toolBarManager.add(new CustomSQLaction());
 			break;
 		case 2:
 			toolBarManager.add(searchField);
@@ -337,19 +340,30 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 				//Do nothing
 			}});
 		
-		try {
-			if(cmdLineArgs.length>0) {
-				File f = new File(cmdLineArgs[0]);
-				if(f.canRead())
-					openDB(cmdLineArgs[0]);
-				else {
-					openDB(null);
+		boolean success = false;
+		if(cmdLineArgs.length>0) {
+			if(CONST.DEBUG_MODE) System.out.println("Opening file frome command line argument");
+			String arg = cmdLineArgs[0];
+			if(!System.getProperty("file.separator").equals("\\")) {
+				for (int i = 1; i < cmdLineArgs.length && cmdLineArgs[i-1].endsWith("\\"); i++) {
+					arg = arg.substring(0, arg.length()-1) + " " + cmdLineArgs[i];
 				}
-			} else {
-				openDB(null);
 			}
-		} catch(Exception e) {
-			handleException(e);
+			File f = new File(arg);
+			if(f.canRead()) {
+				if(CONST.DEBUG_MODE) System.out.println("Opening "+arg);
+				success = openDB(arg);
+			}
+			else
+				if(CONST.DEBUG_MODE) System.out.println(arg+" failed to read, falling back");
+		}
+		if(!success && settings.getOpenRecentFile()) {
+			if(CONST.DEBUG_MODE) System.out.println("Falling back to open recently used file");
+			success = openRecent(0);
+		}
+		if(!success) {
+			if(CONST.DEBUG_MODE) System.out.println("Falling back to open an empty database");
+			openDB(null);
 		}
 		
 		return table;
@@ -410,24 +424,61 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	/**
 	 * Opens a new database in the main window
 	 * @param path to the database, or null
-	 * @throws IOException 
-	 * @throws SQLException 
-	 * @throws ClassNotFoundException 
+	 * @return false if the database failed to open
 	 */
-	public void openDB(String path) throws ClassNotFoundException, SQLException, IOException {
+	public boolean openDB(String path) {
 		try {
-			new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
-			table.setModel(viewer);
-			Settings.getSettings().updateRecentFiles(path);
-			updateShellText();
-			if(currentlyOpenDb.getMovieCount()>0)
-				setStatusLineMessage("Opened "+currentlyOpenDb.getMovieCount()+" movies");
+			internalOpen(path);
+			return true;
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(e.getCause() instanceof ZipException)
+				MessageDialog.openError(this.getShell(), "File open error", "The file is of the wrong type or may be corrupted:\n"+path);
+			else if(e.getCause() instanceof FileNotFoundException)
+				MessageDialog.openError(this.getShell(), "File open error", "The file was not found or could not be opened:\n"+path);
+			else
+				MessageDialog.openError(this.getShell(), "File open error", "The file could not be opened:\n"+path);
+			return false;
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// Should never happen
+			return false;
+		}
+	}
+	
+	private void internalOpen(String path) throws InvocationTargetException, InterruptedException {
+		new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
+		table.setModel(viewer);
+		Settings.getSettings().updateRecentFiles(path);
+		updateShellText();
+		if(currentlyOpenDb.getMovieCount()>0)
+			setStatusLineMessage("Opened "+currentlyOpenDb.getMovieCount()+" movies");
+	}
+	
+	/**
+	 * Opens a recently used database file
+	 * @param the position in the recently used files list to open. 0 to try each file until one has been successfully opened.
+	 * @return false if the database failed to open
+	 */
+	public boolean openRecent(int number) {
+		if(number>4 || number<0)
+			return false;
+		if(number==0) {
+			while(settings.getRecentFiles()[0].length()>0) {
+				try {
+					internalOpen(settings.getRecentFiles()[0]);
+					return true;
+				} catch (Exception e) {
+					settings.dropRecentFile(1);
+				}
+			}
+			return false;
+		} else {
+			try {
+				internalOpen(settings.getRecentFiles()[number-1]);
+				return true;
+			} catch (Exception e) {
+				settings.dropRecentFile(number);
+				return false;
+			}
 		}
 	}
         
@@ -463,7 +514,17 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 		public void run(IProgressMonitor monitor) throws InvocationTargetException {
 			try {
+				if(CONST.DEBUG_MODE) System.out.println("Running OpenDBWorker with argument "+path);
 				monitor.beginTask("Loading database", IProgressMonitor.UNKNOWN);
+				if(path == null)
+					monitor.subTask("Creating empty database");
+				else {
+					monitor.subTask("Opening database");
+					if(!new File(path).canRead())
+						throw new FileNotFoundException();
+				}
+				Moviedb db = new Moviedb(path);
+				
 				if(currentlyOpenDb != null) {
 					monitor.subTask("Closing previous database");
 					sortedList.dispose();
@@ -472,8 +533,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 					currentlyOpenDb.closeDatabase();
 					currentlyOpenDb = null;
 				}
-				monitor.subTask("Opening database");
-				Moviedb db = new Moviedb(path);
 
 				monitor.subTask("Importing data");
 				sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
@@ -724,7 +783,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 * Create or rebuild the recent files menu (rebuild each time the contents change)
 	 */
 	private void createRecentFilesMenu() {
-		System.out.println("BUILDING RECENT FILES MENU");
+		if(CONST.DEBUG_MODE) System.out.println("BUILDING RECENT FILES MENU:");
 		
 		String[] recentFiles = settings.getRecentFiles();
 		boolean[] recentEnabled = new boolean[4];
@@ -736,7 +795,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 		
 		openPreviousAction1 = new OpenPreviousAction(1, recentFiles[0], fileSaveAction);
-		System.out.println(recentFiles[0]);
 		openPreviousAction1.setEnabled(recentEnabled[0]);
 		openPreviousAction2 = new OpenPreviousAction(2, recentFiles[1], fileSaveAction);
 		openPreviousAction2.setEnabled(recentEnabled[1]);
@@ -744,6 +802,12 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		openPreviousAction3.setEnabled(recentEnabled[2]);
 		openPreviousAction4 = new OpenPreviousAction(4, recentFiles[3], fileSaveAction);
 		openPreviousAction4.setEnabled(recentEnabled[3]);
+		if(CONST.DEBUG_MODE) {
+			if(openPreviousAction1.isEnabled()) System.out.println(recentFiles[0]);
+			if(openPreviousAction2.isEnabled()) System.out.println(recentFiles[1]);
+			if(openPreviousAction3.isEnabled()) System.out.println(recentFiles[2]);
+			if(openPreviousAction4.isEnabled()) System.out.println(recentFiles[3]);
+		}
 	}
 	
 	/**
@@ -781,15 +845,12 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			}
 		}
 		if(pce.getProperty().equals(CONST.RECENT_FILES_PROPERTY_NAME)) {
+
+			if(CONST.DEBUG_MODE) System.out.println("PCE: REFRESH RECENT FILES LIST");
 			createRecentFilesMenu();
 
-			if(CONST.DEBUG_MODE) {
-				System.out.println("PCE: REFRESH RECENT FILES LIST");
-				System.out.println("The topmost item should now be " + openPreviousAction1.getText());
-			}
-
 			getMenuBarManager().updateAll(true); //TODO why does this not work?
-			menuManager.updateAll(true); //TODO why does this not work?
+			//menuManager.updateAll(true); //TODO why does this not work?
 		}
 	}
 	
@@ -830,11 +891,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			System.out.println("CmdLineArg: "+s);
 		
 		//Disable creation of the derby.log file
-		System.getProperties().put("derby.stream.error.file", "");
+		System.getProperties().put("derby.stream.error.file", "null");
 		
 		settings = Settings.getSettings();
 		
-		MainWindow m = new MainWindow(new String[0]);
+		MainWindow m = new MainWindow(args);
 
 		MessageDialog.openInformation(m.getShell(), "Warning", 
 				"This is a very early test version of JMoviedb. " +

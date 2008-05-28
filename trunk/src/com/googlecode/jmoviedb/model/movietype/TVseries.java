@@ -20,19 +20,4 @@
 package com.googlecode.jmoviedb.model.movietype;
 
 public class TVseries extends AbstractSeries {
-	private String fromSeason;
-	private String toSeason;
-	
-	public String getFromSeason() {
-		return fromSeason;
-	}
-	public void setFromSeason(String fromSeason) {
-		this.fromSeason = fromSeason;
-	}
-	public String getToSeason() {
-		return toSeason;
-	}
-	public void setToSeason(String toSeason) {
-		this.toSeason = toSeason;
-	}
 }

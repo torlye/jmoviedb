@@ -209,7 +209,12 @@ public class Moviedb {
 		return saved;
 	}
 	
-	private void setSaved(boolean s) {
+	/**
+	 * Sets the database's saved status. This method should usually NOT be called by the GUI,
+	 * as it is updated automatically by Moviedb when adding/saving movies.
+	 * @param s save status
+	 */
+	public void setSaved(boolean s) {
 		if(saved == s)
 			return;
 		boolean oldValue = saved;
@@ -258,6 +263,14 @@ public class Moviedb {
 		}
 		database=null;
 		recursiveDeleteDirectory(new File(dbTempPath));
+	}
+	
+	/**
+	 * Returns the current Database object
+	 * @return the current Database object
+	 */
+	public Database getDatabase() {
+		return database;
 	}
 	
 	private static void recursiveDeleteDirectory(File path) {

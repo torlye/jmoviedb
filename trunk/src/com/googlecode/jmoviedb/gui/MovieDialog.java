@@ -77,11 +77,16 @@ public class MovieDialog extends Dialog {
 	private Scale rateScale;
 	private Text rateText;
 	private Button seenCheck;
-	private Button colorCheck;
+	private Button colourCheck;
 	private Text NotesText;
 	private Combo versionCombo;
 	private Text versionText;
 	private Button legalCheck;
+	private Combo discCombo;
+	private Text locationText;
+	private Button myEncodeCheck;
+	private Text sceneNameText;
+	private Combo aspectCombo;
 	
 	private Table actorTable;
 	private TableColumn actorNameColumn;
@@ -109,13 +114,16 @@ public class MovieDialog extends Dialog {
 	private static final int MARGIN_HEIGHT = 7;
 	private static final int VERTICAL_SPACING = 5;
 	private static final int HORIZONTAL_SPACING = 6;
-	private static final int HEIGHT_HINT = 14;
 	
 	private Image mainTabIcon;
 	private Image taglineTabIcon;
 	private Image actorTabIcon;
 	private Image formatTabIcon;
 	private Image audioTabIcon;
+	private Combo completenessCombo;
+	private Text completenessText;
+	private Label completenessLabel;
+	private SelectionListener typeComboListener;
 	
 	private final static int COVER_WIDTH = 100;
 	private final static int COVER_HEIGHT = 150;
@@ -197,7 +205,7 @@ public class MovieDialog extends Dialog {
 		
 		Composite c1 = new Composite(tabFolder, SWT.NULL);
 		
-		GridLayout gridLayout = new GridLayout(5, true);
+		GridLayout gridLayout = new GridLayout(5, false);
 		gridLayout.marginHeight = MARGIN_HEIGHT;
 		gridLayout.marginWidth = MARGIN_WIDTH;
 		gridLayout.verticalSpacing = VERTICAL_SPACING;
@@ -214,17 +222,42 @@ public class MovieDialog extends Dialog {
 		Label typeLabel = new Label(c1, SWT.CENTER);
 		typeLabel.setText("Type:");
 		typeCombo = new Combo(c1, SWT.DROP_DOWN|SWT.READ_ONLY);
-		typeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		typeCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
 		typeCombo.setItems(MovieType.getStringArray());
 		typeCombo.select(0);
-		typeCombo.setVisibleItemCount(7); //make all items visible
+		typeCombo.setVisibleItemCount(MovieType.getStringArray().length);
+		typeComboListener = new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent event) {}
+			public void widgetSelected(SelectionEvent event) {
+				if(typeCombo.getSelectionIndex() < 3) {
+					completenessText.setVisible(false);
+					completenessCombo.setVisible(false);
+					completenessLabel.setVisible(false);
+				} else {
+					completenessText.setVisible(true);
+					completenessCombo.setVisible(true);
+					completenessLabel.setVisible(true);
+				}
+			}
+		};
+		typeCombo.addSelectionListener(typeComboListener);
+		
+		completenessLabel = new Label(c1, SWT.CENTER);
+		completenessLabel.setText("Complete:");
+		completenessCombo = new Combo(c1, SWT.DROP_DOWN|SWT.READ_ONLY);
+		completenessCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		completenessCombo.setItems(Completeness.getStringArray());
+		completenessCombo.select(0);
+		completenessCombo.setVisibleItemCount(Completeness.getStringArray().length); //make all items visible
+		completenessText = new Text(c1, SWT.SINGLE|SWT.BORDER);
+		completenessText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		
 		Label titleLabel = new Label(c1, SWT.CENTER);
 		titleLabel.setText("Title:");
 		titleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		titleText.setToolTipText("The title of the movie. If this field is changed, it will be overwritten " +
 				"on the next IMDb update. If you want to use a custom title, pleas use the \"display title\" field.");
-		titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 		
 		Label altTitleLabel = new Label(c1, SWT.CENTER);
 		altTitleLabel.setText("Display title:");
@@ -261,7 +294,7 @@ public class MovieDialog extends Dialog {
 		runtimeText.setToolTipText("This field will be overwritten by IMDb updates!");
 		
 		Label rateLabel = new Label(c1, SWT.CENTER);
-		rateLabel.setText("Rate:");
+		rateLabel.setText("IMDb rating:");
 		rateScale = new Scale(c1, SWT.HORIZONTAL);
 		rateScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		rateScale.setIncrement(1);
@@ -280,9 +313,10 @@ public class MovieDialog extends Dialog {
 		rateText.setEditable(false);
 		
 		Label seenLabel = new Label(c1, SWT.CENTER);
-		seenLabel.setText("I have seen this movie");
+		seenLabel.setText("");
 		seenCheck = new Button(c1, SWT.CHECK);
 		seenCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
+		seenCheck.setText("Have seen it");
 		
 		Label imdbLabel = new Label(c1, SWT.CENTER);
 		imdbLabel.setText("IMDb address:");
@@ -327,9 +361,9 @@ public class MovieDialog extends Dialog {
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 70;
 		taglineLabel.setLayoutData(gd);
-		taglineText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
+		taglineText = new Text(c2, SWT.SINGLE|SWT.BORDER);
 		//taglineText.setSize(100, 100);
-		taglineText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		taglineText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		Label plotLabel = new Label(c2, SWT.LEFT);
 		plotLabel.setText("Plot outline:");
@@ -401,15 +435,14 @@ public class MovieDialog extends Dialog {
 		compositeLayout.makeColumnsEqualWidth = false;
 		c.setLayout(compositeLayout);
 		
-		GridData comboLayout = new GridData();
-		comboLayout.horizontalSpan = 9;
-		comboLayout.horizontalAlignment = SWT.FILL;
-		comboLayout.grabExcessHorizontalSpace = true;
+		int comboHorizontalAlignment = SWT.BEGINNING;
+		boolean comboGrabExcessHorizontalSpace = false;
+		int comboHorizontalSpan = 9;
 		
 		Label formatLabel = new Label(c, SWT.CENTER);
 		formatLabel.setText("Format:");
 		formatCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-		formatCombo.setLayoutData(comboLayout);
+		formatCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, comboGrabExcessHorizontalSpace, false, comboHorizontalSpan, 1));
 		formatCombo.setItems(FormatType.getStringArray());
 		formatCombo.select(0);
 		formatCombo.setVisibleItemCount(FormatType.getStringArray().length); //make all items visible
@@ -417,7 +450,7 @@ public class MovieDialog extends Dialog {
 		Label containerLabel = new Label(c, SWT.CENTER);
 		containerLabel.setText("Container format:");
 		containerCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-		containerCombo.setLayoutData(comboLayout);
+		containerCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, comboGrabExcessHorizontalSpace, false, comboHorizontalSpan, 1));
 		containerCombo.setItems(ContainerFormat.getStringArray());
 		containerCombo.select(0);
 		containerCombo.setVisibleItemCount(ContainerFormat.getStringArray().length); //make all items visible
@@ -425,7 +458,7 @@ public class MovieDialog extends Dialog {
 		Label videoCodecLabel = new Label(c, SWT.CENTER);
 		videoCodecLabel.setText("Video format:");
 		videoCodecCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-		videoCodecCombo.setLayoutData(comboLayout);
+		videoCodecCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, comboGrabExcessHorizontalSpace, false, comboHorizontalSpan, 1));
 		videoCodecCombo.setItems(VideoCodec.getStringArray());
 		videoCodecCombo.select(0);
 		videoCodecCombo.setVisibleItemCount(VideoCodec.getStringArray().length); //make all items visible
@@ -433,18 +466,31 @@ public class MovieDialog extends Dialog {
 		Label resolutionLabel = new Label(c, SWT.CENTER);
 		resolutionLabel.setText("Video resolution:");
 		resolutionCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-		resolutionCombo.setLayoutData(comboLayout);
+		resolutionCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, comboGrabExcessHorizontalSpace, false, comboHorizontalSpan, 1));
 		resolutionCombo.setItems(Resolution.getStringArray());
 		resolutionCombo.select(0);
 		resolutionCombo.setVisibleItemCount(Resolution.getStringArray().length); //make all items visible
 		
+		Label aspectLabel = new Label(c, SWT.CENTER);
+		aspectLabel.setText("Aspect ratio");
+		aspectCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+		aspectCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, comboGrabExcessHorizontalSpace, false, comboHorizontalSpan, 1));
+		aspectCombo.setItems(AspectRatio.getStringArray());
+		aspectCombo.select(0);
+		aspectCombo.setVisibleItemCount(AspectRatio.getStringArray().length); //make all items visible
+		
+		
 		Label tvSystemLabel = new Label(c, SWT.CENTER);
 		tvSystemLabel.setText("TV system:");
 		tvSystemCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-		tvSystemCombo.setLayoutData(comboLayout);
+		tvSystemCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, false, false, comboHorizontalSpan-1, 1));
 		tvSystemCombo.setItems(TVsystem.getStringArray());
 		tvSystemCombo.select(0);
 		tvSystemCombo.setVisibleItemCount(TVsystem.getStringArray().length); //make all items visible
+		
+		colourCheck = new Button(c, SWT.CHECK);
+		colourCheck.setText("Colour");
+		colourCheck.setSelection(true);
 		
 		Label regionLabel = new Label(c, SWT.CENTER);
 		regionLabel.setText("Region:");
@@ -466,6 +512,35 @@ public class MovieDialog extends Dialog {
 		r7.setText("R7");
 		r8 = new Button(c, SWT.CHECK);
 		r8.setText("R8");
+		
+		Label discLabel = new Label(c, SWT.CENTER);
+		discLabel.setText("Storage medium:");
+		discCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+		discCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, comboGrabExcessHorizontalSpace, false, comboHorizontalSpan, 1));
+		discCombo.setItems(DiscType.getStringArray());
+		discCombo.select(0);
+		discCombo.setVisibleItemCount(DiscType.getStringArray().length); //make all items visible
+		
+		Label locationLabel = new Label(c, SWT.CENTER);
+		locationLabel.setText("Storage location:");
+		locationText = new Text(c, SWT.SINGLE|SWT.BORDER);
+		locationText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
+		
+		legalCheck = new Button(c, SWT.CHECK);
+		legalCheck.setText("Original");
+		legalCheck.setSelection(true);
+		legalCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
+		
+		myEncodeCheck = new Button(c, SWT.CHECK);
+		myEncodeCheck.setText("Encoded by me");
+		myEncodeCheck.setSelection(true);
+		myEncodeCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
+		
+		Label sceneNameLabel = new Label(c, SWT.CENTER);
+		sceneNameLabel.setText("Scene release name:");
+		sceneNameText = new Text(c, SWT.SINGLE|SWT.BORDER);
+		sceneNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
+		
 		
 		tab4.setControl(c);
 	}
@@ -491,6 +566,7 @@ public class MovieDialog extends Dialog {
 	private void setModel(AbstractMovie m) {
 		this.getShell().setText("Movie info - " + m.getDisplayTitle() + " (" + m.getYear() + ")");
 		typeCombo.select(MovieType.abstractMovieToInt(m));
+		typeComboListener.widgetSelected(null);
 		imdbText.setText(m.getImdbUrl());
 		titleText.setText(m.getTitle());
 		altTitleText.setText(m.getCustomTitle());
@@ -517,11 +593,11 @@ public class MovieDialog extends Dialog {
 			i.setText(2, a.getCharacter());
 		}
 		
-		formatCombo.select(m.getFormat().getID());
-		containerCombo.select(m.getContainer().getID());
-		videoCodecCombo.select(m.getVideo().getID());
-		resolutionCombo.select(m.getResolution().getID());
-		tvSystemCombo.select(m.getTvSystem().getID());
+		formatCombo.select(m.getFormat().ordinal());
+		containerCombo.select(m.getContainer().ordinal());
+		videoCodecCombo.select(m.getVideo().ordinal());
+		resolutionCombo.select(m.getResolution().ordinal());
+		tvSystemCombo.select(m.getTvSystem().ordinal());
 		r0.setSelection(m.getDvdRegion()[0]);
 		r1.setSelection(m.getDvdRegion()[1]);
 		r2.setSelection(m.getDvdRegion()[2]);
@@ -531,6 +607,13 @@ public class MovieDialog extends Dialog {
 		r6.setSelection(m.getDvdRegion()[6]);
 		r7.setSelection(m.getDvdRegion()[7]);
 		r8.setSelection(m.getDvdRegion()[8]);
+		colourCheck.setSelection(m.isColor());
+		legalCheck.setSelection(m.isLegal());
+		discCombo.select(m.getDisc().ordinal());
+		aspectCombo.select(m.getAspectRatio().ordinal());
+		locationText.setText(m.getLocation());
+		myEncodeCheck.setSelection(m.isMyEncode());
+		sceneNameText.setText(m.getSceneReleaseName());
 		
 		actorNameColumn.pack();
 		asColumn.pack();
@@ -541,6 +624,12 @@ public class MovieDialog extends Dialog {
 		
 		imageArea.setImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), 
 				CONST.scaleImage(movie.getImageData(), false, COVER_WIDTH, COVER_HEIGHT)));
+		
+		if (movie instanceof AbstractSeries) {
+			AbstractSeries series = (AbstractSeries)movie;
+			completenessCombo.select(series.getCompleteness().ordinal());
+			completenessText.setText(series.getCompletenessDetail());
+		}
 		
 	}
 	
@@ -637,6 +726,19 @@ public class MovieDialog extends Dialog {
 					r7.getSelection(),
 					r8.getSelection(),
 				});
+		movie.setColor(colourCheck.getSelection());
+		movie.setLegal(legalCheck.getSelection());
+		movie.setDisc(DiscType.values()[discCombo.getSelectionIndex()]);
+		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
+		movie.setLocation(locationText.getText());
+		movie.setSceneReleaseName(sceneNameText.getText());
+		movie.setMyEncode(myEncodeCheck.getSelection());
+		
+		if (movie instanceof AbstractSeries) {
+			AbstractSeries series = (AbstractSeries)movie;
+			series.setCompleteness(Completeness.values()[completenessCombo.getSelectionIndex()]);
+			series.setCompletenessDetail(completenessText.getText());
+		}
 	}
 	
 	public AbstractMovie getModel() {

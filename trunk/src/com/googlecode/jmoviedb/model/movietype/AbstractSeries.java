@@ -21,35 +21,49 @@ package com.googlecode.jmoviedb.model.movietype;
 
 import com.googlecode.jmoviedb.enumerated.Completeness;
 
+/**
+ * In addition to the fields in AbstractMovie, an AbstractSeries contains
+ * information about how complete the series is, i.e. its <i>completeness</i>.
+ * This information is represented in two parts: One is an enum of the type
+ * Completeness, and the other is a String.  
+ * Example 1: If completeness is Completeness.one_season
+ * the detail string may be "4", i.e. this entry in the
+ * database represents season four of a series.
+ * 
+ */
 public abstract class AbstractSeries extends AbstractMovie {
 	private Completeness completeness;
-	private int numberOfEpisodes;
-	private String fromEpisode;
-	private String toEpisode;
+	private String completenessDetail;
 	
+	/**
+	 * Gets the <i>completeness</i> of the series.
+	 * @return completeness
+	 */
 	public Completeness getCompleteness() {
 		return completeness;
 	}
+	
+	/**
+	 * Sets the <i>completeness</i> of the series.
+	 * @param completeness
+	 */
 	public void setCompleteness(Completeness completeness) {
 		this.completeness = completeness;
 	}
-	public int getNumberOfEpisodes() {
-		return numberOfEpisodes;
-	}
-	public void setNumberOfEpisodes(int numberOfEpisodes) {
-		this.numberOfEpisodes = numberOfEpisodes;
-	}
-	public String getFromEpisode() {
-		return fromEpisode;
-	}
-	public void setFromEpisode(String fromEpisode) {
-		this.fromEpisode = fromEpisode;
-	}
-	public String getToEpisode() {
-		return toEpisode;
-	}
-	public void setToEpisode(String toEpisode) {
-		this.toEpisode = toEpisode;
+	
+	/**
+	 * Gets details about the <i>completeness</i> of the series  
+	 * @return completeness detail string
+	 */
+	public String getCompletenessDetail() {
+		return completenessDetail;
 	}
 	
+	/**
+	 * Sets details about the <i>completeness</i> of the series,
+	 * @param completenessDetail
+	 */
+	public void setCompletenessDetail(String completenessDetail) {
+		this.completenessDetail = completenessDetail;
+	}	
 }

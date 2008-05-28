@@ -212,6 +212,7 @@ public abstract class AbstractMovie implements Cloneable {
 		this.aspectRatio = AspectRatio.unspecified;
 		this.dvdRegion = new boolean[]{false, false, false, false, false, false, false, false, false};
 		this.imageBytes = null;
+		this.location = "";
 	}
 
 	public String toString() {

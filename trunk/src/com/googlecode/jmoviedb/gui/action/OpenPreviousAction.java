@@ -23,12 +23,15 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.gui.MainWindow;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 
 public class OpenPreviousAction extends Action {
 
+	private int number;
 	private String filePath;
 	
 	public OpenPreviousAction(int number, String filePath, Action fileSaveAction) {
+		this.number = number;
 		this.filePath = filePath;
 		setText(number + " " + generateDisplayName(filePath));
 	}
@@ -43,11 +46,8 @@ public class OpenPreviousAction extends Action {
 			return;
 		
 		//open the new file
-		try {
-			MainWindow.getMainWindow().openDB(filePath);
-		} catch (Exception e) {
-			MainWindow.getMainWindow().handleException(e);
-		}
+		if(!MainWindow.getMainWindow().openRecent(number))
+			MessageDialog.openError(MainWindow.getMainWindow().getShell(), "File open error", "The file could not be opened:\n"+filePath);
 	}
 	
 	private String generateDisplayName(String filePath) {
