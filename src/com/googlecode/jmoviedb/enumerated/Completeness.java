@@ -22,14 +22,13 @@ package com.googlecode.jmoviedb.enumerated;
 import com.googlecode.jmoviedb.CONST;
 
 public enum Completeness {
-	complete(0, "Complete"),
-	one_season(1, ""), 
-	one_episode(2, ""),
-	complete_until_season(3, ""), 
-	complete_until_episode(4, ""),
-	from_season_to_season(5, ""), 
-	from_episode_to_episode(6, ""),
-	sporadic(7, "");
+	other(0, ""),
+	complete(1, "Complete series"),
+	one_season(2, "One season"), 
+	one_episode(3, "One episode"),
+	episodes(4, "Range of seasons"), 
+	seasons(5, "Range of episodes"),
+	sporadic(9, "Sporadic episodes");
 	
 	private int id;
 	private String name;
@@ -59,6 +58,13 @@ public enum Completeness {
 		if(CONST.DEBUG_MODE)
 			System.out.println("Unrecognised completeness ID: " + id);
 		return null;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[Completeness.values().length];
+		for(int i = 0; i < Completeness.values().length; i++)
+			strings[i] = Completeness.values()[i].getName();
+		return strings;
 	}
 
 }

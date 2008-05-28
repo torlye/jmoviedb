@@ -728,4 +728,21 @@ public class Database {
 			addPersonStatement.clearParameters();
 		}
 	}
+	
+	/**
+	 * Runs a custom SQL query against the database
+	 * @param query the query to run
+	 * @return an Object, either a ResultSet containing the results or 
+	 * an Integer containing the number of updated rows.
+	 * @throws SQLException
+	 */
+	public Object runCustomQuery(String query) throws SQLException {
+		Statement s = connection.createStatement();
+		if(s.execute(query))
+			return s.getResultSet();
+		int count = s.getUpdateCount();
+		if(count>-1)
+			return new Integer(count);
+		throw new SQLException("getUpdateCount() returned -1");
+	}
 }

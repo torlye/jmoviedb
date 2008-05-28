@@ -61,4 +61,11 @@ public enum AspectRatio {
 			System.out.println("Unrecognised aspect ratio ID: " + id);
 		return null;
 	}
+
+	public static String[] getStringArray() {
+		String[] strings = new String[AspectRatio.values().length];
+		for(int i = 0; i < AspectRatio.values().length; i++)
+			strings[i] = AspectRatio.values()[i].getShortName();
+		return strings;
+	}
 }

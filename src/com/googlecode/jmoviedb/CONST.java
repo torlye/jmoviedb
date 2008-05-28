@@ -382,6 +382,11 @@ public class CONST {
 	 * Exclamation mark icon
 	 */
 	public static final URL ICON_EXCLAMATION = ClassLoader.getSystemResource("resources/icon-silk/exclamation.png");
+
+	/**
+	 * Edit database icon
+	 */
+	public static final URL ICON_DATABASE_EDIT = ClassLoader.getSystemResource("resources/icon-silk/database_edit.png");
 	
 	/**
 	 * Tick mark icon, 12x12 pixels

@@ -22,34 +22,39 @@ package com.googlecode.jmoviedb.enumerated;
 import com.googlecode.jmoviedb.CONST;
 
 public enum DiscType {
-	cd/*(0, "", "", "")*/,
-	cdr,
-	cdrw,
-	dvd,
-	dvdminusr,
-	dvdplusr,
-	dvdminusrw,
-	dvdplusrw,
-	dvdminusrdl,
-	dvdplusrdl,
-	dvdram,
-	bd,
-	bdr,
-	bdre,
-	hddvd,
-	hddvdr,
-	umd,
-	ld,
-	vhs, other;
+	other(0, "", "", ""),
+	harddrive(1, "Hard drive", "", ""),
+	cd(2, "CD-ROM", "", ""),
+	cdr(3, "CD-R", "", ""),
+	cdrw(4, "CD-RW", "", ""),
+	dvd(5, "DVD-ROM", "", ""),
+	dvdminusr(6, "DVD-R", "", ""),
+	dvdplusr(7, "DVD+R", "", ""),
+	dvdminusrw(8, "DVD-RW", "", ""),
+	dvdplusrw(9, "DVD+RW", "", ""),
+	dvdminusrdl(10, "DVD-R DL", "", ""),
+	dvdplusrdl(11, "DVD+R DL", "", ""),
+	dvdram(12, "DVD-RAM", "", ""),
+	bd(13, "BD-ROM", "", ""),
+	bdr(14, "BD-R", "", ""),
+	bdre(15, "BD-RE", "", ""),
+	hddvd(16, "HD DVD-ROM", "", ""),
+	hddvdr(17, "HD DVD-R", "", ""),
+	umd(18, "UMD", "", ""),
+	ld(19, "LD", "", ""),
+	vhs(20, "VHS", "", "");
 	
 	private int id;
 	private String name;
 	private String longName;
 	private String description;
 	
-//	Disc(int id, String name, String longName, String description) {
-//		
-//	}
+	private DiscType(int id, String name, String longName, String description) {
+		this.id = id;
+		this.name = name;
+		this.longName = longName;
+		this.description = description;
+	}
 	
 	public String getDescription() {
 		return description;
@@ -76,5 +81,12 @@ public enum DiscType {
 		if(CONST.DEBUG_MODE)
 			System.out.println("Unrecognised disc type ID: " + id);
 		return null;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[DiscType.values().length];
+		for(int i = 0; i < DiscType.values().length; i++)
+			strings[i] = DiscType.values()[i].getName();
+		return strings;
 	}
 }

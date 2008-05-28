@@ -56,6 +56,7 @@ public class Settings {
 	private final static String SORTDIR = "SortDirection";
 	
 	private final static String SECTION_RECENT = "RecentFiles";
+	private final static String OPEN_RECENT = "OpenRecent";
 	private final static String FILE1 = "File1";
 	private final static String FILE2 = "File2";
 	private final static String FILE3 = "File3";
@@ -114,6 +115,7 @@ public class Settings {
 		
 		DialogSettings files = new DialogSettings(SECTION_RECENT);
 		dSettings.addSection(files);
+		files.put(OPEN_RECENT, true);
 		files.put(FILE1, "");
 		files.put(FILE2, "");
 		files.put(FILE3, "");
@@ -218,12 +220,37 @@ public class Settings {
 		}
 	}
 	
+	/**
+	 * Drops a recently used file from the list
+	 * @param fileNumber the file's number on the list (one-indexed)
+	 */
+	public void dropRecentFile(int fileNumber) {
+		if(fileNumber<1 || fileNumber > 4)
+			return;
+		if(fileNumber<2)
+			dSettings.getSection(SECTION_RECENT).put(FILE1, dSettings.getSection(SECTION_RECENT).get(FILE2));
+		if(fileNumber<3)
+			dSettings.getSection(SECTION_RECENT).put(FILE2, dSettings.getSection(SECTION_RECENT).get(FILE3));
+		if(fileNumber<4)
+			dSettings.getSection(SECTION_RECENT).put(FILE3, dSettings.getSection(SECTION_RECENT).get(FILE4));
+		dSettings.getSection(SECTION_RECENT).put(FILE4, "");
+		firePropertyChange(CONST.RECENT_FILES_PROPERTY_NAME, null, null);
+	}
+	
 	public String getRecentFolder() {
 		return dSettings.getSection(SECTION_RECENT).get(FOLDER);
 	}
 	
 	public void setRecentFolder(String folderPath) {
 		dSettings.getSection(SECTION_RECENT).put(FOLDER, folderPath);
+	}
+	
+	public boolean getOpenRecentFile() {
+		return dSettings.getSection(SECTION_RECENT).getBoolean(OPEN_RECENT);
+	}
+	
+	public void setOpenRecentFile(boolean value) {
+		dSettings.getSection(SECTION_RECENT).put(OPEN_RECENT, value);
 	}
 	
 	public String getImdbUrl() {
