@@ -692,11 +692,12 @@ public class MovieDialog extends Dialog {
 		System.out.println("Selection: " + MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())));
 		if(!MovieType.objectToEnum(movie).equals(MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())))) {
 			AbstractMovie newMovie = MovieType.intToAbstractMovie(typeCombo.getSelectionIndex());
-			System.out.println("_old id " + movie.getID()); //TODO whats going on here?
-			newMovie.setID(movie.getID());
-			System.out.println("_new id " + newMovie.getID());
+			newMovie = movie.copyTo(newMovie);
+//			System.out.println("_old id " + movie.getID()); //TODO whats going on here?
+//			newMovie.setID(movie.getID());
+//			System.out.println("_new id " + newMovie.getID());
 			movie = newMovie;
-			System.out.println("_new copied to old id " + movie.getID());
+//			System.out.println("_new copied to old id " + movie.getID());
 		}
 		
 		movie.setImdbID(imdbText.getText());

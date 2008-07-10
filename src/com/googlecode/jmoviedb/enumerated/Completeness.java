@@ -26,8 +26,8 @@ public enum Completeness {
 	complete(1, "Complete series"),
 	one_season(2, "One season"), 
 	one_episode(3, "One episode"),
-	episodes(4, "Range of seasons"), 
-	seasons(5, "Range of episodes"),
+	seasons(5, "Range of seasons"),
+	episodes(4, "Range of episodes"), 
 	sporadic(9, "Sporadic episodes");
 	
 	private int id;

@@ -37,6 +37,7 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
+import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
 import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.DiscType;
@@ -130,10 +131,11 @@ public class Database {
 				"PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, NOTES, VERSION, " +
 				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
 				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
-				"VIDEORESOLUTION, VIDEOASPECT, COVER, CONTAINER) " + 
+				"VIDEORESOLUTION, VIDEOASPECT, COVER, CONTAINER, COMPLETENESS, " +
+				"COMPLETENESSDETAIL) " + 
 				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-				"?, ?, ?, ?, ?, ?, ?)", 
+				"?, ?, ?, ?, ?, ?, ?, ?, ?)", 
 				PreparedStatement.RETURN_GENERATED_KEYS);
 		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
 				"TYPE = ?, IMDBID = ?, TITLE = ?, CUSTOMTITLE = ?, " +
@@ -142,7 +144,7 @@ public class Database {
 				"CUSTOMFILMVERSION = ?, LEGAL = ?, SEEN = ?, LOCATION = ?, FORMAT = ?, " +
 				"DISC = ?, VIDEO = ?, MYENCODE = ?, DVDREGION = ?, TVSYSTEM = ?, " +
 				"SCENERELEASENAME = ?, VIDEORESOLUTION = ?, VIDEOASPECT = ?, " +
-				"COVER = ?, CONTAINER = ? " +
+				"COVER = ?, CONTAINER = ?, COMPLETENESS = ?, COMPLETENESSDETAIL = ? " +
 				"WHERE MOVIEID = ?");
 		getMovieStatement = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
@@ -215,6 +217,8 @@ public class Database {
 				"VIDEOASPECT SMALLINT, " +
 				"COVER BLOB(4M), " +
 				"CONTAINER SMALLINT, " +
+				"COMPLETENESS SMALLINT, " +
+				"COMPLETENESSDETAIL VARCHAR(50), " +
 				"PRIMARY KEY (MOVIEID)" +
 				")";
 		String movieActor = "CREATE TABLE MOVIEACTOR(" +
@@ -397,6 +401,15 @@ public class Database {
 		statement.setInt(24, m.getResolution().getID());
 		statement.setInt(25, m.getAspectRatio().getID());
 		
+		if (m instanceof AbstractSeries) {
+			AbstractSeries series = (AbstractSeries)m;
+			statement.setInt(28, series.getCompleteness().getID());
+			statement.setString(29, series.getCompletenessDetail());
+		} else {
+			statement.setInt(28, 0);
+			statement.setString(29, null);
+		}
+		
 		if(m.getImageBytes() != null)
 			statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()), m.getImageBytes().length);
 		else
@@ -405,7 +418,7 @@ public class Database {
 		statement.setInt(27, m.getContainer().getID());
 		
 		if(edit)
-			statement.setInt(28, m.getID());
+			statement.setInt(30, m.getID());
 		
 		statement.execute();
 		
@@ -581,6 +594,12 @@ public class Database {
 		m.setResolution(Resolution.intToEnum(rs.getInt("VIDEORESOLUTION")));
 		m.setAspectRatio(AspectRatio.intToEnum(rs.getInt("VIDEOASPECT")));
 		m.setContainer(ContainerFormat.intToEnum(rs.getInt("CONTAINER")));
+		
+		if (m instanceof AbstractSeries) {
+			AbstractSeries series = (AbstractSeries)m;
+			series.setCompleteness(Completeness.intToEnum(rs.getInt("COMPLETENESS")));
+			series.setCompletenessDetail(rs.getString("COMPLETENESSDETAIL"));
+		}
 		
 		InputStream stream = rs.getBinaryStream("COVER");
 		if(stream != null) {

@@ -60,9 +60,11 @@ public class CustomSQLquery implements IRunnableWithProgress {
 							break;
 						case Types.CHAR:
 							row[i] = rs.getString(i+1);
+							if(row[i] == null) row[i] = "[NULL]";
 							break;
 						case Types.VARCHAR:
 							row[i] = rs.getString(i+1);
+							if(row[i] == null) row[i] = "[NULL]";
 							break;
 						case Types.BLOB:
 							row[i] = "[BLOB]";

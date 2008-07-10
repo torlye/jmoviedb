@@ -35,6 +35,12 @@ public abstract class AbstractSeries extends AbstractMovie {
 	private Completeness completeness;
 	private String completenessDetail;
 	
+	public AbstractSeries() {
+		super();
+		this.completeness = Completeness.other;
+		this.completenessDetail = "";
+	}
+	
 	/**
 	 * Gets the <i>completeness</i> of the series.
 	 * @return completeness
@@ -65,5 +71,17 @@ public abstract class AbstractSeries extends AbstractMovie {
 	 */
 	public void setCompletenessDetail(String completenessDetail) {
 		this.completenessDetail = completenessDetail;
-	}	
+	}
+	
+	@Override
+	public AbstractMovie copyTo(AbstractMovie movie) {
+		super.copyTo(movie);
+		if (movie instanceof AbstractSeries) {
+			AbstractSeries series = (AbstractSeries)movie;
+			
+			series.completeness = this.completeness;
+			series.completenessDetail = this.completenessDetail;
+		}
+		return movie;
+	}
 }

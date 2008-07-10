@@ -24,7 +24,7 @@ import java.net.URL;
 import com.googlecode.jmoviedb.CONST;
 
 public enum ContainerFormat {
-	other(0, "Other/unknown", "", null, null),
+	other(0, "", "", null, null),
 	medianative(1, "Media native", "", null, null),
 	vob(2, "VOB", "", null, null),
 	avi(3, "AVI", "Audio Video Interleave", null, null),

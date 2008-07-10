@@ -49,7 +49,8 @@ public class ImdbParser {
 	 * @return IMDb ID
 	 */
 	protected String getID() {
-		Pattern patternID = Pattern.compile("<a\\s+href=\"/rg/title-top/boards/title/tt(\\d{7})/board\">");
+		//TODO Is this safe? What if there are links to other movies on the page?
+		Pattern patternID = Pattern.compile("/title/tt(\\d{7})/");
 		Matcher matcherID = patternID.matcher(html);
 		if (matcherID.find())
 			return matcherID.group(1);
@@ -87,6 +88,28 @@ public class ImdbParser {
 			return title;
 		}
 		return null;
+	}
+	
+	protected MovieType getType(MovieType currentType) {
+		if(currentType == MovieType.webseries || currentType == MovieType.movieserial)
+			return currentType;
+		
+		Pattern patternType = Pattern.compile("<h1>(.+)</h1>");
+		Matcher matcherType = patternType.matcher(html);
+		
+		if(matcherType.find()) {
+			String match = matcherType.group(1);
+			if(match.contains("(TV)"))
+				return MovieType.tvmovie;
+			else if(match.contains("(V)"))
+				return MovieType.videomovie;
+			else if(match.contains("TV mini-series"))
+				return MovieType.miniseries;
+			else if(match.startsWith("&#34;"))
+				return MovieType.tvseries;
+		}
+		
+		return currentType;
 	}
 	
 	/**
@@ -167,7 +190,7 @@ public class ImdbParser {
 	 * @return runtime
 	 */
 	protected int getRuntime() {
-		Pattern patternRuntime = Pattern.compile("<h5>Runtime:</h5>\\s*([0-9]+)\\smin");
+		Pattern patternRuntime = Pattern.compile("<h5>Runtime:</h5>[^0-9]*([0-9]+)\\smin");
 		Matcher matcherRuntime = patternRuntime.matcher(html);
 		if(matcherRuntime.find())
 			return Integer.valueOf(matcherRuntime.group(1));
@@ -191,7 +214,7 @@ public class ImdbParser {
 	 * Returns the movie's languages, if the open document is a movie page.
 	 * @return an ArrayList of languages
 	 */
-	protected ArrayList<Language> getLanguages() {
+	protected ArrayList<Language> getLanguages() throws UnknownLanguageException {
 		Pattern patternLanguage1 = Pattern.compile("<h5>Language:</h5>(.+?)</div>");
 		Pattern patternLanguage2 = Pattern.compile("<a href=\"/Sections/Languages/([^/]+)/\">");
 		Matcher matcherLanguage = patternLanguage1.matcher(html);
@@ -202,7 +225,12 @@ public class ImdbParser {
 			matcherLanguage = patternLanguage2.matcher(matcherLanguage.group(1));
 
 			while(matcherLanguage.find()) {
-				tempList.add(Language.StringToEnum(matcherLanguage.group(1)));
+				Language l = Language.StringToEnum(matcherLanguage.group(1));
+				if(l == null)
+					throw new UnknownLanguageException("Unknown language: " + matcherLanguage.group(1));
+				else {
+					if(!tempList.contains(l)) tempList.add(l);
+				}
 			}
 		}
 			
@@ -371,6 +399,7 @@ public class ImdbParser {
 		Matcher moviePageMatcher = moviePagePattern.matcher(html);
 		if(moviePageMatcher.find()) {
 			//TODO fix type and altTitles, these are currently hard-coded with default values
+			if(CONST.DEBUG_MODE) System.out.println("Only one search result, was redirected to movie page");
 			return new ImdbSearchResult[]{new ImdbSearchResult(getID(), MovieType.film, getTitle(), "" + getYear(), new String[0])};
 		}
 		

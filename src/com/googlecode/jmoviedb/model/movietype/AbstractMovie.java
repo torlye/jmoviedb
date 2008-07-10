@@ -197,7 +197,7 @@ public abstract class AbstractMovie implements Cloneable {
 		this.notes = "";
 		this.version = FilmVersion.unspecified;
 		this.customVersion = "";
-		this.legal = true;
+		this.legal = false;
 		this.seen = false;
 		this.format = FormatType.other;
 		this.container = ContainerFormat.other;
@@ -621,6 +621,8 @@ public abstract class AbstractMovie implements Cloneable {
 			sortString = sortString.substring(4);
 		else if(sortString.toLowerCase().startsWith("a "))
 			sortString = sortString.substring(2);
+		if(sortString.startsWith("'"))
+			sortString = sortString.substring(1);
 		
 		return sortString;
 	}
@@ -744,6 +746,45 @@ public abstract class AbstractMovie implements Cloneable {
 	public AbstractMovie clone() {
 		//TODO finish
 		return null;
+	}
+	
+	public AbstractMovie copyTo(AbstractMovie movie) {
+		movie.imdbID = this.imdbID;
+		movie.title = this.title;
+		movie.year = this.year;
+		movie.rating = this.rating;
+		movie.plotOutline = this.plotOutline;
+		movie.tagline = this.tagline;
+		movie.color = this.color;
+		movie.runTime = this.runTime;
+		movie.genres = this.genres;
+		movie.countries = this.countries;
+		movie.imdbLanguages = this.imdbLanguages;
+		movie.directors = this.directors;
+		movie.writers = this.writers;
+		movie.actors = this.actors;
+		movie.ID = this.ID;
+		movie.customTitle = this.customTitle;
+		movie.notes = this.notes;
+		movie.version = this.version;
+		movie.customVersion = this.customVersion;
+		movie.sceneReleaseName = this.sceneReleaseName;
+		movie.legal = this.legal;
+		movie.seen = this.seen;
+		movie.myEncode = this.myEncode;
+		movie.location = this.location;
+		movie.format = this.format;
+		movie.container = this.container;
+		movie.disc = this.disc;
+		movie.video = this.video;
+		movie.tvSystem = this.tvSystem;
+		movie.audioTracks = this.audioTracks;
+		movie.subtitles = this.subtitles;
+		movie.resolution = this.resolution;
+		movie.aspectRatio = this.aspectRatio;
+		movie.dvdRegion = this.dvdRegion;
+		movie.imageBytes = this.imageBytes;
+		return movie;
 	}
 
 }
