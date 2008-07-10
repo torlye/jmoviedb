@@ -22,7 +22,7 @@ package com.googlecode.jmoviedb.enumerated;
 import com.googlecode.jmoviedb.CONST;
 
 public enum Resolution {
-	unspecified(0, "Unspecified"), 
+	unspecified(0, ""), 
 	cif(1, "CIF"), 
 	sd(2, "SD"),
 	p720(3, "720p"), 

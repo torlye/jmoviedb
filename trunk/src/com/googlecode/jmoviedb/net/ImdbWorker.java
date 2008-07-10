@@ -33,6 +33,7 @@ import ca.odell.glazedlists.EventList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
+import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.SearchResultDialog;
 import com.googlecode.jmoviedb.model.Moviedb;
@@ -89,14 +90,16 @@ public class ImdbWorker {
 		}
 
 		//At this point we have a valid IMDb URL
+		ImdbDownloader downloader = new ImdbDownloader(movie);
 		try {
-			new ProgressMonitorDialog(parentShell).run(true, false, new ImdbDownloader(movie));
+			new ProgressMonitorDialog(parentShell).run(true, false, downloader);
 		} catch (InvocationTargetException e) {
 			// handle exception
 		} catch (InterruptedException e) {
 			//Not used
 		}
-		return movie;
+		
+		return downloader.getMovie();
 	}
 
 	private class ImdbSearcher implements IRunnableWithProgress {
@@ -130,6 +133,11 @@ public class ImdbWorker {
 		public ImdbDownloader(AbstractMovie m) {
 			movie = m;
 		}
+		
+		public AbstractMovie getMovie() {
+			return movie;
+		}
+		
 		public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 			try {
 				monitor.beginTask("Importing information from IMDb", IProgressMonitor.UNKNOWN);
@@ -139,6 +147,18 @@ public class ImdbWorker {
 				ImdbParser parser = new ImdbParser(new DownloadWorker(url).downloadHtml());
 				
 				monitor.subTask("Importing data");
+				
+				MovieType imdbType = parser.getType(MovieType.objectToEnum(movie));
+				System.out.println("Testing movie type, old: "+MovieType.objectToEnum(movie).getName() + 
+						" new: " + imdbType.getName());
+				if(MovieType.objectToEnum(movie) != imdbType) {
+					if(CONST.DEBUG_MODE)
+						System.out.println("Switching movie type from "+MovieType.objectToEnum(movie).getName() + 
+								" to " + imdbType.getName());
+					AbstractMovie newMovie = MovieType.intToAbstractMovie(imdbType.getId());
+					newMovie = movie.copyTo(newMovie);
+					movie = newMovie;
+				}
 
 				movie.setTitle(parser.getTitle());
 				movie.setYear(parser.getYear());

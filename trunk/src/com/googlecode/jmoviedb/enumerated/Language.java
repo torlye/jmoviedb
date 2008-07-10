@@ -318,7 +318,8 @@ public enum Language {
 	yapese(287, "Yapese", Settings.getSettings().getLanguageClass().LANGUAGE_YAPESE),
 	yiddish(288, "Yiddish", Settings.getSettings().getLanguageClass().LANGUAGE_YIDDISH),
 	yoruba(289, "Yoruba", Settings.getSettings().getLanguageClass().LANGUAGE_YORUBA),
-	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU);
+	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU),
+	maasai(291, "Maasai", "Maasai");
 
 	
 	private int id;

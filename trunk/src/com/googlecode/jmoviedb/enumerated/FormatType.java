@@ -25,7 +25,7 @@ import com.googlecode.jmoviedb.Settings;
 @SuppressWarnings("static-access")
 
 public enum FormatType {
-	other(0, "Other/unknown", "", null, null),
+	other(0, "", "", null, null),
 	file(1, "File", "Computer file", 
 			Settings.getSettings().getLanguageClass().FORMAT_FILE_DESCRIPTION, 
 			null),
