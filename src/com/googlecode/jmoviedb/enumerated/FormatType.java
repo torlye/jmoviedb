@@ -40,7 +40,7 @@ public enum FormatType {
 	svcd(6, "SVCD", "Super Video CD", Settings.getSettings().getLanguageClass().FORMAT_SVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_SVCD_URL),
 	xvcd(7, "XVCD", "Non-standard VCD", Settings.getSettings().getLanguageClass().FORMAT_XVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_XVCD_URL),
 	xsvcd(8, "XSVCD", "Non-standard SVCD", Settings.getSettings().getLanguageClass().FORMAT_XSVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_XSVCD_URL),
-	kvcd(9, "KVCD", "K Video Compression Dynamics", Settings.getSettings().getLanguageClass().FORMAT_KVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_KVCD_URL),
+	vhs(9, "VHS", "VHS video cassette", "", ""),
 	umd(10, "UMD", "", Settings.getSettings().getLanguageClass().FORMAT_UMD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_UMD_URL), 
 	laserdisc(11, "LaserDisc", "", "DESCRIPTION", null);
 	

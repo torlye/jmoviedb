@@ -24,30 +24,30 @@ import java.net.URL;
 import com.googlecode.jmoviedb.CONST;
 
 public enum SubtitleFormat {
-	other(0),
-	burnt_in(99),
-	medianative(1),
-	vobsub(2),
-	subrip(3),
-	microdvd(4),
-	mpeg4(5),
-	ogg(6),
-	ssa(7),
-	subviewer(8),
-	usf(9),
-	xsub(10),
-	aqt(11),
-	jaco(12),
-	mpsub(13),
-	phoenix(14),
-	powerdivx(15),
-	real(16),
-	sami(17),
-	ssf(18),
-	vplayer(19),
-	svcd(20),
-	cvd(21),
-	cc(22);
+	other(0, ""),
+	burnt_in(99, "Burned in"),
+	medianative(1, "Media native"),
+	vobsub(2, "VobSub"),
+	subrip(3, "SRT"),
+	microdvd(4, "MicroDVD"),
+	mpeg4(5, "MPEG-4"),
+	ogg(6, "OGG"),
+	ssa(7, "SSA"),
+	subviewer(8, "SUB"),
+	usf(9, "USF"),
+	xsub(10, ""),
+	aqt(11, ""),
+	jaco(12, ""),
+	mpsub(13, ""),
+	phoenix(14, ""),
+	powerdivx(15, ""),
+	real(16, ""),
+	sami(17, ""),
+	ssf(18, ""),
+	vplayer(19, ""),
+	svcd(20, "SVCD"),
+	cvd(21, "CVD"),
+	cc(22, "CC");
 	
 	private int ID;
 	private String shortName;
@@ -55,8 +55,9 @@ public enum SubtitleFormat {
 	private String description;
 	private URL url;
 	
-	private SubtitleFormat(int id) {
+	private SubtitleFormat(int id, String sn) {
 		this.ID = id;
+		this.shortName = sn;
 	}
 	
 	public String getShortName() {
@@ -91,5 +92,12 @@ public enum SubtitleFormat {
 		if(CONST.DEBUG_MODE)
 			System.out.println("Unrecognised subtitle format ID: " + id);
 		return null;
+	}
+	
+	public static String[] getStringArray() {
+		String[] strings = new String[SubtitleFormat.values().length];
+		for(int i = 0; i < SubtitleFormat.values().length; i++)
+			strings[i] = SubtitleFormat.values()[i].getShortName();
+		return strings;
 	}
 }

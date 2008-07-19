@@ -19,6 +19,8 @@
 
 package com.googlecode.jmoviedb.gui;
 
+import java.util.ArrayList;
+
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.*;
 import com.googlecode.jmoviedb.model.*;
@@ -78,7 +80,7 @@ public class MovieDialog extends Dialog {
 	private Text rateText;
 	private Button seenCheck;
 	private Button colourCheck;
-	private Text NotesText;
+	private Text notesText;
 	private Combo versionCombo;
 	private Text versionText;
 	private Button legalCheck;
@@ -124,6 +126,7 @@ public class MovieDialog extends Dialog {
 	private Text completenessText;
 	private Label completenessLabel;
 	private SelectionListener typeComboListener;
+	private Label regionLabel;
 	
 	private final static int COVER_WIDTH = 100;
 	private final static int COVER_HEIGHT = 150;
@@ -189,13 +192,200 @@ public class MovieDialog extends Dialog {
 		audioSubtitleTab(tabFolder);
 
 		tabFolder.setSelection(0); //select the first tab
-
-		if(movie != null)
-			setModel(movie);
-		else
-			setModel(new Film());
 		
+		configureListeners();
+
 		return c;
+	}
+	
+	private void configureListeners() {
+		formatCombo.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				//Reset
+				videoCodecCombo.setEnabled(true);
+				containerCombo.setEnabled(true);
+				resolutionCombo.setEnabled(true);
+				discCombo.setEnabled(true);
+				regionLabel.setVisible(false);
+				r0.setVisible(false);
+				r1.setVisible(false);
+				r2.setVisible(false);
+				r3.setVisible(false);
+				r4.setVisible(false);
+				r5.setVisible(false);
+				r6.setVisible(false);
+				r7.setVisible(false);
+				r8.setVisible(false);
+				
+				if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.dvd) {
+					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
+					containerCombo.select(ContainerFormat.vob.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					
+					videoCodecCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					
+					regionLabel.setVisible(true);
+					r0.setVisible(true);
+					r1.setVisible(true);
+					r2.setVisible(true);
+					r3.setVisible(true);
+					r4.setVisible(true);
+					r5.setVisible(true);
+					r6.setVisible(true);
+					r7.setVisible(true);
+					r8.setVisible(true);
+					r1.setText("R1");
+					r2.setText("R2");
+					r3.setText("R3");
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.bluray) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					
+					containerCombo.setEnabled(false);
+
+					regionLabel.setVisible(true);
+					r0.setVisible(true);
+					r1.setVisible(true);
+					r2.setVisible(true);
+					r3.setVisible(true);
+					r1.setText("A");
+					r2.setText("B");
+					r3.setText("C");
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.hddvd) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+
+					containerCombo.setEnabled(false);
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.vcd) {
+					containerCombo.select(ContainerFormat.mpeg.ordinal());
+					videoCodecCombo.select(VideoCodec.mpeg1.ordinal());
+					resolutionCombo.select(Resolution.cif.ordinal());
+
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.xvcd) {
+					containerCombo.select(ContainerFormat.mpeg.ordinal());
+					videoCodecCombo.select(VideoCodec.mpeg1.ordinal());
+					resolutionCombo.select(Resolution.cif.ordinal());
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.svcd) {
+					containerCombo.select(ContainerFormat.mpeg.ordinal());
+					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.xsvcd) {
+					containerCombo.select(ContainerFormat.mpeg.ordinal());
+					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.laserdisc) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					videoCodecCombo.select(VideoCodec.analog.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					discCombo.select(DiscType.ld.ordinal());
+					
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					discCombo.setEnabled(false);
+					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.vhs) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					videoCodecCombo.select(VideoCodec.analog.ordinal());
+					resolutionCombo.select(Resolution.cif.ordinal());
+					discCombo.select(DiscType.vhs.ordinal());
+
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					discCombo.setEnabled(false);
+
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.umd) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					videoCodecCombo.select(VideoCodec.h264.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					discCombo.select(DiscType.umd.ordinal());
+					
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					discCombo.setEnabled(false);
+					
+					regionLabel.setVisible(true);
+					r0.setVisible(true);
+					r1.setVisible(true);
+					r2.setVisible(true);
+					r3.setVisible(true);
+					r4.setVisible(true);
+					r5.setVisible(true);
+					r6.setVisible(true);
+				}
+			}
+		});
+		
+		legalCheck.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				if(legalCheck.getSelection() == true) {
+					sceneNameText.setEnabled(false);
+					myEncodeCheck.setSelection(false);
+					myEncodeCheck.setEnabled(false);
+				} else {
+					sceneNameText.setEnabled(true);
+					myEncodeCheck.setEnabled(true);
+				}
+			}
+		});
+		
+		myEncodeCheck.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				if(myEncodeCheck.getSelection() == true) {
+					sceneNameText.setText("");
+					sceneNameText.setEnabled(false);
+					legalCheck.setSelection(false);
+					legalCheck.setEnabled(false);
+				} else {
+					sceneNameText.setEnabled(true);
+					legalCheck.setEnabled(true);
+				}
+			}
+		});
+		
+		r0.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				boolean value = !r0.getSelection();
+				r1.setEnabled(value);
+				r2.setEnabled(value);
+				r3.setEnabled(value);
+				r4.setEnabled(value);
+				r5.setEnabled(value);
+				r6.setEnabled(value);
+				r7.setEnabled(value);
+				r8.setEnabled(value);
+				if(value == false) {
+					r1.setSelection(false);
+					r2.setSelection(false);
+					r3.setSelection(false);
+					r4.setSelection(false);
+					r5.setSelection(false);
+					r6.setSelection(false);
+					r7.setSelection(false);
+					r8.setSelection(false);
+				}
+			}
+		});
 	}
 	
 	private void MainTab(CTabFolder tabFolder) {
@@ -265,6 +455,13 @@ public class MovieDialog extends Dialog {
 		altTitleText.setToolTipText("This is the title that will be shown in the movie list. If empty, " +
 				"the main title will be show instead. The display title will not be overwritten on IMDb updates.");
 		altTitleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		
+		Label versionLabel = new Label(c1, SWT.CENTER);
+		versionLabel.setText("Version:");
+		versionCombo = new Combo(c1, SWT.DROP_DOWN);
+		versionCombo.setToolTipText("");
+		versionCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		versionCombo.setItems(new String[]{"Director's Cut", "Unrated", "Extended version", "Theatrical version"});
 		
 		Label yearLabel = new Label(c1, SWT.CENTER);
 		yearLabel.setText("Year:");
@@ -362,7 +559,6 @@ public class MovieDialog extends Dialog {
 		gd.widthHint = 70;
 		taglineLabel.setLayoutData(gd);
 		taglineText = new Text(c2, SWT.SINGLE|SWT.BORDER);
-		//taglineText.setSize(100, 100);
 		taglineText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
 		Label plotLabel = new Label(c2, SWT.LEFT);
@@ -372,6 +568,14 @@ public class MovieDialog extends Dialog {
 		plotLabel.setLayoutData(gd);
 		plotText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
 		plotText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		Label notesLabel = new Label(c2, SWT.LEFT);
+		notesLabel.setText("Notes:");
+		gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
+		gd.widthHint = 70;
+		notesLabel.setLayoutData(gd);
+		notesText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
+		notesText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		tab2.setControl(c2);
 	}
@@ -492,7 +696,7 @@ public class MovieDialog extends Dialog {
 		colourCheck.setText("Colour");
 		colourCheck.setSelection(true);
 		
-		Label regionLabel = new Label(c, SWT.CENTER);
+		regionLabel = new Label(c, SWT.CENTER);
 		regionLabel.setText("Region:");
 		r0 = new Button(c, SWT.CHECK);
 		r0.setText("Region free");
@@ -553,8 +757,8 @@ public class MovieDialog extends Dialog {
 		Composite c = new Composite(tabFolder, SWT.NULL);
 //		GridLayout compositeLayout = new GridLayout(2, false);
 //		c.setLayout(compositeLayout);
-		audioTable = new AudioSubtitleTable(c, true);
-//		subtitleTable = new AudioSubtitleTable(c, false);
+		audioTable = new AudioSubtitleTable(c, true, formatCombo);
+		subtitleTable = new AudioSubtitleTable(c, false, formatCombo);
 		
 		tab5.setControl(c);
 	}
@@ -572,6 +776,7 @@ public class MovieDialog extends Dialog {
 		altTitleText.setText(m.getCustomTitle());
 		if(m.getYear() != 0)
 			yearText.setText(m.getYear() + "");
+		versionCombo.setText(m.getCustomVersion());
 		directorText.setText(m.getDirectorsAsString());
 		writerText.setText(m.getWritersAsString());
 		genreText.setText(m.getGenresAsString());
@@ -585,6 +790,7 @@ public class MovieDialog extends Dialog {
 	
 		taglineText.setText(m.getTagline());
 		plotText.setText(m.getPlotOutline());
+		notesText.setText(m.getNotes());
 		
 		for(ActorInfo a : movie.getActors()) {
 			TableItem i = new TableItem(actorTable, SWT.NONE);
@@ -619,8 +825,8 @@ public class MovieDialog extends Dialog {
 		asColumn.pack();
 		characterNameColumn.pack();
 		
-		audioTable.setAudioModel(movie.getAudioTracks());
-//		subtitleTable.setSubModel(movie.getSubtitles());
+		audioTable.setModel(movie.getAudioTracks());
+		subtitleTable.setModel(movie.getSubtitles());
 		
 		imageArea.setImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), 
 				CONST.scaleImage(movie.getImageData(), false, COVER_WIDTH, COVER_HEIGHT)));
@@ -683,7 +889,7 @@ public class MovieDialog extends Dialog {
 		formatTabIcon.dispose();
 		audioTabIcon.dispose();
 		audioTable.dispose();
-//		subtitleTable.dispose();
+		subtitleTable.dispose();
 		return super.close();
 	}
 	
@@ -707,9 +913,11 @@ public class MovieDialog extends Dialog {
 		movie.setRunTime(runtimeText.getText());
 		movie.setRatingAsInt(rateScale.getSelection());
 		movie.setSeen(seenCheck.getSelection());
+		movie.setCustomVersion(versionCombo.getText());
 
 		movie.setTagline(taglineText.getText());
 		movie.setPlotOutline(plotText.getText());
+		movie.setNotes(notesText.getText());
 		
 		movie.setFormat(FormatType.values()[formatCombo.getSelectionIndex()]);
 		movie.setContainer(ContainerFormat.values()[containerCombo.getSelectionIndex()]);
@@ -740,10 +948,25 @@ public class MovieDialog extends Dialog {
 			series.setCompleteness(Completeness.values()[completenessCombo.getSelectionIndex()]);
 			series.setCompletenessDetail(completenessText.getText());
 		}
+		
+		movie.setAudioTracks(audioTable.getModel());
+		movie.setSubtitles(subtitleTable.getModel());
 	}
 	
 	public AbstractMovie getModel() {
 		return movie;
+	}
+	
+	@Override
+	public int open() {
+		create();
+		
+		if(movie != null)
+			setModel(movie);
+		else
+			setModel(new Film());
+		
+		return super.open();
 	}
 }
 
