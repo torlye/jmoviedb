@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -27,7 +28,9 @@ import org.eclipse.swt.widgets.TableItem;
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
+import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Language;
+import com.googlecode.jmoviedb.enumerated.SubtitleFormat;
 import com.googlecode.jmoviedb.model.AudioTrack;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
 
@@ -38,8 +41,7 @@ public class AudioSubtitleTable {
 	private TableViewer tableViewer;
 	//	private Button closeButton;
 
-	private ArrayList<AudioTrack> audioModel;
-	private ArrayList<SubtitleTrack> subModel;
+	private ArrayList model;
 
 	// column names
 	private String[] columnNames;
@@ -49,9 +51,11 @@ public class AudioSubtitleTable {
 	private Image removeImage;
 	private Image upImage;
 	private Image downImage;
+	private Combo formatCombo;
 
-	public AudioSubtitleTable(Composite parent, boolean audio) {
+	public AudioSubtitleTable(Composite parent, boolean audio, Combo formatCombo) {
 		this.audio = audio;
+		this.formatCombo = formatCombo;
 		
 		tickImage = ImageDescriptor.createFromURL(CONST.ICON_TICK12).createImage();
 		addImage = ImageDescriptor.createFromURL(CONST.ICON_ADD).createImage();
@@ -84,24 +88,15 @@ public class AudioSubtitleTable {
 		createButtons(parent);
 	}
 	
-	public void setAudioModel(ArrayList<AudioTrack> arrayList) {
-		this.audioModel = arrayList;
+	public void setModel(ArrayList arrayList) {
+		this.model = arrayList;
 		tableViewer.setInput(arrayList);
 	}
 	
-	public void setSubModel(ArrayList<SubtitleTrack> arrayList) {
-		this.subModel = arrayList;
-		tableViewer.setInput(arrayList);
-	}
-	
-	public ArrayList<AudioTrack> getAudioModel() {
-		return audioModel;
+	public ArrayList getModel() {
+		return model;
 	}
 
-	public ArrayList<SubtitleTrack> getSubModel() {
-		return subModel;
-	}
-	
 	/**
 	 * Disposes of Image resources
 	 */
@@ -155,8 +150,13 @@ public class AudioSubtitleTable {
 		CellEditor[] editors = new CellEditor[columnNames.length];
 		editors[0] = new ComboBoxCellEditor(table, Language.getStringArray(), SWT.READ_ONLY);
 		editors[1] = new CheckboxCellEditor(table);
-		editors[2] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
-		editors[3] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
+		if(audio) {
+			editors[2] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
+			editors[3] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
+		} else {
+			editors[2] = new CheckboxCellEditor(table);
+			editors[3] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
+		}
 
 		// Assign the cell editors to the viewer 
 		tableViewer.setCellEditors(editors);
@@ -196,13 +196,13 @@ public class AudioSubtitleTable {
 		up.setLayoutData(gridData);
 		up.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				AudioTrack track = (AudioTrack)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				Object track = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (track != null) {
-					int currentIndex = audioModel.indexOf(track);
+					int currentIndex = model.indexOf(track);
 					if(currentIndex > 0) {
-						AudioTrack temp = audioModel.get(currentIndex);
-						audioModel.set(currentIndex, audioModel.get(currentIndex-1));
-						audioModel.set(currentIndex-1, temp);
+						Object temp = model.get(currentIndex);
+						model.set(currentIndex, model.get(currentIndex-1));
+						model.set(currentIndex-1, temp);
 						tableViewer.refresh();
 					}
 				}
@@ -217,14 +217,13 @@ public class AudioSubtitleTable {
 		down.setLayoutData(gridData);
 		down.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				audioModel.add(new AudioTrack(Language.english, AudioCodec.other, AudioChannels.stereo, false));
-				AudioTrack track = (AudioTrack)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				Object track = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (track != null) {
-					int currentIndex = audioModel.indexOf(track);
-					if(currentIndex < audioModel.size()-1 && audioModel.size() > 1) {
-						AudioTrack temp = audioModel.get(currentIndex);
-						audioModel.set(currentIndex, audioModel.get(currentIndex+1));
-						audioModel.set(currentIndex+1, temp);
+					int currentIndex = model.indexOf(track);
+					if(currentIndex < model.size()-1 && model.size() > 1) {
+						Object temp = model.get(currentIndex);
+						model.set(currentIndex, model.get(currentIndex+1));
+						model.set(currentIndex+1, temp);
 						tableViewer.refresh();
 					}
 				}
@@ -238,7 +237,7 @@ public class AudioSubtitleTable {
 		add.setLayoutData(gridData);
 		add.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				audioModel.add(new AudioTrack(Language.english, AudioCodec.other, AudioChannels.stereo, false));
+				model.add(getNewTrack());
 				tableViewer.refresh();
 			}
 		});
@@ -250,13 +249,53 @@ public class AudioSubtitleTable {
 		delete.setLayoutData(gridData); 
 		delete.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				AudioTrack track = (AudioTrack)((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+				Object track = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 				if (track != null) {
-					audioModel.remove(track);
+					model.remove(track);
 					tableViewer.refresh();
 				}
 			}
 		});
+	}
+	
+	private Object getNewTrack() {
+		FormatType format = FormatType.values()[formatCombo.getSelectionIndex()];
+		
+		Language lang = Language.english;
+		AudioCodec audioformat = AudioCodec.other;
+		AudioChannels channels = AudioChannels.stereo;
+		SubtitleFormat subformat = SubtitleFormat.other;
+		
+		if(format == FormatType.dvd) {
+			audioformat = AudioCodec.ac3;
+			channels = AudioChannels.surround51;
+			subformat = SubtitleFormat.vobsub;
+		} else if(format == FormatType.bluray||format == FormatType.hddvd) {
+			audioformat = AudioCodec.ac3;
+			channels = AudioChannels.surround51;
+			subformat = SubtitleFormat.medianative;
+		} else if(format == FormatType.vcd||format == FormatType.xvcd) {
+			audioformat = AudioCodec.mp2;
+			channels = AudioChannels.stereo;
+			subformat = SubtitleFormat.burnt_in;
+		} else if(format == FormatType.svcd||format == FormatType.xsvcd) {
+			audioformat = AudioCodec.mp2;
+			channels = AudioChannels.stereo;
+			subformat = SubtitleFormat.cvd;
+		} else if(format == FormatType.laserdisc||format == FormatType.vhs) {
+			audioformat = AudioCodec.analog;
+			channels = AudioChannels.stereo;
+			subformat = SubtitleFormat.burnt_in;
+		} else if(format == FormatType.umd) {
+			audioformat = AudioCodec.atrac3plus;
+			channels = AudioChannels.stereo;
+			subformat = SubtitleFormat.medianative;
+		}
+		if(audio) {
+			return new AudioTrack(lang, audioformat, channels, false);
+		} else {
+			return new SubtitleTrack(lang, subformat, false, false);
+		}
 	}
 	
 	private class AudioLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -267,15 +306,22 @@ public class AudioSubtitleTable {
 			String result = "";
 			switch (columnIndex) {
 			case 0:  // COMPLETED_COLUMN
-				result += ((AudioTrack)element).getLanguage().getName();
+				if(audio)
+					result += ((AudioTrack)element).getLanguage().getName();
+				else
+					result += ((SubtitleTrack)element).getLanguage().getName();
 				break;
 			case 1 :
 				break;
 			case 2 :
-				result += ((AudioTrack)element).getAudio().getShortName();
+				if(audio)
+					result += ((AudioTrack)element).getAudio().getShortName();
 				break;
 			case 3 :
-				result += ((AudioTrack)element).getChannels().getDescription();
+				if(audio)
+					result += ((AudioTrack)element).getChannels().getDescription();
+				else
+					result += ((SubtitleTrack)element).getFormat().getShortName();
 				break;
 			default :
 				break; 	
@@ -287,9 +333,18 @@ public class AudioSubtitleTable {
 		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
 		 */
 		public Image getColumnImage(Object element, int columnIndex) {
-			if(columnIndex == 1)
-				if(((AudioTrack)element).isCommentary())
-					return tickImage;
+			if(audio) {
+				if(columnIndex == 1)
+					if(((AudioTrack)element).isCommentary())
+						return tickImage;
+			} else {
+				if(columnIndex == 1)
+					if(((SubtitleTrack)element).isCommentary())
+						return tickImage;
+				if(columnIndex == 2)
+					if(((SubtitleTrack)element).isHearingImpaired())
+						return tickImage;
+			}
 			return null;
 		}
 
@@ -362,22 +417,43 @@ public class AudioSubtitleTable {
 			// Find the index of the column 
 			int columnIndex	= Arrays.asList(columnNames).indexOf(property);
 
-			AudioTrack track = (AudioTrack)(((TableItem)element).getData());
+			if(audio) {
+				AudioTrack track = (AudioTrack)(((TableItem)element).getData());
 
-			switch (columnIndex) {
-			case 0:
-				track.setLanguage(Language.values()[(Integer)value]);
-				break;
-			case 1:
-				track.setCommentary((Boolean)value);
-				break;
-			case 2:
-				track.setAudio(AudioCodec.values()[(Integer)value]);
-				break;
-			case 3:
-				track.setChannels(AudioChannels.values()[(Integer)value]);
-				break;
-			default:
+				switch (columnIndex) {
+				case 0:
+					track.setLanguage(Language.values()[(Integer)value]);
+					break;
+				case 1:
+					track.setCommentary((Boolean)value);
+					break;
+				case 2:
+					track.setAudio(AudioCodec.values()[(Integer)value]);
+					break;
+				case 3:
+					track.setChannels(AudioChannels.values()[(Integer)value]);
+					break;
+				default:
+				}
+			} else {
+				SubtitleTrack track = (SubtitleTrack)(((TableItem)element).getData());
+
+				switch (columnIndex) {
+				case 0:
+					track.setLanguage(Language.values()[(Integer)value]);
+					break;
+				case 1:
+					track.setCommentary((Boolean)value);
+					break;
+				case 2:
+					track.setHearingImpaired((Boolean)value);
+					break;
+				case 3:
+					track.setFormat(SubtitleFormat.values()[(Integer)value]);
+					break;
+				default:
+				}
+
 			}
 			tableViewer.refresh();
 		}

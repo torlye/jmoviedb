@@ -51,6 +51,9 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		if(movie.getYear() != 0)
 			title += " ("+movie.getYear()+")";
 		
+		if(movie.getCustomVersion().length() > 0)
+			title += " [" + movie.getCustomVersion() + "]";
+		
 		if (movie instanceof VideoMovie)
 			title += " (V)";
 		
