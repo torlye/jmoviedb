@@ -191,6 +191,7 @@ public class AudioSubtitleTable {
 		// Create and configure the "Up" button
 		Button up = new Button(parent, SWT.PUSH | SWT.CENTER);
 		up.setImage(upImage);
+		up.setToolTipText("Move up");
 
 		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		up.setLayoutData(gridData);
@@ -212,6 +213,7 @@ public class AudioSubtitleTable {
 		// Create and configure the "Down" button
 		Button down = new Button(parent, SWT.PUSH | SWT.CENTER);
 		down.setImage(downImage);
+		down.setToolTipText("Move down");
 
 		gridData = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		down.setLayoutData(gridData);
@@ -233,6 +235,11 @@ public class AudioSubtitleTable {
 		// Create and configure the "Add" button
 		Button add = new Button(parent, SWT.PUSH | SWT.CENTER);
 		add.setImage(addImage);
+		if(audio)
+			add.setToolTipText("Add audio track");
+		else
+			add.setToolTipText("Add subtitle");
+		
 		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
 		add.setLayoutData(gridData);
 		add.addSelectionListener(new SelectionAdapter() {
@@ -245,6 +252,12 @@ public class AudioSubtitleTable {
 		//	Create and configure the "Delete" button
 		Button delete = new Button(parent, SWT.PUSH | SWT.CENTER);
 		delete.setImage(removeImage);
+		if(audio)
+			delete.setToolTipText("Remove audio track");
+		else
+			delete.setToolTipText("Remove subtitle");
+		
+		
 		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
 		delete.setLayoutData(gridData); 
 		delete.addSelectionListener(new SelectionAdapter() {
