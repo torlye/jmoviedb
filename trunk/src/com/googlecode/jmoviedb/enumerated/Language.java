@@ -111,6 +111,7 @@ public enum Language {
 	cornish(80, "Cornish", Settings.getSettings().getLanguageClass().LANGUAGE_CORNISH),
 	corsican(81, "Corsican", Settings.getSettings().getLanguageClass().LANGUAGE_CORSICAN),
 	cree(82, "Cree", Settings.getSettings().getLanguageClass().LANGUAGE_CREE),
+	croatian(292, "Croatian", "Croatian"),
 	crow(83, "Crow", Settings.getSettings().getLanguageClass().LANGUAGE_CROW),
 	dari(84, "Dari", Settings.getSettings().getLanguageClass().LANGUAGE_DARI),
 	desia(85, "Desia", Settings.getSettings().getLanguageClass().LANGUAGE_DESIA),
@@ -191,6 +192,7 @@ public enum Language {
 	limbu(160, "Limbu", Settings.getSettings().getLanguageClass().LANGUAGE_LIMBU),
 	lingala(161, "Lingala", Settings.getSettings().getLanguageClass().LANGUAGE_LINGALA),
 	lithuanian(162, "Lithuanian", Settings.getSettings().getLanguageClass().LANGUAGE_LITHUANIAN),
+	maasai(291, "Maasai", "Maasai"),
 	macedonian(163, "Macedonian", Settings.getSettings().getLanguageClass().LANGUAGE_MACEDONIAN),
 	macro_je(164, "Macro-Jê", Settings.getSettings().getLanguageClass().LANGUAGE_MACRO_JE),
 	magahi(165, "Magahi", Settings.getSettings().getLanguageClass().LANGUAGE_MAGAHI),
@@ -318,8 +320,7 @@ public enum Language {
 	yapese(287, "Yapese", Settings.getSettings().getLanguageClass().LANGUAGE_YAPESE),
 	yiddish(288, "Yiddish", Settings.getSettings().getLanguageClass().LANGUAGE_YIDDISH),
 	yoruba(289, "Yoruba", Settings.getSettings().getLanguageClass().LANGUAGE_YORUBA),
-	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU),
-	maasai(291, "Maasai", "Maasai");
+	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU);
 
 	
 	private int id;
