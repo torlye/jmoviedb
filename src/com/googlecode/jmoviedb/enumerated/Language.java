@@ -262,6 +262,7 @@ public enum Language {
 	sardinian(229, "Sardinian", Settings.getSettings().getLanguageClass().LANGUAGE_SARDINIAN),
 	scanian(230, "Scanian", Settings.getSettings().getLanguageClass().LANGUAGE_SCANIAN),
 	scottishgaelic(231, "ScottishGaelic", Settings.getSettings().getLanguageClass().LANGUAGE_SCOTTISHGAELIC),
+	serbian(293, "Serbian", "Serbian"),
 	serere(232, "Serere", Settings.getSettings().getLanguageClass().LANGUAGE_SERERE),
 	shanghainese(233, "Shanghainese", Settings.getSettings().getLanguageClass().LANGUAGE_SHANGHAINESE),
 	shanxi(234, "Shanxi", Settings.getSettings().getLanguageClass().LANGUAGE_SHANXI),
@@ -321,7 +322,7 @@ public enum Language {
 	yiddish(288, "Yiddish", Settings.getSettings().getLanguageClass().LANGUAGE_YIDDISH),
 	yoruba(289, "Yoruba", Settings.getSettings().getLanguageClass().LANGUAGE_YORUBA),
 	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU);
-
+	//last id: 293
 	
 	private int id;
 	private String imdbID;

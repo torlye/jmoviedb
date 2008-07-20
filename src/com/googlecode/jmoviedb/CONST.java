@@ -58,7 +58,7 @@ public class CONST {
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 1;
+	public static final int RELEASE_VERSION = 2;
 	
 	/**
 	 * The current development stage expressed as a string.
@@ -70,7 +70,7 @@ public class CONST {
 	/**
 	 * SWT version number
 	 */
-	public static final String VERSION_SWT = "3.3.2";
+	public static final String VERSION_SWT = "3.4.0";
 	
 	/**
 	 * Apache Derby version number
