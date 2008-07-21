@@ -68,14 +68,6 @@ public class AudioSubtitleTable {
 		else
 			columnNames = new String[] {"Language","Commentary track","Hearing impaired","Format"};
 		
-		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_BOTH);
-		parent.setLayoutData(gridData);
-
-		// Set numColumns to 3 for the buttons 
-		GridLayout layout = new GridLayout(4, false);
-		layout.marginWidth = 4;
-		parent.setLayout(layout);
-
 		// Create the table 
 		createTable(parent);
 
@@ -118,9 +110,10 @@ public class AudioSubtitleTable {
 
 		table = new Table(parent, style);
 
-		GridData gridData = new GridData(GridData.FILL_BOTH);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalSpan = 4;
+		gridData.minimumHeight = 100;
 		table.setLayoutData(gridData);		
 
 		table.setLinesVisible(true);
@@ -193,7 +186,7 @@ public class AudioSubtitleTable {
 		up.setImage(upImage);
 		up.setToolTipText("Move up");
 
-		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+		GridData gridData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
 		up.setLayoutData(gridData);
 		up.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -240,7 +233,7 @@ public class AudioSubtitleTable {
 		else
 			add.setToolTipText("Add subtitle");
 		
-		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
+		gridData = new GridData(SWT.END, SWT.CENTER, false, false);
 		add.setLayoutData(gridData);
 		add.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -258,7 +251,7 @@ public class AudioSubtitleTable {
 			delete.setToolTipText("Remove subtitle");
 		
 		
-		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
+		gridData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
 		delete.setLayoutData(gridData); 
 		delete.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

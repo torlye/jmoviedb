@@ -755,8 +755,15 @@ public class MovieDialog extends Dialog {
 		tab5.setImage(audioTabIcon);
 		
 		Composite c = new Composite(tabFolder, SWT.NULL);
-//		GridLayout compositeLayout = new GridLayout(2, false);
-//		c.setLayout(compositeLayout);
+		
+//		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_BOTH);
+//		parent.setLayoutData(gridData);
+
+		// Set numColumns to 3 for the buttons 
+		GridLayout layout = new GridLayout(4, false);
+		layout.marginWidth = 4;
+		c.setLayout(layout);
+		
 		audioTable = new AudioSubtitleTable(c, true, formatCombo);
 		subtitleTable = new AudioSubtitleTable(c, false, formatCombo);
 		
