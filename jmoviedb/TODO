@@ -14,4 +14,3 @@ BUGS
 ----
 Find and plug memory leak in IMDB mass update feature
 Recently used files list isn't updated properly
-Fix build.xml file. It does not work. Skip downloading of jar files.
