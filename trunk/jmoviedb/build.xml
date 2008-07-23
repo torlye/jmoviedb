@@ -1,325 +1,154 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<project name="JMoviedb" basedir="." default="jar-all">
+<project name="JMoviedb" basedir="." default="jar">
 
-	<property name="buildversion"     value="0.0.2"/>
-	<property name="src.dir"          value="src"/>
-	<property name="compile.dir"      value="build"/>
-	<property name="jar.dir"          value="jar"/>
-	<property name="main-class"       value="com.googlecode.jmoviedb.gui.MainWindow"/>
-	<property name="res.dir"          value="resources"/>
-	<property name="dl.dir"           value="lib"/>
-	<property name="temp.dir"         value="jar-temp"/>
-	<property name="url"              value="http://jmoviedb.googlecode.com/files"/>
-	<property name="url.browser"      value="BrowserLauncher2-1_3.jar"/>
-	<property name="url.glazed"       value="glazedlists-1.7.0_java15.jar"/>
-	<property name="url.derby"        value="derby-10.3.3.0.jar"/>
-	<property name="url.ktable"       value="ktable_2.1.3.jar"/>
-	<property name="url.jface"        value="org.eclipse.jface_3.4.0.I20080606-1300.jar"/>
-	<property name="url.eequinox"     value="org.eclipse.equinox.common_3.4.0.v20080421-2006.jar"/>
-	<property name="url.eecore"       value="org.eclipse.core.commands_3.4.0.I20080509-2000.jar"/>
-	<property name="url.osgi"         value="org.eclipse.osgi_3.4.0.v20080605-1900.jar"/>
-	<property name="swt.win32"        value="swt.jar"/>
-	<property name="swt.win64"        value="swt.jar"/>
-	<property name="swt.linux32"      value="swt.jar"/>
-	<property name="swt.linux64"      value="swt.jar"/>
-	<property name="swt.linuxppc"     value="swt.jar"/>
-	<property name="swt.osx"          value="swt.jar"/>
+	<property name="buildversion"  value="0.0.2" />
+	<property name="jar.name"      value="${ant.project.name}.jar" />
+	<property name="exe.name"      value="${ant.project.name}.exe" />
+	<property name="main-class"    value="com.googlecode.jmoviedb.gui.MainWindow" />
+	<property name="src.dir"       location="src" />
+	<property name="compile.dir"   location="build" />
+	<property name="jar.dir"       location="jar" />
+	<property name="res.dir"       value="resources" />
+	<property name="lib.dir"       location="lib" />
+	<property name="temp.dir"      location="jar-temp" />
+	<property name="installer.dir" location="installer" />
+	<property name="launch4j.dir"  location="launch4j" />
+	<property name="icon"          location="${installer.dir}/windows-icon.ico" />
+	<property name="jar.browser"   value="BrowserLauncher2-1_3.jar" />
+	<property name="jar.glazed"    value="glazedlists-1.7.0_java15.jar" />
+	<property name="jar.derby"     value="derby-10.3.3.0.jar" />
+	<property name="jar.ktable"    value="ktable_2.1.3.jar" />
+	<property name="jar.jface"     value="org.eclipse.jface_3.4.0.I20080606-1300.jar" />
+	<property name="jar.equinox"   value="org.eclipse.equinox.common_3.4.0.v20080421-2006.jar" />
+	<property name="jar.ecore"     value="org.eclipse.core.commands_3.4.0.I20080509-2000.jar" />
+	<property name="jar.osgi"      value="org.eclipse.osgi_3.4.0.v20080605-1900.jar" />
+	<property name="jar.swt"       value="swt.jar" />
 
-	
+	<taskdef name="launch4j" 
+		classname="net.sf.launch4j.ant.Launch4jTask" 
+		classpath="${launch4j.dir}/launch4j.jar
+	        :${launch4j.dir}/lib/xstream.jar" />
+
 	<target name="clean">
-		<delete dir="${compile.dir}"/>
-		<delete dir="${temp.dir}"/>
-		<delete dir="${unzip.dir}"/>
-		<delete dir="${jar.dir}"/>
+		<delete dir="${compile.dir}" />
+		<delete dir="${temp.dir}" />
+		<delete dir="${jar.dir}" />
 	</target>
 
-	
-	<target name="download">
-		<mkdir dir="${dl.dir}"/>
-	</target>
-	
-	
-	<target name="extract" depends="download">
-		<mkdir dir="${temp.dir}"/>
-		<unjar src="${dl.dir}/${url.browser}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/><include name="**/*.properties"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.glazed}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.ktable}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.derby}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/><include name="org/**/*.properties"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.jface}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/><include name="org/**/*.properties"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.eequinox}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.eecore}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
-		<unjar src="${dl.dir}/${url.osgi}" dest="${temp.dir}" overwrite="false">
-			<patternset><include name="**/*.class"/></patternset></unjar>
-		
+	<target name="extract">
+		<mkdir dir="${temp.dir}" />
+
+		<unjar src="${lib.dir}/${jar.browser}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.glazed}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.ktable}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.derby}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+				<include name="org/**/*.properties" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.jface}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+				<include name="org/**/*.properties" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.equinox}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.ecore}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unjar>
+
+		<unjar src="${lib.dir}/${jar.osgi}" dest="${temp.dir}" overwrite="false">
+			<patternset>
+				<include name="**/*.class" />
+			</patternset>
+		</unjar>
+
 	</target>
 
-	
-	<target name="compile" depends="download">
+
+	<target name="compile">
 		<path id="classpath">
-			<fileset dir="${dl.dir}">
-				<include name="**"/>
+			<fileset dir="${lib.dir}">
+				<include name="**" />
 			</fileset>
 		</path>
-		<mkdir dir="${compile.dir}"/>
-		<javac source="1.5" target="1.5" encoding="UTF-8" srcdir="${src.dir}" destdir="${compile.dir}" classpathref="classpath"/>
+
+		<mkdir dir="${compile.dir}" />
+		<javac source="1.5" target="1.5" encoding="UTF-8"
+			srcdir="${src.dir}" destdir="${compile.dir}" 
+			classpathref="classpath" />
 	</target>
-	
-	<target name="jar-universal" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
+
+	<target name="jar" depends="compile, extract">
+		<mkdir dir="${jar.dir}" />
+
+		<copy todir="${temp.dir}" overwrite="true">
+			<fileset dir="${compile.dir}" />
 		</copy>
-		
+
 		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
+			<root classname="${main-class}" />
 		</classfileset>
-		
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-universal.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
+
+		<jar destfile="${jar.dir}/${jar.name}">
+			<fileset refid="requiredClasses" />
+			<fileset dir="${basedir}" includes="${res.dir}/" />
+			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class" />
+			<fileset dir="${temp.dir}" includes="org/eclipse/jface/**/*.class" />
+			<fileset dir="${temp.dir}" includes="**/*.properties" />
 			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-				<attribute name="Class-Path" value="./swt.jar"/>
+				<attribute name="Main-Class" value="${main-class}" />
+				<attribute name="Class-Path" value="./swt.jar" />
 			</manifest>
 		</jar>
 	</target>
-	
-	<target name="jar-win32" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
-		</copy>
-		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<!--<get dest="${dl.dir}/${swt.win32}" src="${url}/${swt.win32}" verbose="true" usetimestamp="true"/>-->
-		<unjar src="${dl.dir}/${swt.win32}" dest="${temp.dir}" overwrite="true">
-			<patternset>
-				<include name="**/*.class"/>
-				<include name="**/*.dll"/>
-			</patternset>
-		</unjar>
-		
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-win-x86.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/jface/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
-			<fileset dir="${temp.dir}" includes="**/*.dll"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
-			<fileset dir="${temp.dir}" includes="**/*.dll"/>
-		</delete>
+
+	<target name="exe" depends="jar">
+		<launch4j>
+			<config headerType="gui" outfile="${jar.dir}/${exe.name}" 
+				dontWrapJar="true" jar="${jar.dir}/${jar.name}" 
+				jarPath="${jar.name}" icon="${icon}">
+
+				<jre minVersion="1.5.0"></jre>
+
+				<versionInfo 
+					fileVersion="${buildversion}.0" 
+					productVersion="${buildversion}.0"
+					txtFileVersion="${buildversion}"
+					txtProductVersion="${buildversion}"
+					fileDescription="${ant.project.name}"
+					productName="${ant.project.name}"
+					internalName="${ant.project.name}"
+					originalFilename="${exe.name}"
+					copyright="Copyright (C) 2008 Tor Lye">
+				</versionInfo>
+			</config>
+		</launch4j>
 	</target>
-	
-	<target name="jar-win64" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
-		</copy>
-		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<get dest="${dl.dir}/${swt.win64}" src="${url}/${swt.win64}" verbose="true" usetimestamp="true"/>
-		<unjar src="${dl.dir}/${swt.win64}" dest="${temp.dir}" overwrite="true">
-			<patternset>
-				<include name="**/*.class"/>
-				<include name="**/*.dll"/>
-			</patternset>
-		</unjar>
-		
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-win-x86_64.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
-			<fileset dir="${temp.dir}" includes="**/*.dll"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
-			<fileset dir="${temp.dir}" includes="**/*.dll"/>
-		</delete>
-	</target>
-	
-	<target name="jar-osx" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
-		</copy>
-		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<get dest="${dl.dir}/${swt.osx}" src="${url}/${swt.osx}" verbose="true" usetimestamp="true"/>
-		<unjar src="${dl.dir}/${swt.osx}" dest="${temp.dir}" overwrite="true">
-			<patternset>
-				<include name="**/*.class"/>
-				<include name="**/*.jnilib"/>
-			</patternset>
-		</unjar>
-			
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-osx.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
-			<fileset dir="${temp.dir}" includes="**/*.jnilib"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
-			<fileset dir="${temp.dir}" includes="**/*.jnilib"/>
-		</delete>
-	</target>
-	
-	<target name="jar-linux32" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
-		</copy>
-		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<get dest="${dl.dir}/${swt.linux32}" src="${url}/${swt.linux32}" verbose="true" usetimestamp="true"/>
-		<unjar src="${dl.dir}/${swt.linux32}" dest="${temp.dir}" overwrite="true">
-			<patternset>
-				<include name="**/*.class"/>
-				<include name="**/*.so"/>
-			</patternset>
-		</unjar>
-		
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-linux-x86.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
-			<fileset dir="${temp.dir}" includes="**/*.so"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
-			<fileset dir="${temp.dir}" includes="**/*.jnilib"/>
-		</delete>
-	</target>
-	
-	<target name="jar-linux64" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
-		</copy>
-		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<!--<get dest="${dl.dir}/${swt.linux64}" src="${url}/${swt.linux64}" verbose="true" usetimestamp="true"/>-->
-		<unjar src="${dl.dir}/${swt.linux64}" dest="${temp.dir}" overwrite="true">
-			<patternset>
-				<include name="**/*.class"/>
-				<include name="**/*.so"/>
-			</patternset>
-		</unjar>
-		
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-linux-x86_64.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/jface/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
-			<fileset dir="${temp.dir}" includes="**/*.so"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
-			<fileset dir="${temp.dir}" includes="**/*.jnilib"/>
-		</delete>
-	</target>
-	
-	<target name="jar-linuxppc" depends="compile, extract">
-		<mkdir dir="${jar.dir}"/>
-		
-		<copy todir="${temp.dir}">
-			<fileset dir="${compile.dir}"/>
-		</copy>
-		
-		<classfileset id="requiredClasses" dir="${temp.dir}">
-			<root classname="${main-class}"/>
-		</classfileset>		
-		
-		<get dest="${dl.dir}/${swt.linuxppc}" src="${url}/${swt.linuxppc}" verbose="true" usetimestamp="true"/>
-		<unjar src="${dl.dir}/${swt.linuxppc}" dest="${temp.dir}" overwrite="true">
-			<patternset>
-				<include name="**/*.class"/>
-				<include name="**/*.so"/>
-			</patternset>
-		</unjar>
-		
-		<jar destfile="${jar.dir}/${ant.project.name}-${buildversion}-linux-ppc.jar">
-			<fileset refid="requiredClasses"/>
-			<fileset dir="." includes="${res.dir}/"/>
-			<fileset dir="${temp.dir}" includes="org/apache/derby/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="org/eclipse/swt/**/*.class"/>
-			<fileset dir="${temp.dir}" includes="**/*.properties"/>
-			<fileset dir="${temp.dir}" includes="**/*.so"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<delete>
-			<fileset dir="${temp.dir}/org/eclipse/" includes="swt/**"/>
-			<fileset dir="${temp.dir}" includes="**/*.jnilib"/>
-		</delete>
-	</target>
-	
-	<target name="jar-all" depends="jar-universal, jar-win32, jar-win64, jar-osx, jar-linux32, jar-linux64, jar-linuxppc"/>
 </project>
-<!--<manifestclasspath property="jar.classpath" jarfile="${jar.dir}/${ant.project.name}.jar">
-<classpath refid="classpath" />
-</manifestclasspath>-->
