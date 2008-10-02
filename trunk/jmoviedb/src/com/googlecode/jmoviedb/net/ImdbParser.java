@@ -117,7 +117,7 @@ public class ImdbParser {
 	 * @return a year
 	 */
 	protected int getYear() {
-		Pattern patternYear = Pattern.compile("<a href=\"/Sections/Years/\\d{4}\">(\\d{4})</a>");
+		Pattern patternYear = Pattern.compile("<a href=\"/Sections/Years/\\d{4}/\">(\\d{4})</a>");
 		Matcher matcherYear = patternYear.matcher(html);
 		if (matcherYear.find()) {
 			return Integer.parseInt(matcherYear.group(1));	
@@ -177,7 +177,7 @@ public class ImdbParser {
 	 * @return the rating
 	 */
 	protected double getRating() {
-		Pattern patternRating = Pattern.compile("<b>User Rating:</b>\\s+<b>([0-9\\.]+)/10</b>");
+		Pattern patternRating = Pattern.compile("<b>([0-9\\.]+)/10</b>");
 		Matcher matcherRating = patternRating.matcher(html);
 		if (matcherRating.find()) {
 			return Double.valueOf(matcherRating.group(1)).doubleValue();	
