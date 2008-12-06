@@ -31,6 +31,8 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 	private final static Color DVD_COLOR = new Color(Display.getCurrent(), 220, 128, 128); //dc8080
 	private final static Color VCD_COLOR = new Color(Display.getCurrent(), 240, 221, 250); //f0ddfa
 	private final static Color SVCD_COLOR = new Color(Display.getCurrent(), 250, 221, 240); //faddf0
+	private final static Color BLURAY_COLOR = new Color(Display.getCurrent(), 0, 149, 213); //0095d5, the colour in the Blu-Ray logo
+	private final static Color HDDVD_COLOR = new Color(Display.getCurrent(), 160, 37, 45); //approximate colour of the HD-DVD cover - too dark? 
 	private final static int IMAGE_WIDTH = 50;
 	private final static int IMAGE_HEIGHT = 70;
 	
@@ -127,10 +129,14 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 			gc.setBackground(NOT_SEEN_COLOR);
 		else if(movie.getFormat() == FormatType.dvd)
 			gc.setBackground(DVD_COLOR);
+		else if(movie.getFormat() == FormatType.bluray)
+			gc.setBackground(BLURAY_COLOR);
 		else if(movie.getFormat() == FormatType.vcd)
 			gc.setBackground(VCD_COLOR);
 		else if(movie.getFormat() == FormatType.svcd)
 			gc.setBackground(SVCD_COLOR);
+		else if(movie.getFormat() == FormatType.hddvd)
+			gc.setBackground(HDDVD_COLOR);
 		else
 			gc.setBackground(DEFAULT_COLOR);
 		
