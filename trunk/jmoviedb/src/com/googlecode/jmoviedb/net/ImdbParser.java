@@ -163,10 +163,9 @@ public class ImdbParser {
 	 * @return the plot outline
 	 */
 	protected String getPlot() {
-		Pattern patternPlot = Pattern.compile("<h5>Plot Outline:</h5>\\s*([^<]+)\\s*<a");
+		Pattern patternPlot = Pattern.compile("<h5>Plot:</h5>\\s*([^<]+)\\s*<a");
 		Matcher matcherPlot = patternPlot.matcher(html);
 		if (matcherPlot.find()) {
-			//String plot = matcherPlot.group(1);
 			return matcherPlot.group(1);
 		}
 		return "";
@@ -323,17 +322,34 @@ public class ImdbParser {
 	 * @return an ArrayList of ActorInfo objects
 	 */
 	protected ArrayList<ActorInfo> getActors() {
-		//TODO the following does not work:
+		//Typical examples:
+		//<td class="nm"><a href="/name/nm0132257/">Bruce Campbell</a></td><td class="ddd"> ... </td><td class="char">Renaldo 'The Heel'</td>
+		//<td class="nm"><a href="/name/nm0001511/">Lee Marvin</a></td><td class="ddd"> ... </td><td class="char"><a href="/character/ch0023281/">The Sergeant</a></td>
+		//Beware of the following cases:
 		//<td class="char"><a href="/character/ch0008987/">Nick</a> (as Nephi Pomaikai Brown)</td>
 		//<td class="char"><a href="/character/ch0001439/">Mr. Spock</a> (80&#160;episodes, 1966-1969)</td>
-		Pattern pattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(<a href=\"[^\"]+\">)?([^<]+)(</a>)?([^<]+)?</td>");
-		Matcher matcher = pattern.matcher(html);
+		//<td class="nm"><a href="/name/nm0921942/">Billy West</a></td><td class="ddd"> ... </td><td class="char"><a href="/character/ch0013043/">Philip J. Fry</a> / <a href="/character/ch0013043/">Frydo</a> / <a href="/character/ch0047043/">Professor Hubert Farnsworth</a> / <a href="/character/ch0047043/">The Great Wizard Greyfarn</a> / <a href="/character/ch0013047/">Dr. Zoidberg</a> / <a href="/character/ch0013047/">Monster Zoidberg</a> / Farmer / Dwarf / <a href="/character/ch0047024/">Smitty</a> / Treedledum / Additional Voices (voice)</td>
+		
+		Pattern actorPattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(.*?)</td>");
+		Matcher actorMatcher = actorPattern.matcher(html);
 		ArrayList<ActorInfo> templist = new ArrayList<ActorInfo>();
 		int counter = 0;
 		
-		while (matcher.find()) {
-			//System.out.println(matcher.group(1)+" "+matcher.group(2)+" "+matcher.group(4));
-			templist.add(new ActorInfo(counter, new Person(matcher.group(1), CONST.fixHtmlCharacters(matcher.group(2))), CONST.fixHtmlCharacters(matcher.group(4))));
+		while (actorMatcher.find()) {
+		/*
+		 * Group 3 matches everything between <td class="char"> and </td>
+		 * i.e. the character description. The following statement removes
+		 * HTML entities from that string, e.g.:
+		 * <a href="/character/ch0008987/">Nick</a> (as Nephi Pomaikai Brown)
+		 * is shortened to:
+		 * Nick (as Nephi Pomaikai Brown)
+		 */
+			String character = actorMatcher.group(3).replaceAll("<.+?>", "");
+			
+			templist.add(new ActorInfo(counter, 
+					new Person(actorMatcher.group(1), 
+					CONST.fixHtmlCharacters(actorMatcher.group(2))),  
+					CONST.fixHtmlCharacters(character)));
 			counter++;
 		}
 
