@@ -24,8 +24,8 @@ import java.util.Comparator;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class RatingSorter implements Comparator<AbstractMovie> {
-	boolean descending;
-	int modifier;
+	private boolean descending;
+	private int modifier;
 	
 	public RatingSorter(boolean descending) {
 		this.descending = descending;
