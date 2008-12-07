@@ -133,8 +133,12 @@ public class MovieDialog extends Dialog {
 	private Combo completenessCombo;
 	private Text completenessText;
 	private Label completenessLabel;
-	private SelectionListener typeComboListener;
 	private Label regionLabel;
+	private SelectionListener typeComboListener;
+	private SelectionListener formatComboListener;
+	private SelectionListener legalCheckListener;
+	private SelectionListener myEncodeCheckListener;
+	private SelectionListener r0CheckListener;
 	
 	private final static int COVER_WIDTH = 100;
 	private final static int COVER_HEIGHT = 150;
@@ -207,7 +211,23 @@ public class MovieDialog extends Dialog {
 	}
 	
 	private void configureListeners() {
-		formatCombo.addSelectionListener(new SelectionListener() {
+		typeComboListener = new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent event) {}
+			public void widgetSelected(SelectionEvent event) {
+				if(typeCombo.getSelectionIndex() < 3) {
+					completenessText.setVisible(false);
+					completenessCombo.setVisible(false);
+					completenessLabel.setVisible(false);
+				} else {
+					completenessText.setVisible(true);
+					completenessCombo.setVisible(true);
+					completenessLabel.setVisible(true);
+				}
+			}
+		};
+		typeCombo.addSelectionListener(typeComboListener);
+		
+		formatComboListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
 				//Reset
@@ -339,9 +359,10 @@ public class MovieDialog extends Dialog {
 					r6.setVisible(true);
 				}
 			}
-		});
+		};
+		formatCombo.addSelectionListener(formatComboListener);
 		
-		legalCheck.addSelectionListener(new SelectionListener() {
+		legalCheckListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
 				if(legalCheck.getSelection() == true) {
@@ -353,9 +374,10 @@ public class MovieDialog extends Dialog {
 					myEncodeCheck.setEnabled(true);
 				}
 			}
-		});
+		};
+		legalCheck.addSelectionListener(legalCheckListener);
 		
-		myEncodeCheck.addSelectionListener(new SelectionListener() {
+		myEncodeCheckListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
 				if(myEncodeCheck.getSelection() == true) {
@@ -368,9 +390,10 @@ public class MovieDialog extends Dialog {
 					legalCheck.setEnabled(true);
 				}
 			}
-		});
+		};
+		myEncodeCheck.addSelectionListener(myEncodeCheckListener);
 		
-		r0.addSelectionListener(new SelectionListener() {
+		r0CheckListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
 				boolean value = !r0.getSelection();
@@ -393,7 +416,8 @@ public class MovieDialog extends Dialog {
 					r8.setSelection(false);
 				}
 			}
-		});
+		};
+		r0.addSelectionListener(r0CheckListener);
 	}
 	
 	private void MainTab(CTabFolder tabFolder) {
@@ -424,21 +448,6 @@ public class MovieDialog extends Dialog {
 		typeCombo.setItems(MovieType.getStringArray());
 		typeCombo.select(0);
 		typeCombo.setVisibleItemCount(MovieType.getStringArray().length);
-		typeComboListener = new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent event) {}
-			public void widgetSelected(SelectionEvent event) {
-				if(typeCombo.getSelectionIndex() < 3) {
-					completenessText.setVisible(false);
-					completenessCombo.setVisible(false);
-					completenessLabel.setVisible(false);
-				} else {
-					completenessText.setVisible(true);
-					completenessCombo.setVisible(true);
-					completenessLabel.setVisible(true);
-				}
-			}
-		};
-		typeCombo.addSelectionListener(typeComboListener);
 		
 		completenessLabel = new Label(c1, SWT.CENTER);
 		completenessLabel.setText("Complete:");
@@ -785,7 +794,6 @@ public class MovieDialog extends Dialog {
 	private void setModel(AbstractMovie m) {
 		this.getShell().setText("Movie info - " + m.getDisplayTitle() + " (" + m.getYear() + ")");
 		typeCombo.select(MovieType.abstractMovieToInt(m));
-		typeComboListener.widgetSelected(null);
 		imdbText.setText(m.getImdbUrl());
 		titleText.setText(m.getTitle());
 		altTitleText.setText(m.getCustomTitle());
@@ -852,6 +860,13 @@ public class MovieDialog extends Dialog {
 			completenessText.setText(series.getCompletenessDetail());
 		}
 		
+		//Trigger listeners
+		typeComboListener.widgetSelected(null);
+		formatComboListener.widgetSelected(null);
+		legalCheckListener.widgetSelected(null);
+		myEncodeCheckListener.widgetSelected(null);
+		r0CheckListener.widgetSelected(null);
+		
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {
@@ -879,7 +894,7 @@ public class MovieDialog extends Dialog {
 			try {
 				save();
 				ImdbWorker w = new ImdbWorker();
-				w.update(movie, getShell());
+				movie = w.update(movie, getShell());
 				setModel(movie);
 			} catch (Exception e) {
 				MainWindow.getMainWindow().handleException(e);

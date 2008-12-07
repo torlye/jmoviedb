@@ -34,6 +34,7 @@ public class ImdbSearchResult {
 	private String year;
 	private String[] altTitle;
 	private String imageURL;
+	private ImageData id;
 	
 	public ImdbSearchResult(String imdbId, MovieType type, String title, String year, String[] altTitle) {
 		this.imdbId = imdbId;
@@ -42,6 +43,7 @@ public class ImdbSearchResult {
 		this.title = title;
 		this.altTitle = altTitle;
 		this.imageURL = "";
+		this.id = null;
 	}
 
 	public String[] getAltTitles() {
@@ -66,15 +68,19 @@ public class ImdbSearchResult {
 
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
+		if (imageURL != null && imageURL.length() > 0) {
+			try {
+				URL url = new URL(imageURL);
+				byte[] bytes = new DownloadWorker(url).downloadBytes();
+				id = new ImageData(new ByteArrayInputStream(bytes));
+			} catch (IOException e) {
+				e.printStackTrace();
+				id = null;
+			}
+		}
 	}
 	
-	public ImageData getImageData() throws IOException {
-		if(imageURL == null || imageURL.equals(""))
-			return null;
-		URL url = new URL(imageURL);
-		byte[] bytes = new DownloadWorker(url).downloadBytes();
-		ImageData id = new ImageData(new ByteArrayInputStream(bytes));
-		
+	public ImageData getImageData() {
 		return id;
 	}
 	

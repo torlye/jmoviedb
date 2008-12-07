@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.enumerated.MovieType;
+import com.googlecode.jmoviedb.model.movietype.Film;
 import com.googlecode.jmoviedb.net.ImdbSearchResult;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -127,12 +128,9 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 			Label imageLabel = new Label(contents, SWT.CENTER);
 			imageLabel.setLayoutData(imageLayout);
 			ImageData imgData = null;
-			try {
-				imgData = resultSet[i].getImageData();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			imgData = resultSet[i].getImageData();
+			
 			if(imgData != null) {
 				Image img = new Image(Display.getCurrent(), imgData);
 				imageLabel.setImage(img);
@@ -179,6 +177,7 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
+//		setShellStyle(SWT.RESIZE);
 		newShell.setText("IMDb search results");
 	}
 	
@@ -264,5 +263,22 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 	public void dispose() {
 		for(Image img : imageList)
 			img.dispose();
+	}
+	
+	@Override
+	protected boolean isResizable() {
+		return true;
+	}
+	
+	@Override
+	public int open() {
+		create();
+		
+		this.getShell().setSize(450, 500);
+		Event e = new Event();
+		e.type = SWT.Resize;
+		handleEvent(e);
+		
+		return super.open();
 	}
 }
