@@ -48,7 +48,8 @@ public class DownloadWorker {
 			System.out.println("DownloadWorker: " + url.toString());
 		this.url = url;
 		
-		System.setProperty("java.net.useSystemProxies","true");
+		if (System.getProperty("java.net.useSystemProxies") != "true")
+			System.setProperty("java.net.useSystemProxies","true");
 
 		Proxy proxy = null;
 		

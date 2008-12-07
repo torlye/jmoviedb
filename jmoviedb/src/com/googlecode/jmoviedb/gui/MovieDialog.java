@@ -603,7 +603,7 @@ public class MovieDialog extends Dialog {
 		actorTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 2, 1));
 		actorTable.setHeaderVisible(true);
 		actorTable.setLinesVisible(true);
-		actorTable.addSelectionListener(new SelectionListener(){
+/*		actorTable.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
 				MessageDialog.openInformation(MovieDialog.this.getShell(), "Unimplemented feature!",
@@ -611,7 +611,7 @@ public class MovieDialog extends Dialog {
 				"opening the actor's IMDb page or maybe displaying other movies with the same actor.");
 			}
 		});
-		actorNameColumn = new TableColumn(actorTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+*/		actorNameColumn = new TableColumn(actorTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		asColumn = new TableColumn(actorTable, SWT.NONE);
 		characterNameColumn = new TableColumn(actorTable, SWT.NONE);
 		actorNameColumn.setText("Actor");

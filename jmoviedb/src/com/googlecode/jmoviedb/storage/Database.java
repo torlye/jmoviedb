@@ -482,7 +482,7 @@ public class Database {
 			addActor.setInt(1, m.getID());
 			addActor.setString(2, a.getPerson().getID());
 			addActor.setInt(3, i);
-			addActor.setString(4, a.getCharacter());
+			addActor.setString(4, a.getCharacter().substring(0, Math.min(250, a.getCharacter().length())));
 			addActor.execute();
 			addActor.clearParameters();
 		}

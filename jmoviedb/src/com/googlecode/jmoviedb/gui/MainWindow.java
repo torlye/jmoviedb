@@ -36,6 +36,7 @@ import ca.odell.glazedlists.swt.EventKTableModel;
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.gui.action.*;
+import com.googlecode.jmoviedb.gui.action.sort.FormatSorter;
 import com.googlecode.jmoviedb.gui.action.sort.IdSorter;
 import com.googlecode.jmoviedb.gui.action.sort.RatingSorter;
 import com.googlecode.jmoviedb.gui.action.sort.TitleSorter;
@@ -101,7 +102,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private SortParameterAction sortByIdAction;
 	private SortParameterAction sortByTitleAction;
 	private SortParameterAction sortByYearAction;
-	private SortParameterAction sortByTypeAction;
+	private SortParameterAction sortByFormatAction;
 	private SortParameterAction sortByRatingAction;
 	private SortParameterAction sortAscendingAction;
 	private SortParameterAction sortDescendingAction;
@@ -173,8 +174,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		sortByIdAction = new SortParameterAction(CONST.SORT_BY_ID);
 		sortByTitleAction = new SortParameterAction(CONST.SORT_BY_TITLE);
 		sortByYearAction = new SortParameterAction(CONST.SORT_BY_YEAR);
-		sortByTypeAction = new SortParameterAction(CONST.SORT_BY_TYPE);
-		sortByTypeAction.setEnabled(false);
+		sortByFormatAction = new SortParameterAction(CONST.SORT_BY_FORMAT);
 		sortByRatingAction = new SortParameterAction(CONST.SORT_BY_RATING);
 		helpHelpAction = new HelpHelpAction();
 		helpAboutAction = new HelpAboutAction(this);
@@ -238,7 +238,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		sortMenu.add(sortByIdAction);
 		sortMenu.add(sortByTitleAction);
 		sortMenu.add(sortByYearAction);
-		sortMenu.add(sortByTypeAction);
+		sortMenu.add(sortByFormatAction);
 		sortMenu.add(sortByRatingAction);
 		sortMenu.add(new Separator());
 		sortMenu.add(sortAscendingAction);
@@ -640,6 +640,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			if(CONST.DEBUG_MODE)
 				System.out.println("Sorting by rating, descending: " + descending);
 			return new RatingSorter(descending);
+		} else if(sortBy == CONST.SORT_BY_FORMAT) {
+			if(CONST.DEBUG_MODE)
+				System.out.println("Sorting by format, descending: " + descending);
+			return new FormatSorter(descending);
 		}
 		return null;
 	}
@@ -869,7 +873,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			case CONST.SORT_BY_ID: sortByIdAction.setChecked(true); break;
 			case CONST.SORT_BY_TITLE: sortByTitleAction.setChecked(true); break;
 			case CONST.SORT_BY_YEAR: sortByYearAction.setChecked(true); break;
-			case CONST.SORT_BY_TYPE: sortByTypeAction.setChecked(true); break;
+			case CONST.SORT_BY_FORMAT: sortByFormatAction.setChecked(true); break;
 			case CONST.SORT_BY_RATING: sortByRatingAction.setChecked(true); break;
 		}
 	}

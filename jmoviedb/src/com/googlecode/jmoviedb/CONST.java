@@ -206,7 +206,7 @@ public class CONST {
 	/**
 	 * Sort by format type. Value is 3;
 	 */
-	public static final int SORT_BY_TYPE = 3;
+	public static final int SORT_BY_FORMAT = 3;
 	
 	/**
 	 * Sort by IMDb rating. Value is 4;

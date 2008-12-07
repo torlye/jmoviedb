@@ -39,7 +39,7 @@ public class SortParameterAction extends Action {
 			case CONST.SORT_BY_ID: setText("Sort by ID"); break;
 			case CONST.SORT_BY_TITLE: setText("Sort by title"); break;
 			case CONST.SORT_BY_YEAR: setText("Sort by year"); break;
-			case CONST.SORT_BY_TYPE: setText("Sort by type"); break;
+			case CONST.SORT_BY_FORMAT: setText("Sort by format"); break;
 			case CONST.SORT_BY_RATING: setText("Sort by rating"); break;
 		}
 	}

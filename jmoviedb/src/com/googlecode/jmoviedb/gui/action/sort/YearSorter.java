@@ -24,8 +24,8 @@ import java.util.Comparator;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class YearSorter implements Comparator<AbstractMovie> {
-	boolean descending;
-	int modifier;
+	private boolean descending;
+	private int modifier;
 	
 	public YearSorter(boolean descending) {
 		this.descending = descending;
@@ -45,6 +45,6 @@ public class YearSorter implements Comparator<AbstractMovie> {
 			return 1*modifier;
 		
 		//if the movies were made in the same year, compare the titles
-		return movie1.getSortTitle().compareToIgnoreCase(movie2.getSortTitle())*modifier;
+		return new TitleSorter(descending).compare(movie1, movie2);
 	}
 }
