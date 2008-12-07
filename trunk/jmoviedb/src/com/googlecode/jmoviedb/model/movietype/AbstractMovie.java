@@ -786,5 +786,14 @@ public abstract class AbstractMovie implements Cloneable {
 		movie.imageBytes = this.imageBytes;
 		return movie;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof AbstractMovie) {
+			AbstractMovie movie = (AbstractMovie) o;
+			return this.getID() == movie.getID();
+		}
+		return false;
+	}
 
 }

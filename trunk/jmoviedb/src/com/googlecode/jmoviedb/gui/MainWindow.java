@@ -543,7 +543,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 						new ListEventListener<AbstractMovie>() {
 							public void listChanged(ListEvent<AbstractMovie> arg0) {
 								if(CONST.DEBUG_MODE) System.out.println("ListChanged, new size "+filteredList.size());
-								//filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO I don't need this, do I?
 								if(filteredList.size() != currentlyOpenDb.getMovieCount())
 								setStatusLineMessage("Displaying "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
 								else
@@ -672,13 +671,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 * @throws IOException
 	 */
 	public void openMovieDialog(AbstractMovie movie) throws SQLException, IOException {
-		AbstractMovie liteMovie = null;
 		
 		if(movie==null) {
 			if(table.getRowSelection().length <= 0)
 				return;
-			liteMovie = filteredList.get(table.getRowSelection()[0]);
-			movie=currentlyOpenDb.getMovie(liteMovie.getID());
+			movie = filteredList.get(table.getRowSelection()[0]);
 		}
 		
 		MovieDialog d = new MovieDialog(movie);
@@ -686,10 +683,19 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 
 		switch (returnCode) {
 		case IDialogConstants.OK_ID:
-			getDB().saveMovie(d.getModel(), liteMovie);//TODO maybe use movie instead of getModel
+			getDB().saveMovie(d.getModel());
 			break;
 		case IDialogConstants.ABORT_ID:
-			//TODO MainWindow.getMainWindow().getDB().deleteMovie();
+			if (d.getModel().getID() > -1) {
+				try {
+					getDB().deleteMovie(movie);
+				} catch (SQLException e) {
+					handleException(e);
+				}
+			}
+			break;
+		case IDialogConstants.CANCEL_ID:
+			getDB().revertMovie(movie);
 			break;
 		}
 		d = null;
@@ -716,7 +722,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		sortByIdAction.setEnabled(enabled);
 		sortByTitleAction.setEnabled(enabled);
 		sortByYearAction.setEnabled(enabled);
-//		sortByTypeAction.setEnabled(enabled); //TODO enable this when sort by type is implemented
+		sortByFormatAction.setEnabled(enabled);
 		sortByRatingAction.setEnabled(enabled);
 		sortAscendingAction.setEnabled(enabled);
 		sortDescendingAction.setEnabled(enabled);

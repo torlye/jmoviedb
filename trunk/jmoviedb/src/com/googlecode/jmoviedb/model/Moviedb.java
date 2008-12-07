@@ -139,6 +139,12 @@ public class Moviedb {
 		return database.getMovieFull(movieID);
 	}
 	
+	public synchronized void revertMovie(AbstractMovie movie) throws SQLException, IOException {
+		int index = movies.indexOf(movie);
+		if(index > -1)
+			movies.set(index, getMovie(movie.getID()));
+	}
+	
 	/**
 	 * Stores a movie in the database. If the movie's getID() returns -1,
 	 * the movie is added as a new element in the database. If not, the existing
@@ -147,24 +153,42 @@ public class Moviedb {
 	 * @param listMovieInstance the movie instance used as a list item. null if a new movie is to be added.
 	 * @throws SQLException
 	 */
-	public synchronized void saveMovie(AbstractMovie savedMovie, AbstractMovie listMovieInstance) throws SQLException, IOException {
-		int movieID = savedMovie.getID();
+	public synchronized void saveMovie(AbstractMovie movie) throws SQLException, IOException {
+		int movieID = movie.getID();
 		
 		if(CONST.DEBUG_MODE)
 			System.out.println("MODEL: saveMovie ID " + movieID);
 		
-		database.saveMovie(savedMovie);
+		database.saveMovie(movie);
 		
-		if(listMovieInstance==null && movieID<0) //new movie added
-			movies.add(savedMovie);
-		else if(listMovieInstance!=null && movieID>=0) {//existing movie updated
-			movies.set(movies.indexOf(listMovieInstance), savedMovie);
-		}
+		if (movieID < 0) //new movie added
+			movies.add(movie);
+		else //existing movie updated
+			movies.set(movies.indexOf(movie), movie);
 		
 		setSaved(false);
 		
 		if(CONST.DEBUG_MODE)
 			System.out.println("Total number of movies is now " + getMovieCount());
+	}
+	
+	public synchronized void deleteMovie(AbstractMovie movie) throws SQLException {
+		int movieID = movie.getID();
+		
+		if(CONST.DEBUG_MODE)
+			System.out.println("MODEL: Delete movie ID " + movieID);
+		
+		if (movies.remove(movie)) {
+
+			database.deleteMovie(movie);
+		
+			setSaved(false);
+		
+			if(CONST.DEBUG_MODE)
+				System.out.println("Total number of movies is now " + getMovieCount());
+		} else if(CONST.DEBUG_MODE) {
+			System.out.println("Movie not in list, could not remove");
+		}
 	}
 	
 	/**

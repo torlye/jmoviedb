@@ -2,6 +2,7 @@ package com.googlecode.jmoviedb.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -18,13 +19,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
@@ -41,6 +42,7 @@ public class AudioSubtitleTable {
 	private TableViewer tableViewer;
 	//	private Button closeButton;
 
+	@SuppressWarnings("unchecked")
 	private ArrayList model;
 
 	// column names
@@ -398,7 +400,8 @@ public class AudioSubtitleTable {
 
 				switch(columnIndex) {
 				case 0: 
-					result = Arrays.asList(Language.values()).indexOf(track);
+//					result = Arrays.asList(Language.values()).indexOf(track);
+					result = track.getLanguage().ordinal();
 					break;
 				case 1:
 					result = track.isCommentary();
