@@ -29,6 +29,7 @@ import java.net.ProxySelector;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownServiceException;
 import java.util.List;
 
 import com.googlecode.jmoviedb.CONST;
@@ -47,12 +48,13 @@ public class DownloadWorker {
 		if(CONST.DEBUG_MODE && url != null)
 			System.out.println("DownloadWorker: " + url.toString());
 		this.url = url;
-		
-		if (System.getProperty("java.net.useSystemProxies") != "true")
+/*		
+		if (System.getProperty("java.net.useSystemProxies") != "true") {
 			System.setProperty("java.net.useSystemProxies","true");
+		}
 
 		Proxy proxy = null;
-		
+
 		try {
 			List<Proxy> l = ProxySelector.getDefault().select(url.toURI());
 			
@@ -62,19 +64,20 @@ public class DownloadWorker {
 		} catch (URISyntaxException e) {
 			//Let proxy stay null if this fails
 		}
-		
+
 		if (proxy == null) {
 			if(CONST.DEBUG_MODE)
 				System.out.println("No proxy found, trying no proxy");
-			this.proxy = Proxy.NO_PROXY;
-		} else {
+*/			this.proxy = Proxy.NO_PROXY;
+/*d		} else {
 			InetSocketAddress addr = (InetSocketAddress)proxy.address();
+
 			if(CONST.DEBUG_MODE)
 				System.out.println("Using proxy "+ proxy.type() 
 						+ " " + addr.getHostName() + ":" + addr.getPort());
 			this.proxy = proxy;
 		}
-	}
+*/	}
 
 	/**
 	 * Downloads a html file and returns it as one huge string.
@@ -103,7 +106,9 @@ public class DownloadWorker {
 	 * @return a byte array containing the downloaded data
 	 * @throws IOException
 	 */
-	public byte[] downloadBytes() throws IOException {
+	public byte[] downloadBytes() throws IOException/*, SecurityException, 
+				IllegalArgumentException, UnsupportedOperationException, 
+				IllegalStateException, UnknownServiceException*/ {
 		if(url == null)
 			return null;
 
@@ -112,15 +117,17 @@ public class DownloadWorker {
 		
 		//Connection to IMDb fails with a 403 if we don't set a User Agent
 		connection.setRequestProperty("User-Agent", "None/0.0 (None)");
-		
+
 		int fileSize = connection.getContentLength();
+
 		BufferedInputStream stream = new BufferedInputStream(connection.getInputStream());
 		int tryNumber = 0;
+
 		while(tryNumber<CONST.DOWNLOAD_RETRY_COUNT) {
 			tryNumber++;
 			if(CONST.DEBUG_MODE)
 				System.out.println("Downloading image, attempt #"+ tryNumber);
-			
+
 			byte[] imageBytes = new byte[0];
 			long startTime = System.currentTimeMillis();
 

@@ -440,7 +440,7 @@ public class ImdbParser {
 			//Call a method to parse the title, year, etc. This method will also return the ImdbSearchResult object.
 			ImdbSearchResult result = titleSearchResult(matcher.group(2));
 			
-			//Add the image URL to the ImdbSearchResult object and add the ImdbSearchResult to the result list. 
+			//Add the image to the ImdbSearchResult object and add the ImdbSearchResult to the result list. 
 			if(result != null) {
 				result.setImageURL(imgUrl);
 				templist.add(result);
@@ -479,7 +479,7 @@ public class ImdbParser {
 	 */
 	private ImdbSearchResult titleSearchResult(String group) {
 		Pattern pattern = Pattern.compile(
-				"<a\\shref=\"/title/tt(\\d{7})/\">([^<]+)</a>\\s\\((\\d{4})\\)\\s*([()A-Z]{0,6})(.*)\\z"
+				"<a\\shref=\"/title/tt(\\d{7})/\">([^<]+)</a>\\s\\((\\d{4})[IVX/]*\\)\\s*([()A-Z]{0,6})(.*)\\z"
 				);
 		Matcher matcher = pattern.matcher(group);
 		
@@ -526,21 +526,19 @@ public class ImdbParser {
 	 * @return an array of alternative titles
 	 */
 	private String[] altTitleSearchResult(String group) {
-//		System.out.println(group);
-		String[] titles = group.split("<br>&#160;aka\\s*<em>");
+		Pattern pattern = Pattern.compile("&#160;aka\\s*<em>(.+?)((<br>)|\\z)");
+		Matcher matcher = pattern.matcher(group);
 		
-		ArrayList<String> templist = new ArrayList<String>(); 
+		ArrayList<String> templist = new ArrayList<String>();
 		
-		for(String title : titles) {
-//			System.out.println("title: "+title);
-			title = title.replaceAll("<em>", "");
-			title = title.replaceAll("</em>", "");
-			title = CONST.fixHtmlCharacters(title);
+		while (matcher.find()) {
+			String title = matcher.group(1);
+			title = title.replaceAll("<.+?>", "");
+			
 			if(title.length() > 0)
 				templist.add(title);
 		}
-		
-		
+				
 		if(templist.size() > 0) {
 			return templist.toArray(new String[0]);
 		}
