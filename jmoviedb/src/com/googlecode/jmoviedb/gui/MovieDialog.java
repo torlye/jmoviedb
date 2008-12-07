@@ -19,14 +19,6 @@
 
 package com.googlecode.jmoviedb.gui;
 
-import java.util.ArrayList;
-
-import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.enumerated.*;
-import com.googlecode.jmoviedb.model.*;
-import com.googlecode.jmoviedb.model.movietype.*;
-import com.googlecode.jmoviedb.net.ImdbWorker;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -51,6 +43,22 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+
+import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.enumerated.AspectRatio;
+import com.googlecode.jmoviedb.enumerated.Completeness;
+import com.googlecode.jmoviedb.enumerated.ContainerFormat;
+import com.googlecode.jmoviedb.enumerated.DiscType;
+import com.googlecode.jmoviedb.enumerated.FormatType;
+import com.googlecode.jmoviedb.enumerated.MovieType;
+import com.googlecode.jmoviedb.enumerated.Resolution;
+import com.googlecode.jmoviedb.enumerated.TVsystem;
+import com.googlecode.jmoviedb.enumerated.VideoCodec;
+import com.googlecode.jmoviedb.model.ActorInfo;
+import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
+import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
+import com.googlecode.jmoviedb.model.movietype.Film;
+import com.googlecode.jmoviedb.net.ImdbWorker;
 
 /**
  * A MovieDialog is a tabbed dialog box that is used to display or edit information about an AbstractMovie subclass.
@@ -867,19 +875,20 @@ public class MovieDialog extends Dialog {
 			}
 		}
 		
-		else if(buttonId == IDialogConstants.DETAILS_ID) {
+		else if(buttonId == IDialogConstants.DETAILS_ID) { //IMDb update
 			try {
 				save();
 				ImdbWorker w = new ImdbWorker();
-				movie = w.update(movie, getShell());
+				w.update(movie, getShell());
 				setModel(movie);
 			} catch (Exception e) {
 				MainWindow.getMainWindow().handleException(e);
 			}
 		}
 		
-		else if(buttonId == IDialogConstants.ABORT_ID) {
-			MessageDialog.openInformation(this.getShell(), "Oops", "That button doesn't do anyting yet");
+		else if(buttonId == IDialogConstants.ABORT_ID) { //Delete
+			if (MessageDialog.openQuestion(this.getShell(), "Delete movie", "Are you sure you want to delete this movie?"))
+				close();
 		}
 	}
 	
@@ -900,17 +909,14 @@ public class MovieDialog extends Dialog {
 		return super.close();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void save() {
 		System.out.println("Movie type: " + MovieType.objectToEnum(movie));
 		System.out.println("Selection: " + MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())));
 		if(!MovieType.objectToEnum(movie).equals(MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())))) {
 			AbstractMovie newMovie = MovieType.intToAbstractMovie(typeCombo.getSelectionIndex());
 			newMovie = movie.copyTo(newMovie);
-//			System.out.println("_old id " + movie.getID()); //TODO whats going on here?
-//			newMovie.setID(movie.getID());
-//			System.out.println("_new id " + newMovie.getID());
 			movie = newMovie;
-//			System.out.println("_new copied to old id " + movie.getID());
 		}
 		
 		movie.setImdbID(imdbText.getText());

@@ -227,24 +227,24 @@ public class Database {
 				"CHARACTERNUMBER SMALLINT, " +
 				"CHARACTERDESCRIPTION VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
-				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
-				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" + //Probably remove cascade
+				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
+				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
 				")";
 		String movieDirector = "CREATE TABLE MOVIEDIRECTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
-				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
-				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" + //Probably remove cascade
+				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
+				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
 				")";
 		String movieWriter = "CREATE TABLE MOVIEWRITER(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
-				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " + //Probably remove cascade
-				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" + //Probably remove cascade
+				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
+				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
 				")";
 		String movieGenre = "CREATE TABLE MOVIEGENRE(" +
 				"MOVIEID INTEGER NOT NULL, " +
@@ -725,8 +725,9 @@ public class Database {
 		if(m.getID()!=-1) {
 			deleteMovieStatement.setInt(1, m.getID());
 			deleteMovieStatement.execute();
-			deleteMovieStatement.clearParameters();
+			deleteMovieStatement.clearParameters();			
 		}
+		m = null;
 	}
 	
 	private void addOrUpdatePerson(Person p) throws SQLException {
