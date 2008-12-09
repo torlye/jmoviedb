@@ -18,6 +18,7 @@ import com.googlecode.jmoviedb.gui.action.search.TitleTextFilterator;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.swt.TextWidgetMatcherEditor;
 import com.googlecode.jmoviedb.gui.MainWindow;
+import com.googlecode.jmoviedb.gui.action.search.ActorTextFilterator;
 import com.googlecode.jmoviedb.gui.action.search.DirectorTextFilterator;
 import com.googlecode.jmoviedb.gui.action.search.GenreTextFilterator;
 import com.googlecode.jmoviedb.gui.action.search.LanguagesTextFilterator;
@@ -103,12 +104,20 @@ public class SearchField extends ControlContribution implements SelectionListene
 
 	}
 
+	/**
+	 * When focus is gained, check if the search field is disabled. If it is, enable it. 
+	 * @see org.eclipse.swt.events.FocusListener#focusGained(org.eclipse.swt.events.FocusEvent)
+	 */
 	public void focusGained(FocusEvent e) {
-		if (searchfield.getText().equals(defaultText)) {
+		if (searchfield.getForeground().equals(disabledColor)) {
 			enableSearch();
 		}
 	}
 
+	/**
+	 * When focus is lost, check if the search field is empty. If it is, disable it.
+	 * @see org.eclipse.swt.events.FocusListener#focusLost(org.eclipse.swt.events.FocusEvent)
+	 */
 	public void focusLost(FocusEvent e) {
 		if (searchfield.getText().equals("")) {
 			disableSearch();
@@ -129,11 +138,20 @@ public class SearchField extends ControlContribution implements SelectionListene
 			matcherEditor = new TextWidgetMatcherEditor(searchfield, new DirectorTextFilterator(), true);
 		} else if (searchParameter.equals("Writer")) {
 			matcherEditor = new TextWidgetMatcherEditor(searchfield, new WriterTextFilterator(), true);
+		} else if (searchParameter.equals("Actor")) {
+			matcherEditor = new TextWidgetMatcherEditor(searchfield, new ActorTextFilterator(), true);
 		} else if (searchParameter.equals("Language")) {
 			matcherEditor = new TextWidgetMatcherEditor(searchfield, new LanguagesTextFilterator(), true);
 		} else {
 			//Default to title
 			matcherEditor = new TextWidgetMatcherEditor(searchfield, new TitleTextFilterator(), true);
+		}
+		
+		if (searchfield.getForeground().equals(disabledColor)) {
+			searchfield.setText("");
+			disableSearch();
+		} else {
+			matcherEditor.setLive(true);
 		}
 
 		//Notify main window that lists should be updated
