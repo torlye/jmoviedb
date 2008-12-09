@@ -222,6 +222,20 @@ public abstract class AbstractMovie implements Cloneable {
 	public ArrayList<ActorInfo> getActors() {
 		return actors;
 	}
+	
+	/**
+	 * Returns a list of all actors in a single string 
+	 * @return actors
+	 */
+	public String getActorsAsString() {
+		String s = "";
+		for(ActorInfo a : actors) {
+			s += a.getPerson().getName() + ", ";
+		}
+		if(s.endsWith(", "))
+			s = s.substring(0, s.length()-2);
+		return s;
+	}
 
 	public void setActors(ArrayList<ActorInfo> actors) {
 		this.actors = actors;

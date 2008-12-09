@@ -56,6 +56,7 @@ public class SearchDropDownMenu extends ControlContribution implements Selection
     comboItemsList.add("Genre");
     comboItemsList.add("Director");
     comboItemsList.add("Writer");
+    comboItemsList.add("Actor");
     comboItemsList.add("Language"); //Also searches countries
   }
 
