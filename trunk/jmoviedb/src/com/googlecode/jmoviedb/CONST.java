@@ -492,6 +492,7 @@ public class CONST {
 		
 		string = string.replace("&#33;", "!");
 		string = string.replace("&#34;", "\"");
+		string = string.replace("&#x22;", "\"");
 		string = string.replace("&#35;", "#");
 		string = string.replace("&#36;", "$");
 		string = string.replace("&#37;", "%");
