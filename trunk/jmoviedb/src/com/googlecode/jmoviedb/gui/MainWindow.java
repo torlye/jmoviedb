@@ -901,7 +901,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			System.out.println("CmdLineArg: "+s);
 		
 		//Disable creation of the derby.log file
-		System.getProperties().put("derby.stream.error.file", "null");
+		System.setProperty("derby.stream.error.method", 
+				"MainWindow.derbyNullLogger");
 		
 		settings = Settings.getSettings();
 		
@@ -924,5 +925,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 				return false;
 			}
 		};
+	}
+	
+	public static java.io.OutputStream derbyNullLogger(){
+	     return new java.io.OutputStream() {
+	         public void write(int b) throws IOException {
+	             // Ignore all log messages
+	         }
+	     };
 	}
 }

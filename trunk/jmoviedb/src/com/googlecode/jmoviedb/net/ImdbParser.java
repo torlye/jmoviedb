@@ -105,7 +105,7 @@ public class ImdbParser {
 				return MovieType.videomovie;
 			else if(match.contains("TV mini-series"))
 				return MovieType.miniseries;
-			else if(match.startsWith("&#34;"))
+			else if(match.startsWith("&#x22;"))
 				return MovieType.tvseries;
 		}
 		
@@ -117,7 +117,7 @@ public class ImdbParser {
 	 * @return a year
 	 */
 	protected int getYear() {
-		Pattern patternYear = Pattern.compile("<a href=\"/Sections/Years/\\d{4}/\">(\\d{4})</a>");
+		Pattern patternYear = Pattern.compile("<a href=\"/year/\\d{4}/\">(\\d{4})</a>");
 		Matcher matcherYear = patternYear.matcher(html);
 		if (matcherYear.find()) {
 			return Integer.parseInt(matcherYear.group(1));	
@@ -150,10 +150,10 @@ public class ImdbParser {
 	 * @return the tagline
 	 */
 	protected String getTagline() {
-		Pattern patternTagline = Pattern.compile("<h5>Tagline:</h5>\\s*([^<]+)\\s*<a");
+		Pattern patternTagline = Pattern.compile("<h5>Tagline:</h5>\\s*<div class=\"info-content\">\\s*([^<]+)\\s*<");
 		Matcher matcherTagline = patternTagline.matcher(html);
 		if (matcherTagline.find()) {
-			return matcherTagline.group(1);	
+			return CONST.fixHtmlCharacters(matcherTagline.group(1));	
 		}
 		return "";
 	}
@@ -163,10 +163,10 @@ public class ImdbParser {
 	 * @return the plot outline
 	 */
 	protected String getPlot() {
-		Pattern patternPlot = Pattern.compile("<h5>Plot:</h5>\\s*([^<]+)\\s*<a");
+		Pattern patternPlot = Pattern.compile("<h5>Plot:</h5>\\s*<div class=\"info-content\">\\s*([^<]+)\\s*<");
 		Matcher matcherPlot = patternPlot.matcher(html);
 		if (matcherPlot.find()) {
-			return matcherPlot.group(1);
+			return CONST.fixHtmlCharacters(matcherPlot.group(1));
 		}
 		return "";
 	}
@@ -330,7 +330,7 @@ public class ImdbParser {
 		//<td class="char"><a href="/character/ch0001439/">Mr. Spock</a> (80&#160;episodes, 1966-1969)</td>
 		//<td class="nm"><a href="/name/nm0921942/">Billy West</a></td><td class="ddd"> ... </td><td class="char"><a href="/character/ch0013043/">Philip J. Fry</a> / <a href="/character/ch0013043/">Frydo</a> / <a href="/character/ch0047043/">Professor Hubert Farnsworth</a> / <a href="/character/ch0047043/">The Great Wizard Greyfarn</a> / <a href="/character/ch0013047/">Dr. Zoidberg</a> / <a href="/character/ch0013047/">Monster Zoidberg</a> / Farmer / Dwarf / <a href="/character/ch0047024/">Smitty</a> / Treedledum / Additional Voices (voice)</td>
 		
-		Pattern actorPattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\">([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(.*?)</td>");
+		Pattern actorPattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\".*?>([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(.*?)</td>");
 		Matcher actorMatcher = actorPattern.matcher(html);
 		ArrayList<ActorInfo> templist = new ArrayList<ActorInfo>();
 		int counter = 0;
@@ -366,7 +366,7 @@ public class ImdbParser {
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
 		if(matcher.find()) {
-			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
+			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\".*?>([^<]+)</a>");
 			Matcher personMatcher = personPattern.matcher(matcher.group(1));
 			while(personMatcher.find()) {
 				Person p = new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2)));
@@ -387,7 +387,7 @@ public class ImdbParser {
 		ArrayList<Person> personArray = new ArrayList<Person>();
 		
 		if(matcher.find()) {
-			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\">([^<]+)</a>");
+			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\".*?>([^<]+)</a>");
 			Matcher personMatcher = personPattern.matcher(matcher.group(2));
 			while(personMatcher.find()) {
 				Person p = new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2)));
