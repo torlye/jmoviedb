@@ -37,7 +37,8 @@ public enum ContainerFormat {
 	quicktime(10, "QuickTime", "", null, null),
 	real(11, "RealMedia", "", null, null),
 	nut(12, "Nut", "", null, null),
-	ratdvd(13, "ratDVD", "", null, null);
+	ratdvd(13, "ratDVD", "", null, null),
+	flv(14, "Flash Video", "", null, null);
 	
 	private int id;
 	private String shortName;

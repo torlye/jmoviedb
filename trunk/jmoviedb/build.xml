@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <project name="JMoviedb" basedir="." default="jar">
 
-	<property name="buildversion"  value="0.0.3" />
+	<property name="buildversion"  value="0.0.4" />
 	<property name="jar.name"      value="${ant.project.name}.jar" />
 	<property name="exe.name"      value="${ant.project.name}.exe" />
 	<property name="main-class"    value="com.googlecode.jmoviedb.gui.MainWindow" />

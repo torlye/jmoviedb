@@ -10,7 +10,8 @@ public enum AudioChannels {
 	surround61(4, "6.1"),
 	surround71(5, "7.1"),
 	surround41(6, "4.1"),
-	surround50(7, "5.0")
+	surround50(7, "5.0"),
+	surround40(8, "4.0")
 	;
 	
 	private int id;
