@@ -39,6 +39,8 @@ public enum VideoCodec {
 	theora(9, "Theora", "Ogg Theora", null, null),
 	dirac(10, "Dirac", "Dirac", null, null),
 	real(11, "RealVideo", "", Settings.getSettings().getLanguageClass().VIDEO_REAL_DESCRIPTION, null),
+	vp6(12, "On2 VP6", "On2 VP6", null, null),
+	sorenson3(13, "SVQ3", "Sorenson Video 3", null, null),
 	analog(99, "Analog video", "", "", null);
 	
 	private int id;
