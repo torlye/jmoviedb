@@ -35,6 +35,7 @@ public class ImdbSearchResult {
 	private String[] altTitle;
 	private String imageURL;
 	private ImageData id;
+	private String text = null;
 	
 	public ImdbSearchResult(String imdbId, MovieType type, String title, String year, String[] altTitle) {
 		this.imdbId = imdbId;
@@ -43,6 +44,12 @@ public class ImdbSearchResult {
 		this.title = title;
 		this.altTitle = altTitle;
 		this.imageURL = "";
+		this.id = null;
+	}
+	
+	public ImdbSearchResult(String imdbId, String text) {
+		this.imdbId = imdbId;
+		this.text = text;
 		this.id = null;
 	}
 
@@ -85,6 +92,9 @@ public class ImdbSearchResult {
 	}
 	
 	public String toString() {
+		if (text != null)
+			return text;
+		
 		String altTitles = "";
 		
 		if(altTitle != null) {	

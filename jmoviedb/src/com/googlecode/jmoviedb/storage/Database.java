@@ -125,6 +125,14 @@ public class Database {
 //			}
 		}
 		
+		try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIE ADD COLUMN YEAR2 SMALLINT");
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
+		
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
 				"TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
@@ -132,10 +140,10 @@ public class Database {
 				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
 				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
 				"VIDEORESOLUTION, VIDEOASPECT, COVER, CONTAINER, COMPLETENESS, " +
-				"COMPLETENESSDETAIL) " + 
+				"COMPLETENESSDETAIL, YEAR2) " + 
 				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-				"?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
 				PreparedStatement.RETURN_GENERATED_KEYS);
 		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
 				"TYPE = ?, IMDBID = ?, TITLE = ?, CUSTOMTITLE = ?, " +
@@ -144,7 +152,8 @@ public class Database {
 				"CUSTOMFILMVERSION = ?, LEGAL = ?, SEEN = ?, LOCATION = ?, FORMAT = ?, " +
 				"DISC = ?, VIDEO = ?, MYENCODE = ?, DVDREGION = ?, TVSYSTEM = ?, " +
 				"SCENERELEASENAME = ?, VIDEORESOLUTION = ?, VIDEOASPECT = ?, " +
-				"COVER = ?, CONTAINER = ?, COMPLETENESS = ?, COMPLETENESSDETAIL = ? " +
+				"COVER = ?, CONTAINER = ?, COMPLETENESS = ?, COMPLETENESSDETAIL = ?, " +
+				"YEAR2 = ?" +
 				"WHERE MOVIEID = ?");
 		getMovieStatement = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
@@ -195,6 +204,7 @@ public class Database {
 				"TITLE VARCHAR(250), " +
 				"CUSTOMTITLE VARCHAR(250), " +
 				"MOVIEYEAR SMALLINT, " +
+				"YEAR2 SMALLINT, " +
 				"RATING SMALLINT, " +
 				"PLOTOUTLINE VARCHAR(10000), " +
 				"TAGLINE VARCHAR(10000), " +
@@ -400,6 +410,7 @@ public class Database {
 		statement.setString(23, m.getSceneReleaseName());
 		statement.setInt(24, m.getResolution().getID());
 		statement.setInt(25, m.getAspectRatio().getID());
+		statement.setInt(30, m.getYear2());
 		
 		if (m instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)m;
@@ -418,7 +429,7 @@ public class Database {
 		statement.setInt(27, m.getContainer().getID());
 		
 		if(edit)
-			statement.setInt(30, m.getID());
+			statement.setInt(31, m.getID());
 		
 		statement.execute();
 		
@@ -573,6 +584,7 @@ public class Database {
 		m.setTitle(rs.getString("TITLE"));
 		m.setCustomTitle(rs.getString("CUSTOMTITLE"));
 		m.setYear(rs.getInt("MOVIEYEAR"));
+		m.setYear2(rs.getInt("YEAR2"));
 		m.setRatingAsInt(rs.getInt("RATING"));
 		m.setPlotOutline(rs.getString("PLOTOUTLINE"));
 		m.setTagline(rs.getString("TAGLINE"));

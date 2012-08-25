@@ -50,8 +50,16 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		Image image = new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), false, IMAGE_WIDTH, IMAGE_HEIGHT));
 		String title = movie.getDisplayTitle();
 		
-		if(movie.getYear() != 0)
-			title += " ("+movie.getYear()+")";
+		if(movie.getYear() != 0) {
+			String yearString = ""+movie.getYear();
+			if (movie.hasYear2()) {
+				String separator = "/";
+				if (movie instanceof TVseries)
+					separator = "–";
+				yearString += separator+movie.getYear2();
+			}
+			title += " ("+yearString+")";
+		}
 		
 		if(movie.getCustomVersion().length() > 0)
 			title += " [" + movie.getCustomVersion() + "]";
@@ -116,7 +124,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 			format = movie.getFormat().getShortName();
 		
 		int leftColumn = rect.x+72;
-		int rightColumn = rect.width-50;
+		int rightColumn = rect.width-10;
 		int rowSpacing = 27;
 		int firstRow = rect.y+10;
 		int secondRow = firstRow+rowSpacing;
@@ -150,9 +158,9 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		gc.drawString(title, leftColumn, firstRow);
 		gc.drawString(genre, leftColumn, secondRow);
 		gc.drawString(actors, leftColumn, thirdRow);
-		gc.drawString(format, rightColumn, firstRow);
-		gc.drawString(rating, rightColumn, secondRow);
-		gc.drawString(runtime, rightColumn, thirdRow);
+		gc.drawString(format, rightColumn-gc.textExtent(format).x, firstRow);
+		gc.drawString(rating, rightColumn-gc.textExtent(rating).x, secondRow);
+		gc.drawString(runtime, rightColumn-gc.textExtent(runtime).x, thirdRow);
 		
 		//release resources
 		image.dispose();

@@ -908,10 +908,10 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		
 		MainWindow m = new MainWindow(args);
 
-		MessageDialog.openInformation(m.getShell(), "Warning", 
+		/*MessageDialog.openInformation(m.getShell(), "Warning", 
 				"This is a very early test version of JMoviedb. " +
 				"It has several errors and missing features. " +
-				"Use it for testing only!");
+				"Use it for testing only!");*/
 		m.run();
 		
 		

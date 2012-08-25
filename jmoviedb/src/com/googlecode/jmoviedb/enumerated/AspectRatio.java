@@ -24,7 +24,8 @@ import com.googlecode.jmoviedb.CONST;
 public enum AspectRatio {
 	unspecified(0, "", ""),
 	fullframe(1, "4:3", "4:3 1.33 Full-frame"),
-	wide16_9(2, "16:9", "16:9 1.78 Widescreen");
+	letterbox(3, "4:3 LB", "4:3 Letterbox"),
+	wide16_9(2, "Wide", "16:9 1.78 Widescreen");
 	
 	private int id;
 	private String shortName;

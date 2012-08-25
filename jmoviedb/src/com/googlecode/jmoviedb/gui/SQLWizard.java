@@ -8,15 +8,22 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 public class SQLWizard extends Wizard {
@@ -70,7 +77,7 @@ public class SQLWizard extends Wizard {
 			public void createControl(Composite parent) {
 				Composite c =  new Composite(parent, SWT.BORDER);
 				c.setLayout(new GridLayout(1, false));
-				table = new Table(c, SWT.V_SCROLL|SWT.H_SCROLL|SWT.SINGLE|SWT.FULL_SELECTION|SWT.HIDE_SELECTION);
+				table = new Table(c, SWT.V_SCROLL|SWT.H_SCROLL|SWT.MULTI|SWT.FULL_SELECTION);
 				table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 				table.setLinesVisible(true);
 				table.setHeaderVisible(true);
@@ -94,6 +101,30 @@ public class SQLWizard extends Wizard {
 						return false;
 					}
 					public void removeListener(ILabelProviderListener listener) {}
+				});
+				
+				table.addKeyListener(new KeyListener() {
+					@Override
+					public void keyReleased(KeyEvent event) {
+						if (event.keyCode == 'c' && event.stateMask == SWT.CTRL) {
+							TableItem[] selection = table.getSelection();
+							StringBuilder selstr = new StringBuilder();
+							for (int ti = 0; ti < selection.length; ti++) {
+								if (ti>0) selstr.append("\n");
+								for (int i = 0; i < table.getColumnCount(); i++) {
+									if (i>0) selstr.append("\t");
+									selstr.append(selection[ti].getText(i));
+								}
+							}
+							
+					        Clipboard clipboard = new Clipboard(Display.getCurrent());
+					        clipboard.setContents(new Object[]{selstr.toString()}, new Transfer[]{TextTransfer.getInstance()});
+						}
+					}
+					
+					@Override
+					public void keyPressed(KeyEvent arg0) {
+					}
 				});
 				
 				setControl(c);

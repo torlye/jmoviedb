@@ -260,6 +260,16 @@ public enum Country {
 		return null;
 	}
 	
+	public static Country StringToEnumUsingName(String string) {
+		if(string == null) {
+			return null;
+		}
+		for(Country c : Country.values())
+			if(string.toLowerCase().equals(c.getName().toLowerCase()))
+				return c;
+		return null;
+	}
+	
 	/**
 	 * Looks up the correct enum value from an int ID
 	 * @param i the ID to look up

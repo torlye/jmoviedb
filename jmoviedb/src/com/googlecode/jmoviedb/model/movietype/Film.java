@@ -37,6 +37,7 @@ public class Film extends AbstractMovie {
 			String title,
 			String customTitle,
 			int year,
+			int year2,
 			int rating, 
 			String plotOutline, 
 			String tagline, 
@@ -56,7 +57,7 @@ public class Film extends AbstractMovie {
 			String sceneReleaseName,
 			int resolutionID,
 			int aspectID) {
-		super(id, imdbID, title, customTitle, year, rating, plotOutline, tagline, color, runTime, notes, version, customVersion, legal, seen, formatID, discTypeID, videoCodecID, myEncode, dvdRegion, tvSystem, sceneReleaseName, resolutionID, aspectID);
+		super(id, imdbID, title, customTitle, year, year2, rating, plotOutline, tagline, color, runTime, notes, version, customVersion, legal, seen, formatID, discTypeID, videoCodecID, myEncode, dvdRegion, tvSystem, sceneReleaseName, resolutionID, aspectID);
 	}
 	
 	/**

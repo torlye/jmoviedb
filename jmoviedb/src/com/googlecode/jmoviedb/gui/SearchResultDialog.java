@@ -149,9 +149,9 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 			
 				Link title = new Link(contents, SWT.NONE);
 				title.setLayoutData(textLayout);
-				title.setText("<A HREF=\"" + Settings.getSettings().getImdbUrl() + resultSet[i].getImdbId() + "\">" + resultSet[i].getTitle() + " (" + resultSet[i].getYear() + ")</A>");
+				title.setText("<A HREF=\"" + Settings.getSettings().getImdbUrl() + resultSet[i].getImdbId() + "\">" + resultSet[i].toString() + "</A>");
 				title.addSelectionListener(this);
-				
+				/*
 				if(resultSet[i].getType() != MovieType.film)
 					title.setText(title.getText() + " - " + resultSet[i].getType().toString());
 				
@@ -164,7 +164,7 @@ public class SearchResultDialog extends Dialog implements Listener, SelectionLis
 						System.out.println(j + " alt title(s)");
 					}
 					title.setText(title.getText() + akaString); 
-				}
+				}*/
 			
 			
 			buttons[i] = radio;

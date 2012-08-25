@@ -31,12 +31,15 @@ import org.eclipse.swt.widgets.Shell;
 
 import ca.odell.glazedlists.EventList;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.enumerated.MovieType;
+import com.googlecode.jmoviedb.enumerated.*;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.SearchResultDialog;
-import com.googlecode.jmoviedb.model.Moviedb;
+import com.googlecode.jmoviedb.model.*;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class ImdbWorker {
@@ -115,7 +118,7 @@ public class ImdbWorker {
 				monitor.beginTask("IMDb search", IProgressMonitor.UNKNOWN);
 				String searchURL = Settings.getSettings().getImdbSearchUrl();
 				URL url = new URL(searchURL + movie.getTitle().replace(" ", "+"));
-				ImdbParser parser = new ImdbParser(new DownloadWorker(url).downloadHtml());
+				ImdbParser parser = new ImdbParser(url);
 				searchResults = parser.getSearchResults();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
@@ -144,7 +147,7 @@ public class ImdbWorker {
 				URL url = new URL(movie.getImdbUrl());
 
 				monitor.subTask("Downloading");
-				ImdbParser parser = new ImdbParser(new DownloadWorker(url).downloadHtml());
+				ImdbParser parser = new ImdbParser(url);
 				
 				monitor.subTask("Importing data");
 				
@@ -159,12 +162,24 @@ public class ImdbWorker {
 					newMovie = movie.copyTo(newMovie);
 					movie = newMovie;
 				}
-
-				movie.setTitle(parser.getTitle());
-				movie.setYear(parser.getYear());
-				movie.setRunTime(parser.getRuntime());
-				movie.setRating(parser.getRating());
-				movie.setColor(parser.isColor());
+				
+				String title = parser.getTitle();
+				if(title != null)  movie.setTitle(title);
+				
+				int[] year = parser.getYear();
+				if(year.length>0) movie.setYear(year[0]);
+				if(year.length>1) movie.setYear2(year[1]);
+				
+				int runtime = parser.getRuntime();
+				if(runtime>0) movie.setRunTime(runtime);
+				
+				double rating = parser.getRating();
+				if(rating>0) movie.setRating(rating);
+				
+				//boolean color = parser.isColor();
+				//if (!color)
+				//	movie.setColor(color);
+				
 				movie.setPlotOutline(parser.getPlot());
 				movie.setTagline(parser.getTagline());
 
@@ -175,56 +190,60 @@ public class ImdbWorker {
 				movie.setWriters(parser.getWriters());
 				movie.setActors(parser.getActors());
 
-				monitor.subTask("Downloading cover image");
-				movie.setImageBytes(new DownloadWorker(parser.getImageURL()).downloadBytes());
+				URL imageUrl = parser.getImageURL();
+				if (imageUrl != null) {
+					monitor.subTask("Downloading cover image");
+					movie.setImageBytes(new DownloadWorker(imageUrl).downloadBytes());
+				}
 
-//				if(CONST.DEBUG_MODE) {
-//					System.out.println("");
-//					System.out.println("------- BEGIN IMDB DATA DUMP -------");
-//					System.out.println("Title: " + parser.getTitle());
-//					System.out.println("Year: " + parser.getYear());
-//					System.out.println("Runtime: " + parser.getRuntime());
-//					System.out.println("Rating: " + parser.getRating());
-//					System.out.println("Color: " + parser.isColor());
-//					System.out.println("Tagline: " + parser.getTagline());
-//					System.out.println("Plot outline: " + parser.getPlot());
-//
-//					String languages = "Languages:";
-//					for(Language l : parser.getLanguages())
-//						languages += " " + l.getName();
-//					System.out.println(languages);
-//
-//					String countries = "Countries:";
-//					for(Country c : parser.getCountries())
-//						countries += " " + c.getName();
-//					System.out.println(countries);
-//
-//					String genres = "Genres:";
-//					for(Genre g : parser.getGenres())
-//						genres += " " + g;
-//					System.out.println(genres);			
-//
-//					String directors = "Directors:";
-//					for(Person d : parser.getDirectors())
-//						directors += " " + d.getName();
-//					System.out.println(directors);
-//
-//					String writers = "Writers:";
-//					for(Person w : parser.getWriters())
-//						writers += " " + w.getName();
-//					System.out.println(writers);
-//
-//					String actors = "\nActors:";
-//					for(ActorInfo a : parser.getActors())
-//						actors += "\n" + a.toString();
-//					System.out.println(actors + "\n");
-//
-//					System.out.println("Image URL: " + parser.getImageURL());
-//					System.out.println("------- END IMDB DATA DUMP -------");
-//					System.out.println("");
-//				}
+				/*if(CONST.DEBUG_MODE) {
+					System.out.println("");
+					System.out.println("------- BEGIN IMDB DATA DUMP -------");
+					System.out.println("Title: " + title);
+					System.out.println("Year: " + year);
+					System.out.println("Runtime: " + runtime);
+					System.out.println("Rating: " + rating);
+					System.out.println("Color: " + parser.isColor());
+					System.out.println("Tagline: " + parser.getTagline());
+					System.out.println("Plot outline: " + parser.getPlot());
+
+					String languages = "Languages:";
+					for(Language l : parser.getLanguages())
+						languages += " " + l.getName();
+					System.out.println(languages);
+
+					String countries = "Countries:";
+					for(Country c : parser.getCountries())
+						countries += " " + c.getName();
+					System.out.println(countries);
+
+					String genres = "Genres:";
+					for(Genre g : parser.getGenres())
+						genres += " " + g;
+					System.out.println(genres);			
+
+					String directors = "Directors:";
+					for(Person d : parser.getDirectors())
+						directors += " " + d.getName();
+					System.out.println(directors);
+
+					String writers = "Writers:";
+					for(Person w : parser.getWriters())
+						writers += " " + w.getName();
+					System.out.println(writers);
+
+					String actors = "\nActors:";
+					for(ActorInfo a : parser.getActors())
+						actors += "\n" + a.toString();
+					System.out.println(actors + "\n");
+
+					System.out.println("Image URL: " + imageUrl);
+					System.out.println("------- END IMDB DATA DUMP -------");
+					System.out.println("");
+				}*/
 			
 			} catch (Exception e) {
+				System.out.println(e);
 				throw new InvocationTargetException(e);
 			} finally {
 				monitor.done();
