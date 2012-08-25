@@ -22,6 +22,7 @@ package com.googlecode.jmoviedb;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -58,7 +59,7 @@ public class CONST {
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 4;
+	public static final int RELEASE_VERSION = 5;
 	
 	/**
 	 * The current development stage expressed as a string.
@@ -70,12 +71,12 @@ public class CONST {
 	/**
 	 * SWT version number
 	 */
-	public static final String VERSION_SWT = "3.4.0";
+	public static final String VERSION_SWT = SWT.getVersion()+"";
 	
 	/**
 	 * Apache Derby version number
 	 */
-	public static final String VERSION_DERBY = "10.3.3.0";
+	public static final String VERSION_DERBY = "10.9.1.0";
 	
 	/**
 	 * BrowserLauncher2 version number
@@ -90,12 +91,12 @@ public class CONST {
 	/**
 	 * Glazed Lists version number
 	 */
-	public static final String VERSION_GLAZED = "1.7.0";
+	public static final String VERSION_GLAZED = "1.8.0";
 	
 	/**
 	 * KTable version number
 	 */
-	public static final String VERSION_KTABLE = "2.1.3";
+	public static final String VERSION_KTABLE = "2.2.0";
 	
 	/**
 	 * This program's website

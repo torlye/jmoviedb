@@ -19,6 +19,8 @@
 
 package com.googlecode.jmoviedb.gui;
 
+import java.awt.Event;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -76,6 +78,7 @@ public class MovieDialog extends Dialog {
 	private Text titleText;
 	private Text altTitleText;
 	private Text yearText;
+	private Text year2Text;
 	private Text directorText;
 	private Text writerText;
 	private Text genreText;
@@ -94,7 +97,7 @@ public class MovieDialog extends Dialog {
 	private Button legalCheck;
 	private Combo discCombo;
 	private Text locationText;
-	private Button myEncodeCheck;
+//	private Button myEncodeCheck;
 	private Text sceneNameText;
 	private Combo aspectCombo;
 	
@@ -137,7 +140,7 @@ public class MovieDialog extends Dialog {
 	private SelectionListener typeComboListener;
 	private SelectionListener formatComboListener;
 	private SelectionListener legalCheckListener;
-	private SelectionListener myEncodeCheckListener;
+//	private SelectionListener myEncodeCheckListener;
 	private SelectionListener r0CheckListener;
 	
 	private final static int COVER_WIDTH = 100;
@@ -288,6 +291,13 @@ public class MovieDialog extends Dialog {
 
 					containerCombo.setEnabled(false);
 					
+				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.avchd) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					containerCombo.setEnabled(false);
+					videoCodecCombo.select(VideoCodec.h264.ordinal());
+					videoCodecCombo.setEnabled(false);
+					if (discCombo.getSelectionIndex() == 0)
+						discCombo.select(DiscType.dvdminusr.ordinal());
 				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.vcd) {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg1.ordinal());
@@ -297,12 +307,7 @@ public class MovieDialog extends Dialog {
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.xvcd) {
-					containerCombo.select(ContainerFormat.mpeg.ordinal());
-					videoCodecCombo.select(VideoCodec.mpeg1.ordinal());
-					resolutionCombo.select(Resolution.cif.ordinal());
-					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.svcd) {
+				}  else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.svcd) {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
@@ -311,11 +316,6 @@ public class MovieDialog extends Dialog {
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.xsvcd) {
-					containerCombo.select(ContainerFormat.mpeg.ordinal());
-					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
-					resolutionCombo.select(Resolution.sd.ordinal());
-					
 				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.laserdisc) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
@@ -323,7 +323,7 @@ public class MovieDialog extends Dialog {
 					discCombo.select(DiscType.ld.ordinal());
 					
 					containerCombo.setEnabled(false);
-					containerCombo.setEnabled(false);
+					videoCodecCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
 					
@@ -367,31 +367,31 @@ public class MovieDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				if(legalCheck.getSelection() == true) {
 					sceneNameText.setEnabled(false);
-					myEncodeCheck.setSelection(false);
-					myEncodeCheck.setEnabled(false);
+//					myEncodeCheck.setSelection(false);
+//					myEncodeCheck.setEnabled(false);
 				} else {
 					sceneNameText.setEnabled(true);
-					myEncodeCheck.setEnabled(true);
+//					myEncodeCheck.setEnabled(true);
 				}
 			}
 		};
 		legalCheck.addSelectionListener(legalCheckListener);
 		
-		myEncodeCheckListener = new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				if(myEncodeCheck.getSelection() == true) {
-					sceneNameText.setText("");
-					sceneNameText.setEnabled(false);
-					legalCheck.setSelection(false);
-					legalCheck.setEnabled(false);
-				} else {
-					sceneNameText.setEnabled(true);
-					legalCheck.setEnabled(true);
-				}
-			}
-		};
-		myEncodeCheck.addSelectionListener(myEncodeCheckListener);
+//		myEncodeCheckListener = new SelectionListener() {
+//			public void widgetDefaultSelected(SelectionEvent e) {}
+//			public void widgetSelected(SelectionEvent e) {
+//				if(myEncodeCheck.getSelection() == true) {
+//					sceneNameText.setText("");
+//					sceneNameText.setEnabled(false);
+//					legalCheck.setSelection(false);
+//					legalCheck.setEnabled(false);
+//				} else {
+//					sceneNameText.setEnabled(true);
+//					legalCheck.setEnabled(true);
+//				}
+//			}
+//		};
+//		myEncodeCheck.addSelectionListener(myEncodeCheckListener);
 		
 		r0CheckListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -484,7 +484,11 @@ public class MovieDialog extends Dialog {
 		yearLabel.setText("Year:");
 		yearText = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		yearText.setTextLimit(4);
-		yearText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
+		yearText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,1, 1));
+		
+		year2Text = new Text(c1, SWT.SINGLE|SWT.BORDER);
+		year2Text.setTextLimit(4);
+		year2Text.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,2, 1));
 		
 		Label genreLabel = new Label(c1, SWT.CENTER);
 		genreLabel.setText("Genre:");
@@ -752,10 +756,10 @@ public class MovieDialog extends Dialog {
 		legalCheck.setSelection(true);
 		legalCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
 		
-		myEncodeCheck = new Button(c, SWT.CHECK);
-		myEncodeCheck.setText("Encoded by me");
-		myEncodeCheck.setSelection(true);
-		myEncodeCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
+//		myEncodeCheck = new Button(c, SWT.CHECK);
+//		myEncodeCheck.setText("Encoded by me");
+//		myEncodeCheck.setSelection(true);
+//		myEncodeCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
 		
 		Label sceneNameLabel = new Label(c, SWT.CENTER);
 		sceneNameLabel.setText("Scene release name:");
@@ -799,6 +803,8 @@ public class MovieDialog extends Dialog {
 		altTitleText.setText(m.getCustomTitle());
 		if(m.getYear() != 0)
 			yearText.setText(m.getYear() + "");
+		if (m.hasYear2())
+			year2Text.setText(m.getYear2()+"");
 		versionCombo.setText(m.getCustomVersion());
 		directorText.setText(m.getDirectorsAsString());
 		writerText.setText(m.getWritersAsString());
@@ -841,7 +847,7 @@ public class MovieDialog extends Dialog {
 		discCombo.select(m.getDisc().ordinal());
 		aspectCombo.select(m.getAspectRatio().ordinal());
 		locationText.setText(m.getLocation());
-		myEncodeCheck.setSelection(m.isMyEncode());
+//		myEncodeCheck.setSelection(m.isMyEncode());
 		sceneNameText.setText(m.getSceneReleaseName());
 		
 		actorNameColumn.pack();
@@ -864,9 +870,8 @@ public class MovieDialog extends Dialog {
 		typeComboListener.widgetSelected(null);
 		formatComboListener.widgetSelected(null);
 		legalCheckListener.widgetSelected(null);
-		myEncodeCheckListener.widgetSelected(null);
+//		myEncodeCheckListener.widgetSelected(null);
 		r0CheckListener.widgetSelected(null);
-		
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {
@@ -938,6 +943,7 @@ public class MovieDialog extends Dialog {
 		movie.setTitle(titleText.getText());
 		movie.setCustomTitle(altTitleText.getText());
 		movie.setYear(yearText.getText());
+		movie.setYear2(year2Text.getText());
 		movie.setRunTime(runtimeText.getText());
 		movie.setRatingAsInt(rateScale.getSelection());
 		movie.setSeen(seenCheck.getSelection());
@@ -969,7 +975,7 @@ public class MovieDialog extends Dialog {
 		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
 		movie.setLocation(locationText.getText());
 		movie.setSceneReleaseName(sceneNameText.getText());
-		movie.setMyEncode(myEncodeCheck.getSelection());
+//		movie.setMyEncode(myEncodeCheck.getSelection());
 		
 		if (movie instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)movie;

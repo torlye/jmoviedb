@@ -22,15 +22,11 @@ package com.googlecode.jmoviedb.net;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownServiceException;
-import java.util.List;
 
 import com.googlecode.jmoviedb.CONST;
 
@@ -99,6 +95,15 @@ public class DownloadWorker {
 			html = html+" "+inputLine;
 		in.close();
 		return html;
+	}
+	
+	public InputStream getHtmlStream() throws IOException {
+		URLConnection connection = url.openConnection(proxy);
+		
+		//Connection to IMDb fails with a 403 if we don't set a User Agent
+		connection.setRequestProperty("User-Agent", "None/0.0 (None)");
+		
+		return connection.getInputStream();
 	}
 
 	/**

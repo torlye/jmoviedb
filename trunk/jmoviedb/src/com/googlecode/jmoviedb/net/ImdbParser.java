@@ -19,9 +19,23 @@
 
 package com.googlecode.jmoviedb.net;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import java.util.*;
 import java.util.regex.*;
+
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
+import org.xml.sax.InputSource;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.Country;
@@ -33,14 +47,17 @@ import com.googlecode.jmoviedb.model.Person;
 
 
 public class ImdbParser {
-	private String html;
+	private Document doc;
 	
-	/**
-	 * The default constructor
-	 * @param html - a HTML document 
-	 */
-	protected ImdbParser(String html) {
-		this.html = html;
+	protected ImdbParser(URL url) {
+		try {
+			System.out.println("Connecting to "+url.toString());
+			doc = Jsoup.connect(url.toString()).header("User-Agent", "None/0.0 (None)").get();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	/**
@@ -51,10 +68,27 @@ public class ImdbParser {
 	protected String getID() {
 		//TODO Is this safe? What if there are links to other movies on the page?
 		Pattern patternID = Pattern.compile("/title/tt(\\d{7})/");
-		Matcher matcherID = patternID.matcher(html);
+		Matcher matcherID = patternID.matcher(doc.baseUri());
 		if (matcherID.find())
 			return matcherID.group(1);
 		return null;
+	}
+	
+	/**
+	 * Examples:
+	 * The Avengers (2012)
+	 * Mazes and Monsters (TV 1982)
+	 * Star Trek (TV Series 1966&ndash;1969)
+	 * &quot;Star Trek&quot; The Cage (TV episode 1986)
+	 * Clone Wars: Bridging the Saga (Video 2005)
+	 * Taken (TV mini-series 2002)
+	 */
+	private String getTitleProperty() {
+		return doc.select("meta[property=og:title]").first().attr("content");
+	}
+	
+	private Element getInfoBar() {
+		return doc.select("div[class=infobar]").first();
 	}
 	
 	/**
@@ -62,28 +96,15 @@ public class ImdbParser {
 	 * @return the movie title
 	 */
 	protected String getTitle() {
-		/*
-		 * Examples:
-		 * <h1>The Arrival <span>(<a href="/Sections/Years/1996">1996</a>)</span></h1>
-		 * <h1>Mazes and Monsters <span>(<a href="/Sections/Years/1982">1982</a>) (TV)</span></h1>
-		 * <h1>Clone Wars: Bridging the Saga <span>(<a href="/Sections/Years/2005">2005</a>) (V)</span></h1>
-		 * <h1>&#34;The Simpsons&#34; <span>(<a href="/Sections/Years/1989">1989</a>)<span>TV series&#160;1989-????</span></span></h1>
-		 * <h1>&#34;Star Trek&#34; <span>(<a href="/Sections/Years/1973">1973</a>)<span>TV series&#160;1973-1975</span></span></h1>
-		 * <h1>&#34;Star Trek&#34;<br><span><em>The Cage</em> (1966)</span></h1>
-		 */
-		Pattern patternTitle = Pattern.compile("<h1>([^<]+)(?:<br>)?<span>(?:<em>)?([^<]+)?(?:</em>)?\\s?\\(");
-		Matcher matcherTitle = patternTitle.matcher(html);
+		String title = getTitleProperty();
+		Pattern patternTitle = Pattern.compile("([^<\\(]+)");
+		Matcher matcherTitle = patternTitle.matcher(title);
 		if (matcherTitle.find()) {
-			String title = CONST.fixHtmlCharacters(matcherTitle.group(1).trim());
+			title = matcherTitle.group(1).trim();
 			
 			//Remove quote at beginning and end of title for TV-series
 			if(title.startsWith("\"") && title.endsWith("\""))
 				title = title.substring(1, title.length()-1);
-			
-			//Add "sub" title, as at http://www.imdb.com/title/tt0059753/
-			System.out.println("group count! "+matcherTitle.groupCount());
-			if(matcherTitle.group(2) != null)
-				title += ": "+CONST.fixHtmlCharacters(matcherTitle.group(2).trim());
 			
 			return title;
 		}
@@ -94,19 +115,24 @@ public class ImdbParser {
 		if(currentType == MovieType.webseries || currentType == MovieType.movieserial)
 			return currentType;
 		
-		Pattern patternType = Pattern.compile("<h1>(.+)</h1>");
-		Matcher matcherType = patternType.matcher(html);
+		String title = getTitleProperty();
+		String type = doc.select("meta[property=og:type]").first().attr("content");
 		
-		if(matcherType.find()) {
-			String match = matcherType.group(1);
-			if(match.contains("(TV)"))
-				return MovieType.tvmovie;
-			else if(match.contains("(V)"))
-				return MovieType.videomovie;
-			else if(match.contains("TV mini-series"))
-				return MovieType.miniseries;
-			else if(match.startsWith("&#x22;"))
+		switch (type) {
+		case "video.tv_show":
+			if (title.contains("TV Series"))
 				return MovieType.tvseries;
+			else if (title.contains("(TV mini-series"))
+				return MovieType.miniseries;
+			else
+				return MovieType.tvmovie;
+		case "video.movie":
+			if (title.contains("(Video"))
+				return MovieType.videomovie;
+			else
+				return MovieType.film;
+		default:
+			break;
 		}
 		
 		return currentType;
@@ -116,13 +142,23 @@ public class ImdbParser {
 	 * Returns the movie's production year, if the open document is a movie page.
 	 * @return a year
 	 */
-	protected int getYear() {
-		Pattern patternYear = Pattern.compile("<a href=\"/year/\\d{4}/\">(\\d{4})</a>");
-		Matcher matcherYear = patternYear.matcher(html);
+	protected int[] getYear() {
+		String title = getTitleProperty();
+		Pattern patternYear = Pattern.compile("(\\d{4})–(\\d{4})\\)");
+		Matcher matcherYear = patternYear.matcher(title);
 		if (matcherYear.find()) {
-			return Integer.parseInt(matcherYear.group(1));	
+			return new int[] {
+					Integer.parseInt(matcherYear.group(1)),
+					Integer.parseInt(matcherYear.group(2))
+			};
 		}
-		return 0;
+		patternYear = Pattern.compile("(\\d{4})\\)");
+		//patternYear = Pattern.compile("\\d{4}");
+		matcherYear = patternYear.matcher(title);
+		if (matcherYear.find()) {
+			return new int[] {Integer.parseInt(matcherYear.group(1))};
+		}
+		return new int[0];
 	}
 	
 	/**
@@ -130,17 +166,11 @@ public class ImdbParser {
 	 * @return an array of genres, or an empty array if none were found.
 	 */
 	protected ArrayList<Genre> getGenres() {
-		/*
-		 * Examples:
-		 * <a href="/Sections/Genres/Crime/">Crime</a>
-		 * <a href="/Sections/Genres/Film-Noir/">Film-Noir</a> 
-		 * <a href="/Sections/Genres/Thriller/">Thriller</a>
-		 */
-		Pattern patternGenre = Pattern.compile("<a href=\"/Sections/Genres/[^/]+/\">([^<]+)</a>");
-		Matcher matcherGenre = patternGenre.matcher(html);
 		ArrayList<Genre> temp = new ArrayList<Genre>();
-		while (matcherGenre.find()) {
-			temp.add(Genre.StringToEnum(matcherGenre.group(1)));
+		
+		Elements genreNodes = getInfoBar().select("a[href^=/genre]");
+		for (Element element : genreNodes) {
+			temp.add(Genre.StringToEnum(element.text()));
 		}
 		return temp;
 	}
@@ -150,12 +180,10 @@ public class ImdbParser {
 	 * @return the tagline
 	 */
 	protected String getTagline() {
-		Pattern patternTagline = Pattern.compile("<h5>Tagline:</h5>\\s*<div class=\"info-content\">\\s*([^<]+)\\s*<");
-		Matcher matcherTagline = patternTagline.matcher(html);
-		if (matcherTagline.find()) {
-			return CONST.fixHtmlCharacters(matcherTagline.group(1));	
-		}
-		return "";
+		Element h4 = doc.select("h4:matchesOwn(Taglines:)").first();
+		if (h4 == null) return "";
+		String text = h4.parent().ownText();
+		return text;
 	}
 	
 	/**
@@ -163,12 +191,11 @@ public class ImdbParser {
 	 * @return the plot outline
 	 */
 	protected String getPlot() {
-		Pattern patternPlot = Pattern.compile("<h5>Plot:</h5>\\s*<div class=\"info-content\">\\s*([^<]+)\\s*<");
-		Matcher matcherPlot = patternPlot.matcher(html);
-		if (matcherPlot.find()) {
-			return CONST.fixHtmlCharacters(matcherPlot.group(1));
-		}
-		return "";
+		Element h2 = doc.select("h2:matchesOwn(Storyline)").first();
+		if (h2 == null) return "";
+		Element el = h2.siblingElements().select("p").first();
+		if (el == null) return "";
+		return el.text();
 	}
 	
 	/**
@@ -176,12 +203,11 @@ public class ImdbParser {
 	 * @return the rating
 	 */
 	protected double getRating() {
-		Pattern patternRating = Pattern.compile("<b>([0-9\\.]+)/10</b>");
-		Matcher matcherRating = patternRating.matcher(html);
-		if (matcherRating.find()) {
-			return Double.valueOf(matcherRating.group(1)).doubleValue();	
-		}
-		return 0.0;
+		String starText = doc.select("div[class=star-box-giga-star]").text();
+		if (!starText.isEmpty())
+			return Double.valueOf(starText).doubleValue();
+		else
+			return 0;
 	}
 	
 	/**
@@ -189,10 +215,13 @@ public class ImdbParser {
 	 * @return runtime
 	 */
 	protected int getRuntime() {
-		Pattern patternRuntime = Pattern.compile("<h5>Runtime:</h5>[^0-9]*([0-9]+)\\smin");
-		Matcher matcherRuntime = patternRuntime.matcher(html);
-		if(matcherRuntime.find())
-			return Integer.valueOf(matcherRuntime.group(1));
+		String time = doc.select("time[itemprop=duration]").text();
+		if (time.length()>0) {
+			Pattern patternRuntime = Pattern.compile("[0-9]+");
+			Matcher matcherRuntime = patternRuntime.matcher(time);
+			if(matcherRuntime.find())
+				return Integer.valueOf(matcherRuntime.group());
+		}
 		return 0;
 	}
 	
@@ -201,11 +230,11 @@ public class ImdbParser {
 	 * @return true if the movie is in color, false if it is black and white
 	 */
 	protected boolean isColor() {
-		Pattern patternColor = Pattern.compile("<h5>Color:</h5>\\s*<a[^>]+>([^<]+)</a>");
-		Matcher matcherColor = patternColor.matcher(html);
-		if(matcherColor.find())
-			if(matcherColor.group(1).equals("Black and White"))
-				return false;
+		Element h4 = doc.select("h4:matchesOwn(Color:)").first();
+		Element anchor = h4.parent().select("a").first();
+		if (anchor.text().contains("Black and White")) {
+			return false;
+		}
 		return true;
 	}
 	
@@ -214,25 +243,19 @@ public class ImdbParser {
 	 * @return an ArrayList of languages
 	 */
 	protected ArrayList<Language> getLanguages() throws UnknownLanguageException {
-		Pattern patternLanguage1 = Pattern.compile("<h5>Language:</h5>(.+?)</div>");
-		Pattern patternLanguage2 = Pattern.compile("<a href=\"/Sections/Languages/([^/]+)/\">");
-		Matcher matcherLanguage = patternLanguage1.matcher(html);
+		Elements languageElements = doc.select("a[href^=/language/]");
 		
-		ArrayList<Language> tempList = new ArrayList<Language>(); 
+		ArrayList<Language> tempList = new ArrayList<Language>();
 		
-		if(matcherLanguage.find()) {
-			matcherLanguage = patternLanguage2.matcher(matcherLanguage.group(1));
-
-			while(matcherLanguage.find()) {
-				Language l = Language.StringToEnum(matcherLanguage.group(1));
-				if(l == null)
-					throw new UnknownLanguageException("Unknown language: " + matcherLanguage.group(1));
-				else {
-					if(!tempList.contains(l)) tempList.add(l);
-				}
+		for (Element element : languageElements) {
+			Language l = Language.StringToEnum(element.text());
+			if(l == null)
+				System.err.println("Unknown language: " + element.text());
+			else {
+				if(!tempList.contains(l)) tempList.add(l);
 			}
 		}
-			
+		
 		return tempList;
 	}
 	
@@ -241,18 +264,16 @@ public class ImdbParser {
 	 * @return an ArrayList of countries
 	 */
 	protected ArrayList<Country> getCountries() {
-		Pattern patternCountry1 = Pattern.compile("<h5>Country:</h5>(.+?)</div>");
-		Pattern patternCountry2 = Pattern.compile("<a href=\"/Sections/Countries/([^/]+)/\">");
-		Matcher matchercountry = patternCountry1.matcher(html);
+		Elements countryElements = doc.select("a[href^=/country/]");
 		
 		ArrayList<Country> tempList = new ArrayList<Country>(); 
 		
-		if(matchercountry.find()) {
-			matchercountry = patternCountry2.matcher(matchercountry.group(1));
-
-			while(matchercountry.find()) {
-				tempList.add(Country.StringToEnum(matchercountry.group(1)));
-			}
+		for (Element element : countryElements) {
+			Country c = Country.StringToEnumUsingName(element.text());
+			if (c != null)
+				tempList.add(c);
+			else
+				System.err.println("Unrecognized country "+element.text());
 		}
 			
 		return tempList;
@@ -263,11 +284,12 @@ public class ImdbParser {
 	 * @return the image URL, or null if no image was found.
 	 */
 	protected URL getImageURL() {
-		Pattern pattern = Pattern.compile("<a name=\"poster\"[^>]+><img[^>]+src=\"(\\S+)\"[^>]+>");
-		Matcher matcher = pattern.matcher(html);
-		if (matcher.find()) {
+		String urlString = doc.select("meta[property=og:image]").attr("content");
+		if (urlString.length()>0) {
+			if (urlString.endsWith("imdb-share-logo.png"))
+				return null;
 			try {
-				return new URL(matcher.group(1));
+				return new URL(urlString);
 			} catch (MalformedURLException e) {
 				return null;
 			}
@@ -276,81 +298,28 @@ public class ImdbParser {
 	}
 	
 	/**
-	 * Downloads the poster image for the current movie
-	 * @return image data
-	 * @throws IOException
-	 */
-//	protected byte[] getImageData() throws IOException {
-//		String url = getImageURL();
-//		
-//		if(url == null)
-//			return null;
-//		
-//		//Read the image into a byte array
-//		URLConnection connection = new URL(url).openConnection();
-//		int fileSize = connection.getContentLength();
-//		BufferedInputStream stream = new BufferedInputStream(connection.getInputStream());
-//		
-//		byte[] imageBytes = new byte[0];
-//		int c = 0;
-////		while(stream.available() > 0) { //loop while there is more data to read
-//		while(imageBytes.length<fileSize) {
-//			c++;
-//			//how much data is ready right now?
-//			int readLength = stream.available();
-//			System.out.println("--Downloading "+readLength+" bytes");
-//			//create a new array that contains the bytes read until now, but with
-//			//free space for more
-//			byte[] newBytes = Arrays.copyOf(imageBytes, imageBytes.length+readLength);
-//			
-//			//read the new bytes into the empty part of the newly created array
-//			stream.read(newBytes, imageBytes.length, readLength);
-//			
-//			//replace the "old" byte array with the new one
-//			imageBytes = newBytes;
-//		}
-//		stream.close();
-//		System.out.println("--Downloaded "+imageBytes.length+" bytes using "+c+" loops.");
-//		// Check for valid data
-//		if(CONST.isValidImage(imageBytes))
-//			return imageBytes;
-//		return null;		
-//	}
-	
-	/**
 	 * Returns the movie's actors, if the open document is a movie page.
 	 * @return an ArrayList of ActorInfo objects
 	 */
 	protected ArrayList<ActorInfo> getActors() {
-		//Typical examples:
-		//<td class="nm"><a href="/name/nm0132257/">Bruce Campbell</a></td><td class="ddd"> ... </td><td class="char">Renaldo 'The Heel'</td>
-		//<td class="nm"><a href="/name/nm0001511/">Lee Marvin</a></td><td class="ddd"> ... </td><td class="char"><a href="/character/ch0023281/">The Sergeant</a></td>
-		//Beware of the following cases:
-		//<td class="char"><a href="/character/ch0008987/">Nick</a> (as Nephi Pomaikai Brown)</td>
-		//<td class="char"><a href="/character/ch0001439/">Mr. Spock</a> (80&#160;episodes, 1966-1969)</td>
-		//<td class="nm"><a href="/name/nm0921942/">Billy West</a></td><td class="ddd"> ... </td><td class="char"><a href="/character/ch0013043/">Philip J. Fry</a> / <a href="/character/ch0013043/">Frydo</a> / <a href="/character/ch0047043/">Professor Hubert Farnsworth</a> / <a href="/character/ch0047043/">The Great Wizard Greyfarn</a> / <a href="/character/ch0013047/">Dr. Zoidberg</a> / <a href="/character/ch0013047/">Monster Zoidberg</a> / Farmer / Dwarf / <a href="/character/ch0047024/">Smitty</a> / Treedledum / Additional Voices (voice)</td>
-		
-		Pattern actorPattern = Pattern.compile("<td class=\"nm\"><a href=\"/name/nm(\\d+)/\".*?>([^<>]+)</a></td><td class=\"ddd\">\\s\\.\\.\\.\\s</td><td class=\"char\">(.*?)</td>");
-		Matcher actorMatcher = actorPattern.matcher(html);
 		ArrayList<ActorInfo> templist = new ArrayList<ActorInfo>();
+		Element castListTable = doc.select("table[class=cast_list]").first();
+		if (castListTable == null) return templist;
+		Elements rows = castListTable.select("tr");
+		
 		int counter = 0;
 		
-		while (actorMatcher.find()) {
-		/*
-		 * Group 3 matches everything between <td class="char"> and </td>
-		 * i.e. the character description. The following statement removes
-		 * HTML entities from that string, e.g.:
-		 * <a href="/character/ch0008987/">Nick</a> (as Nephi Pomaikai Brown)
-		 * is shortened to:
-		 * Nick (as Nephi Pomaikai Brown)
-		 */
-			String character = actorMatcher.group(3).replaceAll("<.+?>", "");
+		for (Element row : rows) {
+			String name = row.select("td[class=name]").text();
+			String character = row.select("td[class=character]").text();
+			String href = row.select("td[class=name] a").attr("href");
+			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
+			Matcher matcherId = patternId.matcher(href);
 			
-			templist.add(new ActorInfo(counter, 
-					new Person(actorMatcher.group(1), 
-					CONST.fixHtmlCharacters(actorMatcher.group(2))),  
-					CONST.fixHtmlCharacters(character)));
-			counter++;
+			if(matcherId.find()) {
+				templist.add(new ActorInfo(counter, new Person(matcherId.group(1), name), character));
+				counter++;
+			}
 		}
 
 		return templist;
@@ -361,15 +330,17 @@ public class ImdbParser {
 	 * @return an array of directors
 	 */
 	protected ArrayList<Person> getDirectors() {
-		Pattern pattern = Pattern.compile("<h5>Directors?:</h5>(.+?)</div>");
-		Matcher matcher = pattern.matcher(html);
+		Elements anchors = doc.select("a[itemprop=director]");
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
-		if(matcher.find()) {
-			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\".*?>([^<]+)</a>");
-			Matcher personMatcher = personPattern.matcher(matcher.group(1));
-			while(personMatcher.find()) {
-				Person p = new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2)));
+		for(Element anchor : anchors) {
+			String name = anchor.text();
+			String href = anchor.attr("href");
+			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
+			Matcher matcherId = patternId.matcher(href);
+			
+			if(matcherId.find()) {
+				Person p = new Person(matcherId.group(1), name);
 				if(!personArray.contains(p))
 					personArray.add(p);
 			}
@@ -383,19 +354,29 @@ public class ImdbParser {
 	 * @return an array of writers
 	 */
 	protected ArrayList<Person> getWriters() {
-		Matcher matcher = Pattern.compile("<h5>Writers?(\\s<a[^<]+</a>)?:</h5>(.+?)</div>").matcher(html);
 		ArrayList<Person> personArray = new ArrayList<Person>();
+		Element h4 = doc.select("h4:matchesOwn(Writers:)").first();
+		if (h4 == null) {
+			h4 = doc.select("h4:matchesOwn(Writer:)").first();
+			if (h4 == null)
+				return personArray;
+		}
 		
-		if(matcher.find()) {
-			Pattern personPattern = Pattern.compile("<a\\shref=\"/name/nm(\\d{7})/\".*?>([^<]+)</a>");
-			Matcher personMatcher = personPattern.matcher(matcher.group(2));
-			while(personMatcher.find()) {
-				Person p = new Person(personMatcher.group(1), CONST.fixHtmlCharacters(personMatcher.group(2)));
+		Elements anchors = h4.parent().select("a");
+
+		for(Element anchor : anchors) {
+			String name = anchor.text();
+			String href = anchor.attr("href");
+			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
+			Matcher matcherId = patternId.matcher(href);
+			
+			if(matcherId.find()) {
+				Person p = new Person(matcherId.group(1), name);
 				if(!personArray.contains(p))
 					personArray.add(p);
 			}
 		}
-
+		
 		return personArray;
 	}
 	
@@ -411,10 +392,8 @@ public class ImdbParser {
 		 * search result page and goes directly to the movie page. The following is
 		 * to handle this special case.
 		 */
-		Pattern moviePagePattern = Pattern.compile("<div\\s+id=\"tn15\"\\s+class=\"maindetails\">");
-		Matcher moviePageMatcher = moviePagePattern.matcher(html);
-		if(moviePageMatcher.find()) {
-			//TODO fix type and altTitles, these are currently hard-coded with default values
+		if(doc.select("h1").size() > 0) {
+			getTitleProperty();
 			if(CONST.DEBUG_MODE) System.out.println("Only one search result, was redirected to movie page");
 			return new ImdbSearchResult[]{new ImdbSearchResult(getID(), MovieType.film, getTitle(), "" + getYear(), new String[0])};
 		}
@@ -424,25 +403,57 @@ public class ImdbParser {
 		 * try to parse it and get the results
 		 */
 		
-		Pattern pattern = Pattern.compile(
-				"<tr>\\s*<td valign=\"top\">(.+?)</td>\\s*" +
-				"<td align=\"right\" valign=\"top\">.+?</td>\\s*" +
-				"<td valign=\"top\">(.+?)</td>\\s*</tr>"
-				);
-		Matcher matcher = pattern.matcher(html);
+		Elements rows = doc.select("table tr");
 		
-		ArrayList<ImdbSearchResult> templist = new ArrayList<ImdbSearchResult>(); 
-
-		while(matcher.find()) {
-			//Call a separate method to find the image URL, if any
-			String imgUrl = imgSearchResult(matcher.group(1));
+		ArrayList<ImdbSearchResult> templist = new ArrayList<ImdbSearchResult>();
+		
+		Pattern hrefPattern = Pattern.compile("/title/tt(\\d+)");
+		
+		for (Element row : rows) {
+			Elements cells = row.select("td");
+			if (cells.size() != 3) continue;
 			
-			//Call a method to parse the title, year, etc. This method will also return the ImdbSearchResult object.
-			ImdbSearchResult result = titleSearchResult(matcher.group(2));
+			String href = cells.last().select("a").first().attr("href");
 			
-			//Add the image to the ImdbSearchResult object and add the ImdbSearchResult to the result list. 
-			if(result != null) {
-				result.setImageURL(imgUrl);
+			Matcher matcher = hrefPattern.matcher(href);
+			if (matcher.find()) {
+				StringBuilder builder = new StringBuilder();
+				List<Node> nodes = cells.last().childNodes();
+				for (Node node : nodes) {
+					if (node instanceof TextNode)
+						builder.append(((TextNode) node).text());
+					else if (node instanceof Element) {
+						Elements pElements = ((Element) node).getElementsByTag("p");
+						if (pElements.size()>0) {
+							for (Element element : pElements) {
+								builder.append("\n");
+								builder.append(element.text());
+							}
+						} else {
+							builder.append(((Element) node).text());
+						}
+					}
+				}
+				List<TextNode> texts = cells.last().textNodes();
+				
+				for (TextNode textNode : texts) {
+					if (!textNode.isBlank() && textNode.nodeName().equals("p"))
+						builder.append("\n"+textNode.text());
+					else
+						builder.append(textNode.text());
+				}
+				
+				ImdbSearchResult result = new ImdbSearchResult(matcher.group(1), builder.toString());
+				
+				Element img = cells.first().select("img").first();
+				if (img != null) {
+					String src = img.attr("src");
+					if (src.endsWith("/b.gif")) {
+						
+					} else {
+						result.setImageURL(src);
+					}
+				}
 				templist.add(result);
 			}
 		}

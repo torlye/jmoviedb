@@ -56,6 +56,7 @@ public abstract class AbstractMovie implements Cloneable {
 	private String imdbID;
 	private String title;
 	private int year;
+	private int year2;
 	private double rating;
 	private String plotOutline;
 	private String tagline;
@@ -126,6 +127,7 @@ public abstract class AbstractMovie implements Cloneable {
 			String title,
 			String customTitle,
 			int year,
+			int year2,
 			int rating, 
 			String plotOutline, 
 			String tagline, 
@@ -151,6 +153,7 @@ public abstract class AbstractMovie implements Cloneable {
 		setTitle(title);
 		setCustomTitle(customTitle);
 		setYear(year);
+		setYear2(year2);
 		setRatingAsInt(rating);
 		setPlotOutline(plotOutline);
 		setTagline(tagline);
@@ -181,6 +184,7 @@ public abstract class AbstractMovie implements Cloneable {
 		this.imdbID = "";
 		this.title = "";
 		this.year = 0;
+		this.year2 = 0;
 		this.rating = 0.0;
 		this.plotOutline = "";
 		this.tagline = "";
@@ -499,9 +503,9 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 	
 	public String getRuntimeAsHourMinuteString() {
-		if(runTime>60)
+		if(runTime>=60)
 			return runTime/60 + "h " + runTime%60 + "m";
-		return runTime%60 + "m";
+		return runTime + "m";
 	}
 
 	public boolean isSeen() {
@@ -599,6 +603,30 @@ public abstract class AbstractMovie implements Cloneable {
 			setYear(yearInt);
 		} catch (NumberFormatException e) {
 			setYear(0);
+		}
+	}
+	
+	public int getYear2() {
+		return year2;
+	}
+	
+	public boolean hasYear2() {
+		return year2 > 0 && year2 < 9999;
+	}
+
+	public void setYear2(int year) {
+		if(year > 0 && year < 9999)
+			this.year2 = year;
+		else
+			this.year2 = 0;
+	}
+	
+	public void setYear2(String year) {
+		try {
+			int yearInt = Integer.valueOf(year).intValue();
+			setYear2(yearInt);
+		} catch (NumberFormatException e) {
+			setYear2(0);
 		}
 	}
 

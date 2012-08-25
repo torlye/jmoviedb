@@ -278,15 +278,15 @@ public class AudioSubtitleTable {
 			audioformat = AudioCodec.ac3;
 			channels = AudioChannels.surround51;
 			subformat = SubtitleFormat.vobsub;
-		} else if(format == FormatType.bluray||format == FormatType.hddvd) {
+		} else if(format == FormatType.bluray||format == FormatType.hddvd||format == FormatType.avchd) {
 			audioformat = AudioCodec.ac3;
 			channels = AudioChannels.surround51;
 			subformat = SubtitleFormat.medianative;
-		} else if(format == FormatType.vcd||format == FormatType.xvcd) {
+		} else if(format == FormatType.vcd) {
 			audioformat = AudioCodec.mp2;
 			channels = AudioChannels.stereo;
 			subformat = SubtitleFormat.burnt_in;
-		} else if(format == FormatType.svcd||format == FormatType.xsvcd) {
+		} else if(format == FormatType.svcd) {
 			audioformat = AudioCodec.mp2;
 			channels = AudioChannels.stereo;
 			subformat = SubtitleFormat.cvd;

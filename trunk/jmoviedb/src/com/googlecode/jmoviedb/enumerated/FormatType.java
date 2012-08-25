@@ -38,11 +38,10 @@ public enum FormatType {
 			Settings.getSettings().getLanguageClass().FORMAT_HDDVD_URL),
 	vcd(5, "VCD", "Video CD", Settings.getSettings().getLanguageClass().FORMAT_VCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_VCD_URL),
 	svcd(6, "SVCD", "Super Video CD", Settings.getSettings().getLanguageClass().FORMAT_SVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_SVCD_URL),
-	xvcd(7, "XVCD", "Non-standard VCD", Settings.getSettings().getLanguageClass().FORMAT_XVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_XVCD_URL),
-	xsvcd(8, "XSVCD", "Non-standard SVCD", Settings.getSettings().getLanguageClass().FORMAT_XSVCD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_XSVCD_URL),
 	vhs(9, "VHS", "VHS video cassette", "", ""),
 	umd(10, "UMD", "", Settings.getSettings().getLanguageClass().FORMAT_UMD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_UMD_URL), 
-	laserdisc(11, "LaserDisc", "", "DESCRIPTION", null);
+	laserdisc(11, "LaserDisc", "", "DESCRIPTION", null),
+	avchd(7, "AVCHD", "AVCHD", "", null);
 	
 	private int id;
 	private String shortName;

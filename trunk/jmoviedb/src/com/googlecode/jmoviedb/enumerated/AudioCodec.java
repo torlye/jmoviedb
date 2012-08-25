@@ -41,7 +41,7 @@ public enum AudioCodec {
 	dts_hd_hra(13, "DTS-HD HRA", "DTS-HD High Resolution Audio", null, null),
 	dts_hd_ma(14, "DTS-HD MA", "DTS-HD Master Audio (DTS++/DTS-HD)", null, null),
 	wma(6, "WMA", "Windows Media Audio", Settings.getSettings().getLanguageClass().AUDIO_WMA_DESCRIPTION, null),
-	pcm(9, "PCM/LPCM", "Pulse-code modulation", Settings.getSettings().getLanguageClass().AUDIO_PCM_DESCRIPTION, null),
+	pcm(9, "LPCM", "Pulse-code modulation", Settings.getSettings().getLanguageClass().AUDIO_PCM_DESCRIPTION, null),
 	ogg(7, "Vorbis", "Vorbis, aka. Ogg Vorbis", Settings.getSettings().getLanguageClass().AUDIO_VORBIS_DESCRIPTION, null),
 	real(8, "RealAudio", "RealAudio", Settings.getSettings().getLanguageClass().AUDIO_REAL_DESCRIPTION, null),
 	analog(10, "Analog audio", "", "", null),
