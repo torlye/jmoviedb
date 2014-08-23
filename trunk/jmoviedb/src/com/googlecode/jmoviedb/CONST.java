@@ -506,9 +506,11 @@ public class CONST {
 			float widthfactor = (float)maxWidth/(float)imageData.width;
 			float heightFactor = (float)maxHeight/(float)imageData.height;
 			if(widthfactor < heightFactor) {
-				return imageData.scaledTo(Math.round(imageData.width*widthfactor), Math.round(imageData.height*widthfactor));
+				//return imageData.scaledTo(Math.round(imageData.width*widthfactor), Math.round(imageData.height*widthfactor));
+				return Utils.resize(imageData, widthfactor);
 			} else {
-				return imageData.scaledTo(Math.round(imageData.width*heightFactor), Math.round(imageData.height*heightFactor));
+				return Utils.resize(imageData, heightFactor);
+				//return imageData.scaledTo(Math.round(imageData.width*heightFactor), Math.round(imageData.height*heightFactor));
 			}
 		}
 		return imageData;

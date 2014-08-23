@@ -24,9 +24,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 import com.googlecode.jmoviedb.CONST;
 
@@ -44,7 +48,7 @@ public class DownloadWorker {
 		if(CONST.DEBUG_MODE && url != null)
 			System.out.println("DownloadWorker: " + url.toString());
 		this.url = url;
-/*		
+		
 		if (System.getProperty("java.net.useSystemProxies") != "true") {
 			System.setProperty("java.net.useSystemProxies","true");
 		}
@@ -61,11 +65,11 @@ public class DownloadWorker {
 			//Let proxy stay null if this fails
 		}
 
-		if (proxy == null) {
+		if (proxy == null || proxy.address() == null) {
 			if(CONST.DEBUG_MODE)
 				System.out.println("No proxy found, trying no proxy");
-*/			this.proxy = Proxy.NO_PROXY;
-/*d		} else {
+			this.proxy = Proxy.NO_PROXY;
+		} else {
 			InetSocketAddress addr = (InetSocketAddress)proxy.address();
 
 			if(CONST.DEBUG_MODE)
@@ -73,7 +77,7 @@ public class DownloadWorker {
 						+ " " + addr.getHostName() + ":" + addr.getPort());
 			this.proxy = proxy;
 		}
-*/	}
+	}
 
 	/**
 	 * Downloads a html file and returns it as one huge string.
@@ -83,10 +87,7 @@ public class DownloadWorker {
 	public String downloadHtml() throws IOException {
 		String html = "";
 		
-		URLConnection connection = url.openConnection(proxy);
-		
-		//Connection to IMDb fails with a 403 if we don't set a User Agent
-		connection.setRequestProperty("User-Agent", "None/0.0 (None)");
+		URLConnection connection = openConnection();
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 				connection.getInputStream()));
@@ -96,12 +97,18 @@ public class DownloadWorker {
 		in.close();
 		return html;
 	}
-	
-	public InputStream getHtmlStream() throws IOException {
+
+	private URLConnection openConnection() throws IOException {
 		URLConnection connection = url.openConnection(proxy);
 		
 		//Connection to IMDb fails with a 403 if we don't set a User Agent
 		connection.setRequestProperty("User-Agent", "None/0.0 (None)");
+		connection.setRequestProperty("Accept-Language", "en-US,en");
+		return connection;
+	}
+	
+	public InputStream getHtmlStream() throws IOException {
+		URLConnection connection = openConnection();
 		
 		return connection.getInputStream();
 	}
@@ -118,10 +125,7 @@ public class DownloadWorker {
 			return null;
 
 		//Read the image into a byte array
-		URLConnection connection = url.openConnection(proxy);
-		
-		//Connection to IMDb fails with a 403 if we don't set a User Agent
-		connection.setRequestProperty("User-Agent", "None/0.0 (None)");
+		URLConnection connection = openConnection();
 
 		int fileSize = connection.getContentLength();
 

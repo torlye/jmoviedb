@@ -56,7 +56,9 @@ public class ImdbWorker {
 			/*
 			 * We end up here if the movie doesn't have an IMDb URL yet, or if it is malformed.
 			 */
-
+			MessageDialog.openInformation(parentShell, "Missing information", "You must enter an IMDb URL before you can download information.");
+			return movie;
+/*
 			//Can't search if the movie has no title
 			if(movie.getTitle() == null || movie.getTitle().length() == 0) {
 				MessageDialog.openInformation(parentShell, "Missing information", "You must enter a title or an IMDb URL before you can download information.");
@@ -89,7 +91,7 @@ public class ImdbWorker {
 				return movie;
 
 			//Update the movie with the new ID
-			movie.setImdbID(searchResults[selection].getImdbId());
+			movie.setImdbID(searchResults[selection].getImdbId());*/
 		}
 
 		//At this point we have a valid IMDb URL
@@ -118,7 +120,8 @@ public class ImdbWorker {
 				monitor.beginTask("IMDb search", IProgressMonitor.UNKNOWN);
 				String searchURL = Settings.getSettings().getImdbSearchUrl();
 				URL url = new URL(searchURL + movie.getTitle().replace(" ", "+"));
-				ImdbParser parser = new ImdbParser(url);
+				String html = new DownloadWorker(url).downloadHtml();
+				ImdbParser parser = new ImdbParser(html);
 				searchResults = parser.getSearchResults();
 			} catch (Exception e) {
 				throw new InvocationTargetException(e);
@@ -147,7 +150,8 @@ public class ImdbWorker {
 				URL url = new URL(movie.getImdbUrl());
 
 				monitor.subTask("Downloading");
-				ImdbParser parser = new ImdbParser(url);
+				String html = new DownloadWorker(url).downloadHtml();
+				ImdbParser parser = new ImdbParser(html);
 				
 				monitor.subTask("Importing data");
 				
@@ -164,7 +168,14 @@ public class ImdbWorker {
 				}
 				
 				String title = parser.getTitle();
-				if(title != null)  movie.setTitle(title);
+				String originalTitle = parser.getOriginalTitle();
+				if(originalTitle != null) {
+					movie.setTitle(originalTitle);
+					if(title != null)
+						movie.setCustomTitle(title);
+				} 
+				else if(title != null)
+					movie.setTitle(title);
 				
 				int[] year = parser.getYear();
 				if(year.length>0) movie.setYear(year[0]);
