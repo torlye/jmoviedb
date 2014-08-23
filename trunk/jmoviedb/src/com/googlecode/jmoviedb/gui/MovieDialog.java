@@ -28,6 +28,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -64,7 +66,7 @@ import com.googlecode.jmoviedb.net.ImdbWorker;
 
 /**
  * A MovieDialog is a tabbed dialog box that is used to display or edit information about an AbstractMovie subclass.
- * When the dialog is closed, it will reaturn one of the following return codes: IDialogConstants.OK_ID, (if the user
+ * When the dialog is closed, it will return one of the following return codes: IDialogConstants.OK_ID, (if the user
  * pressed the OK button) IDialogConstants.CANCEL_ID, (if the user pressed the cancel button) or 
  * IDialogConstants.ABORT_ID (if the user pressed the delete button)
  * @author Tor Arne Lye
@@ -142,6 +144,7 @@ public class MovieDialog extends Dialog {
 	private SelectionListener legalCheckListener;
 //	private SelectionListener myEncodeCheckListener;
 	private SelectionListener r0CheckListener;
+	private MouseListener imageClickListener;
 	
 	private final static int COVER_WIDTH = 100;
 	private final static int COVER_HEIGHT = 150;
@@ -163,7 +166,7 @@ public class MovieDialog extends Dialog {
 	
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
-//		shell.setSize(630, 490);
+		//shell.setSize(630, 490);
 	}
 	
 	protected Control createDialogArea(Composite parent) {
@@ -418,6 +421,23 @@ public class MovieDialog extends Dialog {
 			}
 		};
 		r0.addSelectionListener(r0CheckListener);
+	
+		imageClickListener = new MouseListener() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				if (e.button == 3) {
+					movie.setImageBytes(null);
+					setImageAreaFromModel();
+				}
+			}
+
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {}
+
+			@Override
+			public void mouseUp(MouseEvent e) {}
+		};
+		imageArea.addMouseListener(imageClickListener);
 	}
 	
 	private void MainTab(CTabFolder tabFolder) {
@@ -857,8 +877,7 @@ public class MovieDialog extends Dialog {
 		audioTable.setModel(movie.getAudioTracks());
 		subtitleTable.setModel(movie.getSubtitles());
 		
-		imageArea.setImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), 
-				CONST.scaleImage(movie.getImageData(), false, COVER_WIDTH, COVER_HEIGHT)));
+		setImageAreaFromModel();
 		
 		if (movie instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)movie;
@@ -872,6 +891,11 @@ public class MovieDialog extends Dialog {
 		legalCheckListener.widgetSelected(null);
 //		myEncodeCheckListener.widgetSelected(null);
 		r0CheckListener.widgetSelected(null);
+	}
+
+	private void setImageAreaFromModel() {
+		imageArea.setImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), 
+				CONST.scaleImage(movie.getImageData(), false, COVER_WIDTH, COVER_HEIGHT)));
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {
