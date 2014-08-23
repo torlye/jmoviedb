@@ -49,15 +49,9 @@ import com.googlecode.jmoviedb.model.Person;
 public class ImdbParser {
 	private Document doc;
 	
-	protected ImdbParser(URL url) {
-		try {
-			System.out.println("Connecting to "+url.toString());
-			doc = Jsoup.connect(url.toString()).header("User-Agent", "None/0.0 (None)").get();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+	protected ImdbParser(String html) {
+		System.out.println("Parsing document");
+		doc = Jsoup.parse(html);
 	}
 	
 	/**
@@ -109,6 +103,20 @@ public class ImdbParser {
 			return title;
 		}
 		return null;
+	}
+	
+	
+	protected String getOriginalTitle() {
+		String title = null;
+		Element titleElement = doc.select("span[class=title-extra]").first();
+		if (titleElement == null) return null;
+		
+		String text = titleElement.text();
+		Pattern patternTitle = Pattern.compile("\"([^\"]+)\"");
+		Matcher matcherTitle = patternTitle.matcher(text);
+		if (matcherTitle.find())
+			title = matcherTitle.group(1).trim();
+		return title;
 	}
 	
 	protected MovieType getType(MovieType currentType) {
@@ -203,7 +211,7 @@ public class ImdbParser {
 	 * @return the rating
 	 */
 	protected double getRating() {
-		String starText = doc.select("div[class=star-box-giga-star]").text();
+		String starText = doc.select("[itemprop=ratingValue]").first().text();
 		if (!starText.isEmpty())
 			return Double.valueOf(starText).doubleValue();
 		else
@@ -310,9 +318,9 @@ public class ImdbParser {
 		int counter = 0;
 		
 		for (Element row : rows) {
-			String name = row.select("td[class=name]").text();
+			String name = row.select("td[itemprop=actor] [itemprop=name]").text();
 			String character = row.select("td[class=character]").text();
-			String href = row.select("td[class=name] a").attr("href");
+			String href = row.select("td[itemprop=actor] a[itemprop=url]").attr("href");
 			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
 			Matcher matcherId = patternId.matcher(href);
 			
@@ -330,12 +338,12 @@ public class ImdbParser {
 	 * @return an array of directors
 	 */
 	protected ArrayList<Person> getDirectors() {
-		Elements anchors = doc.select("a[itemprop=director]");
+		Elements container = doc.select("div[itemprop=director]");
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
-		for(Element anchor : anchors) {
-			String name = anchor.text();
-			String href = anchor.attr("href");
+		for(Element a : container.select("a[itemprop=url]")) {
+			String name = a.select("[itemprop=name]").text();
+			String href = a.attr("href");
 			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
 			Matcher matcherId = patternId.matcher(href);
 			
@@ -354,19 +362,12 @@ public class ImdbParser {
 	 * @return an array of writers
 	 */
 	protected ArrayList<Person> getWriters() {
+		Elements container = doc.select("div[itemprop=creator]");
 		ArrayList<Person> personArray = new ArrayList<Person>();
-		Element h4 = doc.select("h4:matchesOwn(Writers:)").first();
-		if (h4 == null) {
-			h4 = doc.select("h4:matchesOwn(Writer:)").first();
-			if (h4 == null)
-				return personArray;
-		}
-		
-		Elements anchors = h4.parent().select("a");
 
-		for(Element anchor : anchors) {
-			String name = anchor.text();
-			String href = anchor.attr("href");
+		for(Element a : container.select("a[itemprop=url]")) {
+			String name = a.select("[itemprop=name]").text();
+			String href = a.attr("href");
 			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
 			Matcher matcherId = patternId.matcher(href);
 			
