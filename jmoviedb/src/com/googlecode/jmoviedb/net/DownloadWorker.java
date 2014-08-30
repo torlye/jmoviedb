@@ -31,6 +31,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.googlecode.jmoviedb.CONST;
 
@@ -88,14 +90,27 @@ public class DownloadWorker {
 		String html = "";
 		
 		URLConnection connection = openConnection();
+		String contentType = connection.getContentType();
+		String charsetName = getContentCharset(contentType);
+		if (charsetName == null) charsetName = "UTF-8";
 		
 		BufferedReader in = new BufferedReader(new InputStreamReader(
-				connection.getInputStream()));
+				connection.getInputStream(), charsetName));
 		String inputLine;
 		while ((inputLine = in.readLine()) != null)
 			html = html+" "+inputLine;
 		in.close();
 		return html;
+	}
+
+	private String getContentCharset(String contentType) {
+		if (contentType == null || contentType.length() == 0)
+			return null;
+		Pattern pattern = Pattern.compile("charset=([A-Za-z0-9\\-\\.:_]+)");
+		Matcher matcher = pattern.matcher(contentType);
+		if (matcher.find())
+			return matcher.group(1);
+		return null;
 	}
 
 	private URLConnection openConnection() throws IOException {
