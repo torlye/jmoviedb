@@ -6,13 +6,18 @@ import de.kupzog.ktable.KTableCellRenderer;
 import de.kupzog.ktable.renderers.DefaultCellRenderer;
 
 public class MovieTableFormat extends AbstractKTableFormat {
+	private int fontHeight = 17;
+	
+	public MovieTableFormat(int i) {
+		super();
+		this.fontHeight = i;
+	}
 
 	public KTableCellEditor getColumnEditor(Object arg0, int arg1) {
 		return null;
 	}
 
 	public Object getColumnHeaderValue(int headerRow, int column) {
-		System.out.println("getColumnHeaderValue "+headerRow+" "+column);
 		return null;
 	}
 
@@ -33,7 +38,7 @@ public class MovieTableFormat extends AbstractKTableFormat {
 	}
 	
 	public int getRowHeightMinimum() {
-		return 90;
+		return 10 + (fontHeight+10)*3;
 	}
 	
 	public int getRowHeight(Object rowObject) {

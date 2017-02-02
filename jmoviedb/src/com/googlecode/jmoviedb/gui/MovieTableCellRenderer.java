@@ -3,6 +3,7 @@ package com.googlecode.jmoviedb.gui;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -18,6 +19,7 @@ import com.googlecode.jmoviedb.model.movietype.MiniSeries;
 import com.googlecode.jmoviedb.model.movietype.TVmovie;
 import com.googlecode.jmoviedb.model.movietype.TVseries;
 import com.googlecode.jmoviedb.model.movietype.VideoMovie;
+import com.googlecode.jmoviedb.model.movietype.WebSeries;
 
 import de.kupzog.ktable.KTableCellRenderer;
 import de.kupzog.ktable.KTableModel;
@@ -36,7 +38,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 	private final static int IMAGE_WIDTH = 50;
 	private final static int IMAGE_HEIGHT = 70;
 	
-	private static Font FONT = new Font(Display.getCurrent(), 
+	static Font FONT = new Font(Display.getCurrent(), 
 			Display.getCurrent().getSystemFont().getFontData()[0].getName(), 10, SWT.BOLD);
 
 	public MovieTableCellRenderer(int style) {
@@ -47,7 +49,6 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 	public void drawCell(GC gc, Rectangle rect, int col, int row, Object content,
 			boolean focus, boolean header, boolean clicked, KTableModel model) {
 		AbstractMovie movie = (AbstractMovie)content;
-		Image image = new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), false, IMAGE_WIDTH, IMAGE_HEIGHT));
 		String title = movie.getDisplayTitle();
 		
 		if(movie.getYear() != 0) {
@@ -76,6 +77,8 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 				title += " (mini)";
 			else if(series instanceof TVseries)
 				title += " (TV-series)";
+			else if(series instanceof WebSeries)
+				title += " (Web)";
 			
 			Completeness complete = series.getCompleteness();
 			String detail = series.getCompletenessDetail();
@@ -123,14 +126,21 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		if(movie.getFormat() != FormatType.other)
 			format = movie.getFormat().getShortName();
 		
-		int leftColumn = rect.x+72;
-		int rightColumn = rect.width-10;
-		int rowSpacing = 27;
+		gc.setFont(FONT);
+		FontMetrics fm = gc.getFontMetrics();
+		int fontHeight = fm.getHeight();
+		int rowSpacing = fontHeight + 10;
 		int firstRow = rect.y+10;
 		int secondRow = firstRow+rowSpacing;
 		int thirdRow = secondRow+rowSpacing;
+		int imgHeight = -10 + (fontHeight+10) * 3;
+		int imgWidth = (int) Math.round(imgHeight * 0.71);
+		int leftColumn = rect.x+20+imgWidth;
+		int rightColumn = rect.width-10;
 		
-		//Configure table cell background color
+		Image image = new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), true, imgWidth, imgHeight));
+		
+		//Configure table cell background colour
 		if(focus)
 			gc.setBackground(SELECTED_COLOR);
 		else if(!movie.isSeen())
@@ -152,9 +162,9 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		gc.fillRectangle(rect);
 		gc.drawRectangle(rect);
 		gc.drawImage(image, 
-				rect.x+10+(IMAGE_WIDTH-image.getBounds().width)/2, 
-				rect.y+10+(IMAGE_HEIGHT-image.getBounds().height)/2);
-		gc.setFont(FONT);
+				rect.x+10+(imgWidth-image.getBounds().width)/2, 
+				rect.y+10+(imgHeight-image.getBounds().height)/2);
+		
 		gc.drawString(title, leftColumn, firstRow);
 		gc.drawString(genre, leftColumn, secondRow);
 		gc.drawString(actors, leftColumn, thirdRow);

@@ -60,7 +60,6 @@ public class ImdbParser {
 	 * @return IMDb ID
 	 */
 	protected String getID() {
-		//TODO Is this safe? What if there are links to other movies on the page?
 		Pattern patternID = Pattern.compile("/title/tt(\\d{7})/");
 		Matcher matcherID = patternID.matcher(doc.baseUri());
 		if (matcherID.find())

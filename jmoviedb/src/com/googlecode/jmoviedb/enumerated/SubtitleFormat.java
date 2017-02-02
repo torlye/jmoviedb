@@ -43,11 +43,13 @@ public enum SubtitleFormat {
 	powerdivx(15, ""),
 	real(16, ""),
 	sami(17, ""),
-	ssf(18, ""),
+	ssf(18, "SSF"),
 	vplayer(19, ""),
 	svcd(20, "SVCD"),
 	cvd(21, "CVD"),
-	cc(22, "CC");
+	cc(22, "CC"),
+	pgs(23, "PGS"),
+	utf8(24, "UTF-8 Plain Text");
 	
 	private int ID;
 	private String shortName;

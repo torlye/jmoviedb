@@ -18,10 +18,10 @@
 	<property name="jar.glazed"    value="glazedlists-1.8.0_java15.jar" />
 	<property name="jar.derby"     value="derby-10.9.1.0.jar" />
 	<property name="jar.ktable"    value="ktable_2.2.0.jar" />
-	<property name="jar.jface"     value="org.eclipse.jface_3.8.0.v20120521-2329.jar" />
-	<property name="jar.equinox"   value="org.eclipse.equinox.common_3.6.100.v20120522-1841.jar" />
-	<property name="jar.ecore"     value="org.eclipse.core.commands_3.6.1.v20120521-2329.jar" />
-	<property name="jar.osgi"      value="org.eclipse.osgi_3.8.0.v20120529-1548.jar" />
+	<property name="jar.jface"     value="org.eclipse.jface_3.10.0.v20140604-0740.jar" />
+	<property name="jar.equinox"   value="org.eclipse.equinox.common_3.6.200.v20130402-1505.jar" />
+	<property name="jar.ecore"     value="org.eclipse.core.commands_3.6.100.v20140528-1422.jar" />
+	<property name="jar.osgi"      value="org.eclipse.osgi_3.10.0.v20140606-1445.jar" />
 	<property name="jar.swt"       value="swt.jar" />
 
 	<taskdef name="launch4j" 

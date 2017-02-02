@@ -321,8 +321,11 @@ public enum Language {
 	yapese(287, "Yapese", Settings.getSettings().getLanguageClass().LANGUAGE_YAPESE),
 	yiddish(288, "Yiddish", Settings.getSettings().getLanguageClass().LANGUAGE_YIDDISH),
 	yoruba(289, "Yoruba", Settings.getSettings().getLanguageClass().LANGUAGE_YORUBA),
-	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU);
-	//last id: 293
+	zulu(290, "Zulu", Settings.getSettings().getLanguageClass().LANGUAGE_ZULU),
+	chinese(294, "Chinese", "Chinese"),
+	chinesesimplified(295, "Chinese Simplified", "Chinese Simplified"),
+	chinesetraditional(296, "Chinese Traditional", "Chinese Traditional");
+	//last id: 296
 	
 	private int id;
 	private String imdbID;

@@ -47,7 +47,6 @@ import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import de.kupzog.ktable.KTable;
 import de.kupzog.ktable.KTableCellDoubleClickListener;
 import de.kupzog.ktable.SWTX;
-
 import edu.stanford.ejalbert.BrowserLauncher;
 import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
@@ -69,6 +68,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -137,6 +138,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	
 	private ExceptionHandler exceptionHandler;
 	private BrowserLauncher browserLauncher;
+	
+	private int tableCellFontHeight = 17;
 
 	public MainWindow(String[] args) {
 		super(null);
@@ -445,6 +448,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	}
 	
 	private void internalOpen(String path) throws InvocationTargetException, InterruptedException {
+		this.tableCellFontHeight = getFontSize();
 		new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
 		table.setModel(viewer);
 		Settings.getSettings().updateRecentFiles(path);
@@ -537,7 +541,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 				monitor.subTask("Importing data");
 				sortedList = new SortedList<AbstractMovie>(db.getMovieList(), getComparator());
 				filteredList = new FilterList<AbstractMovie>(sortedList, searchField.getMatcherEditor()); //TODO how do I fix this?
-				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat());
+				viewer = new EventKTableModel(table, filteredList, new MovieTableFormat(tableCellFontHeight));
 
 				filteredList.addListEventListener(
 						new ListEventListener<AbstractMovie>() {
@@ -882,6 +886,17 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			case CONST.SORT_BY_FORMAT: sortByFormatAction.setChecked(true); break;
 			case CONST.SORT_BY_RATING: sortByRatingAction.setChecked(true); break;
 		}
+	}
+	
+	private int getFontSize() {
+		Composite c = new Composite(getShell(), SWT.NONE);
+		GC gc = new GC(c);
+		gc.setFont(MovieTableCellRenderer.FONT);
+		FontMetrics fontMetrics = gc.getFontMetrics();
+		gc.dispose();
+		c.dispose();
+		
+		return fontMetrics.getHeight();
 	}
 	
 //	public AbstractMovie getSelectedItem() throws SQLException, IOException {
