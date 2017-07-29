@@ -27,7 +27,8 @@ public enum Resolution {
 	sd(2, "SD"),
 	p720(3, "720p"), 
 	i1080(4, "1080i"), 
-	p1080(5, "1080p");
+	p1080(5, "1080p"),
+	p2160(6, "4K UHD");
 	
 	int id;
 	String name;
@@ -46,7 +47,7 @@ public enum Resolution {
 	}
 	
 	public boolean isHD() {
-		if(id >= 3 && id <= 5)
+		if(id >= 3)
 			return true;
 		return false;
 	}

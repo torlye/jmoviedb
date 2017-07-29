@@ -252,7 +252,9 @@ public class MovieDialog extends Dialog {
 				r7.setVisible(false);
 				r8.setVisible(false);
 				
-				if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.dvd) {
+				FormatType selectedValue = FormatType.values()[formatCombo.getSelectionIndex()];
+				
+				if(selectedValue == FormatType.dvd) {
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					containerCombo.select(ContainerFormat.vob.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
@@ -275,10 +277,12 @@ public class MovieDialog extends Dialog {
 					r2.setText("R2");
 					r3.setText("R3");
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.bluray) {
+					discCombo.select(DiscType.dvd.ordinal());
+				} else if(selectedValue == FormatType.bluray || selectedValue == FormatType.bluray3d) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
-					
 					containerCombo.setEnabled(false);
+					
+					resolutionCombo.select(Resolution.p1080.ordinal());
 
 					regionLabel.setVisible(true);
 					r0.setVisible(true);
@@ -289,19 +293,28 @@ public class MovieDialog extends Dialog {
 					r2.setText("B");
 					r3.setText("C");
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.hddvd) {
+					discCombo.select(DiscType.bd.ordinal());
+				} else if(selectedValue == FormatType.uhdbluray) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					containerCombo.setEnabled(false);
+					
+					resolutionCombo.select(Resolution.p2160.ordinal());
+					
+					discCombo.select(DiscType.uhdbd.ordinal());
+	
+				} else if(selectedValue == FormatType.hddvd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 
 					containerCombo.setEnabled(false);
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.avchd) {
+				} else if(selectedValue == FormatType.avchd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					videoCodecCombo.select(VideoCodec.h264.ordinal());
 					videoCodecCombo.setEnabled(false);
 					if (discCombo.getSelectionIndex() == 0)
 						discCombo.select(DiscType.dvdminusr.ordinal());
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.vcd) {
+				} else if(selectedValue == FormatType.vcd) {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg1.ordinal());
 					resolutionCombo.select(Resolution.cif.ordinal());
@@ -310,7 +323,7 @@ public class MovieDialog extends Dialog {
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					
-				}  else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.svcd) {
+				}  else if(selectedValue == FormatType.svcd) {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
@@ -319,7 +332,7 @@ public class MovieDialog extends Dialog {
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.laserdisc) {
+				} else if(selectedValue == FormatType.laserdisc) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
@@ -330,7 +343,7 @@ public class MovieDialog extends Dialog {
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
 					
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.vhs) {
+				} else if(selectedValue == FormatType.vhs) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
 					resolutionCombo.select(Resolution.cif.ordinal());
@@ -341,7 +354,7 @@ public class MovieDialog extends Dialog {
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
 
-				} else if(FormatType.values()[formatCombo.getSelectionIndex()] == FormatType.umd) {
+				} else if(selectedValue == FormatType.umd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.h264.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());

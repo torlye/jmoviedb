@@ -204,7 +204,7 @@ public class ImdbWorker {
 				URL imageUrl = parser.getImageURL();
 				if (imageUrl != null) {
 					monitor.subTask("Downloading cover image");
-					movie.setImageBytes(new DownloadWorker(imageUrl).downloadBytes());
+					movie.setImageBytes(new DownloadWorker(imageUrl).downloadImage());
 				}
 
 				/*if(CONST.DEBUG_MODE) {

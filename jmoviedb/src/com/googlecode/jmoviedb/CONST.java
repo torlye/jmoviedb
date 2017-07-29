@@ -59,7 +59,7 @@ public class CONST {
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 5;
+	public static final int RELEASE_VERSION = 6;
 	
 	/**
 	 * The current development stage expressed as a string.
@@ -422,7 +422,7 @@ public class CONST {
 	/**
 	 * Timeout when downloading files from the internet (seconds)
 	 */
-	public static final int DOWNLOAD_TIMEOUT = 5;
+	public static final int DOWNLOAD_TIMEOUT = 15;
 	
 	/**
 	 * Number of times to retry a failed download

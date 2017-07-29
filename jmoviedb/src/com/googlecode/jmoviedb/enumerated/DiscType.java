@@ -37,6 +37,7 @@ public enum DiscType {
 	dvdram(12, "DVD-RAM", "", ""),
 	bd(13, "BD-ROM", "", ""),
 	bdr(14, "BD-R", "", ""),
+	uhdbd(21, "UHD BD", "", ""),
 	//bdre(15, "BD-RE", "", ""),
 	hddvd(16, "HD DVD-ROM", "", ""),
 	hddvdr(17, "HD DVD-R", "", ""),

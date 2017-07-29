@@ -55,8 +55,8 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 			String yearString = ""+movie.getYear();
 			if (movie.hasYear2()) {
 				String separator = "/";
-				if (movie instanceof TVseries)
-					separator = "–";
+				if (movie instanceof TVseries || movie instanceof WebSeries)
+					separator = "\u2013";
 				yearString += separator+movie.getYear2();
 			}
 			title += " ("+yearString+")";
@@ -147,7 +147,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 			gc.setBackground(NOT_SEEN_COLOR);
 		else if(movie.getFormat() == FormatType.dvd)
 			gc.setBackground(DVD_COLOR);
-		else if(movie.getFormat() == FormatType.bluray)
+		else if(movie.getFormat() == FormatType.bluray || movie.getFormat() == FormatType.bluray3d || movie.getFormat() == FormatType.uhdbluray)
 			gc.setBackground(BLURAY_COLOR);
 		else if(movie.getFormat() == FormatType.vcd)
 			gc.setBackground(VCD_COLOR);

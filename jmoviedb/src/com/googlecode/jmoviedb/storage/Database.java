@@ -125,6 +125,7 @@ public class Database {
 //			}
 		}
 		
+		//Upgrade
 		try {
 			Statement s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIE ADD COLUMN YEAR2 SMALLINT");
@@ -132,6 +133,23 @@ public class Database {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
+		
+		try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIEAUDIO ADD COLUMN DESCRIPTIVE SMALLINT");
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
+		
+		try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIESUBTITLE ADD COLUMN FORCED SMALLINT");
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
+		
 		
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
@@ -175,8 +193,8 @@ public class Database {
 		addGenre = connection.prepareStatement("INSERT INTO MOVIEGENRE VALUES(?, ?)");
 		addLanguage = connection.prepareStatement("INSERT INTO MOVIELANGUAGE VALUES(?, ?)");
 		addCountry = connection.prepareStatement("INSERT INTO MOVIECOUNTRY VALUES(?, ?)");
-		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?)");
-		addSubtitleTrack = connection.prepareStatement("INSERT INTO MOVIESUBTITLE VALUES(?, ?, ?, ?, ?, ?)");
+		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?, ?)");
+		addSubtitleTrack = connection.prepareStatement("INSERT INTO MOVIESUBTITLE VALUES(?, ?, ?, ?, ?, ?, ?)");
 		getActors = connection.prepareStatement("SELECT * FROM MOVIEACTOR JOIN PERSON ON MOVIEACTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
 		getDirectors = connection.prepareStatement("SELECT * FROM MOVIEDIRECTOR JOIN PERSON ON MOVIEDIRECTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
 		getWriters = connection.prepareStatement("SELECT * FROM MOVIEWRITER JOIN PERSON ON MOVIEWRITER.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
@@ -281,6 +299,7 @@ public class Database {
 				"LANGUAGEID SMALLINT, " +
 				"COMMENTARY SMALLINT, " +
 				"CHANNELID SMALLINT, " +
+				"DESCRIPTIVE SMALLINT, " +
 				"PRIMARY KEY (MOVIEID, TRACKNR), " + 
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
@@ -292,6 +311,7 @@ public class Database {
 				"LANGUAGEID SMALLINT, " +
 				"COMMENTARY SMALLINT, " +
 				"HEARINGIMPAIRED SMALLINT, " +
+				"FORCED SMALLINT, " +
 				"PRIMARY KEY (MOVIEID, TRACKNR), " + 
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
@@ -542,6 +562,7 @@ public class Database {
 			addAudioTrack.setInt(4, m.getAudioTracks().get(i).getLanguage().getID());
 			addAudioTrack.setInt(5, CONST.booleanToInt(m.getAudioTracks().get(i).isCommentary()));
 			addAudioTrack.setInt(6, m.getAudioTracks().get(i).getChannels().getID());
+			addAudioTrack.setInt(7, CONST.booleanToInt(m.getAudioTracks().get(i).isAudioDescriptive()));
 			addAudioTrack.execute();
 			addAudioTrack.clearParameters();
 		}
@@ -557,6 +578,7 @@ public class Database {
 			addSubtitleTrack.setInt(4, m.getSubtitles().get(i).getLanguage().getID());
 			addSubtitleTrack.setInt(5, CONST.booleanToInt(m.getSubtitles().get(i).isCommentary()));
 			addSubtitleTrack.setInt(6, CONST.booleanToInt(m.getSubtitles().get(i).isHearingImpaired()));
+			addSubtitleTrack.setInt(7, CONST.booleanToInt(m.getSubtitles().get(i).isForced()));
 			addSubtitleTrack.execute();
 			addSubtitleTrack.clearParameters();
 		}
@@ -703,7 +725,8 @@ public class Database {
 					Language.intToEnum(rsAud.getInt("LANGUAGEID")),
 					AudioCodec.intToEnum(rsAud.getInt("CODEC")),
 					AudioChannels.intToEnum(rsAud.getInt("CHANNELID")),
-					CONST.intToBoolean(rsAud.getInt("COMMENTARY"))
+					CONST.intToBoolean(rsAud.getInt("COMMENTARY")),
+					CONST.intToBoolean(rsAud.getInt("DESCRIPTIVE"))
 			));
 		for (int i = 0; i < audioHash.size(); i++) {
 			if(audioHash.containsKey(i))
@@ -721,7 +744,8 @@ public class Database {
 					Language.intToEnum(rsSub.getInt("LANGUAGEID")),
 					SubtitleFormat.intToEnum(rsSub.getInt("FORMAT")),
 					CONST.intToBoolean(rsSub.getInt("COMMENTARY")),
-					CONST.intToBoolean(rsSub.getInt("HEARINGIMPAIRED"))
+					CONST.intToBoolean(rsSub.getInt("HEARINGIMPAIRED")),
+					CONST.intToBoolean(rsSub.getInt("FORCED"))
 			));
 		for (int i = 0; i < subHash.size(); i++) {
 			if(subHash.containsKey(i))

@@ -34,6 +34,7 @@ public class SubtitleTrack {
 	private SubtitleFormat format;
 	private boolean commentary;
 	private boolean hearingImpaired;
+	private boolean forced;
 	
 	/**
 	 * Creates a new subtitle track.
@@ -42,11 +43,12 @@ public class SubtitleTrack {
 	 * @param commentary true if the subtitle track is for an audio commentary track
 	 * @param hearingImpaired true if the subtitle track is optimised for the hearing impaired
 	 */
-	public SubtitleTrack(Language language, SubtitleFormat format, boolean commentary, boolean hearingImpaired) {
+	public SubtitleTrack(Language language, SubtitleFormat format, boolean commentary, boolean hearingImpaired, boolean forced) {
 		this.language = language;
 		this.format = format;
 		this.commentary = commentary;
 		this.hearingImpaired = hearingImpaired;
+		this.forced = forced;
 	}
 	
 	public SubtitleFormat getFormat() {
@@ -72,5 +74,13 @@ public class SubtitleTrack {
 	}
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	public boolean isForced() {
+		return forced;
+	}
+
+	public void setForced(boolean forced) {
+		this.forced = forced;
 	}
 }

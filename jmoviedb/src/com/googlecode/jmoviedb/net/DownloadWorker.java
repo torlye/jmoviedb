@@ -21,6 +21,7 @@ package com.googlecode.jmoviedb.net;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -87,20 +88,10 @@ public class DownloadWorker {
 	 * @throws IOException
 	 */
 	public String downloadHtml() throws IOException {
-		String html = "";
+		byte[] bytes = downloadBytes();
 		
-		URLConnection connection = openConnection();
-		String contentType = connection.getContentType();
-		String charsetName = getContentCharset(contentType);
-		if (charsetName == null) charsetName = "UTF-8";
+		return new String (bytes, "UTF-8");
 		
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-				connection.getInputStream(), charsetName));
-		String inputLine;
-		while ((inputLine = in.readLine()) != null)
-			html = html+" "+inputLine;
-		in.close();
-		return html;
 	}
 
 	private String getContentCharset(String contentType) {
@@ -119,13 +110,25 @@ public class DownloadWorker {
 		//Connection to IMDb fails with a 403 if we don't set a User Agent
 		connection.setRequestProperty("User-Agent", "None/0.0 (None)");
 		connection.setRequestProperty("Accept-Language", "en-US,en");
+		connection.setConnectTimeout(CONST.DOWNLOAD_TIMEOUT*1000);
+		connection.setReadTimeout(CONST.DOWNLOAD_TIMEOUT*1000);
 		return connection;
 	}
 	
-	public InputStream getHtmlStream() throws IOException {
-		URLConnection connection = openConnection();
-		
-		return connection.getInputStream();
+//	public InputStream getHtmlStream() throws IOException {
+//		URLConnection connection = openConnection();
+//		
+//		return connection.getInputStream();
+//	}
+	
+	public byte[] downloadImage() throws IOException {
+		byte[] bytes = downloadBytes();
+		// Check for valid data
+		if(CONST.isValidImage(bytes))
+			return bytes;
+		if(CONST.DEBUG_MODE)
+			System.out.println("Invalid image data");
+		return null;
 	}
 
 	/**
@@ -133,58 +136,52 @@ public class DownloadWorker {
 	 * @return a byte array containing the downloaded data
 	 * @throws IOException
 	 */
-	public byte[] downloadBytes() throws IOException/*, SecurityException, 
-				IllegalArgumentException, UnsupportedOperationException, 
-				IllegalStateException, UnknownServiceException*/ {
+	private byte[] downloadBytes() throws IOException {
 		if(url == null)
 			return null;
 
-		//Read the image into a byte array
-		URLConnection connection = openConnection();
-
-		int fileSize = connection.getContentLength();
-
-		BufferedInputStream stream = new BufferedInputStream(connection.getInputStream());
 		int tryNumber = 0;
 
 		while(tryNumber<CONST.DOWNLOAD_RETRY_COUNT) {
 			tryNumber++;
 			if(CONST.DEBUG_MODE)
-				System.out.println("Downloading image, attempt #"+ tryNumber);
-
-			byte[] imageBytes = new byte[0];
-			long startTime = System.currentTimeMillis();
-
-			while(imageBytes.length<fileSize) {
-
-				//Check if timeout has been exceeded
-				if(System.currentTimeMillis() > startTime+(CONST.DOWNLOAD_TIMEOUT*1000)) {
-					if(CONST.DEBUG_MODE)
-						System.out.println("Download timeout, aborting");
-					break;
+				System.out.println("Downloading data, attempt #"+ tryNumber);
+			
+			BufferedInputStream stream = null;
+			
+			try
+			{
+				URLConnection connection = openConnection();
+				InputStream istream = connection.getInputStream();
+				stream = new BufferedInputStream(istream);
+				
+				ByteArrayOutputStream outbytes = new ByteArrayOutputStream();
+				byte[] buf = new byte[4096];
+				
+				while(true) {
+					int len = stream.read(buf); 
+					
+					if (len <= 0)
+						break;
+					
+					outbytes.write(buf, 0, len);
 				}
-
-				//how much data is ready right now?
-				int readLength = stream.available();
-
-				//create a new array that contains the bytes read until now, but with free space for more
-				byte[] newBytes = new byte[imageBytes.length+readLength];
-				System.arraycopy(imageBytes, 0, newBytes, 0, imageBytes.length);
-
-				//read the new bytes into the empty part of the newly created array
-				stream.read(newBytes, imageBytes.length, readLength);
-
-				//replace the "old" byte array with the new one
-				imageBytes = newBytes;
+				
+				byte [] byteArray = outbytes.toByteArray();
+				
+				stream.close();
+				if(CONST.DEBUG_MODE)
+					System.out.println("Downloaded "+byteArray.length+" bytes");
+				
+				return byteArray;
 			}
-			stream.close();
-			if(CONST.DEBUG_MODE)
-				System.out.println("Downloaded "+imageBytes.length+" bytes");
-			// Check for valid data
-			if(CONST.isValidImage(imageBytes))
-				return imageBytes;
-			if(CONST.DEBUG_MODE)
-				System.out.println("Invalid image data");
+			catch (IOException e) {
+				continue;
+			}
+			finally {
+				if (stream != null)
+					stream.close();
+			}
 		}
 		return null;
 	}

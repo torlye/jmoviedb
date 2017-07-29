@@ -26,12 +26,14 @@ public class AudioTrack {
 	private AudioCodec audio;
 	private AudioChannels channels;
 	private boolean commentary;
+	private boolean audioDescriptive;
 	
-	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary) {
+	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive) {
 		this.language = language;
 		this.audio = audio;
 		this.commentary = commentary;
 		this.channels = channels;
+		this.setAudioDescriptive(audioDescriptive);
 	}
 
 	public AudioCodec getAudio() {
@@ -65,6 +67,12 @@ public class AudioTrack {
 	public void setChannels(AudioChannels channels) {
 		this.channels = channels;
 	}
-	
-	
+
+	public boolean isAudioDescriptive() {
+		return audioDescriptive;
+	}
+
+	public void setAudioDescriptive(boolean audioDescriptive) {
+		this.audioDescriptive = audioDescriptive;
+	}	
 }

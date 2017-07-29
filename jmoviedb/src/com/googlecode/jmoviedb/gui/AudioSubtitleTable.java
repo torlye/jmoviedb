@@ -66,9 +66,9 @@ public class AudioSubtitleTable {
 		downImage = ImageDescriptor.createFromURL(CONST.ICON_DOWN).createImage();
 		
 		if(audio)
-			columnNames = new String[] {"Language","Commentary track","Format","Channels"};
+			columnNames = new String[] {"Language","Commentary track","Audio descriptive","Format","Channels"};
 		else
-			columnNames = new String[] {"Language","Commentary track","Hearing impaired","Format"};
+			columnNames = new String[] {"Language","Commentary track","Hearing impaired","Forced","Format"};
 		
 		// Create the table 
 		createTable(parent);
@@ -146,11 +146,13 @@ public class AudioSubtitleTable {
 		editors[0] = new ComboBoxCellEditor(table, Language.getStringArray(), SWT.READ_ONLY);
 		editors[1] = new CheckboxCellEditor(table);
 		if(audio) {
-			editors[2] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
-			editors[3] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
+			editors[2] = new CheckboxCellEditor(table);
+			editors[3] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
+			editors[4] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
 		} else {
 			editors[2] = new CheckboxCellEditor(table);
-			editors[3] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
+			editors[3] = new CheckboxCellEditor(table);
+			editors[4] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
 		}
 
 		// Assign the cell editors to the viewer 
@@ -278,7 +280,7 @@ public class AudioSubtitleTable {
 			audioformat = AudioCodec.ac3;
 			channels = AudioChannels.surround51;
 			subformat = SubtitleFormat.vobsub;
-		} else if(format == FormatType.bluray||format == FormatType.hddvd||format == FormatType.avchd) {
+		} else if(format == FormatType.bluray||format == FormatType.hddvd||format == FormatType.avchd||format == FormatType.bluray3d||format == FormatType.uhdbluray) {
 			audioformat = AudioCodec.ac3;
 			channels = AudioChannels.surround51;
 			subformat = SubtitleFormat.medianative;
@@ -300,9 +302,9 @@ public class AudioSubtitleTable {
 			subformat = SubtitleFormat.medianative;
 		}
 		if(audio) {
-			return new AudioTrack(lang, audioformat, channels, false);
+			return new AudioTrack(lang, audioformat, channels, false, false);
 		} else {
-			return new SubtitleTrack(lang, subformat, false, false);
+			return new SubtitleTrack(lang, subformat, false, false, false);
 		}
 	}
 	
@@ -319,13 +321,14 @@ public class AudioSubtitleTable {
 				else
 					result += ((SubtitleTrack)element).getLanguage().getName();
 				break;
-			case 1 :
+			case 1:
+			case 2:
 				break;
-			case 2 :
+			case 3:
 				if(audio)
 					result += ((AudioTrack)element).getAudio().getShortName();
 				break;
-			case 3 :
+			case 4 :
 				if(audio)
 					result += ((AudioTrack)element).getChannels().getDescription();
 				else
@@ -345,12 +348,18 @@ public class AudioSubtitleTable {
 				if(columnIndex == 1)
 					if(((AudioTrack)element).isCommentary())
 						return tickImage;
+				if(columnIndex == 2)
+					if(((AudioTrack)element).isAudioDescriptive())
+						return tickImage;
 			} else {
 				if(columnIndex == 1)
 					if(((SubtitleTrack)element).isCommentary())
 						return tickImage;
 				if(columnIndex == 2)
 					if(((SubtitleTrack)element).isHearingImpaired())
+						return tickImage;
+				if(columnIndex == 3)
+					if(((SubtitleTrack)element).isForced())
 						return tickImage;
 			}
 			return null;
@@ -387,9 +396,12 @@ public class AudioSubtitleTable {
 					result = track.isCommentary();
 					break;
 				case 2:
+					result = track.isAudioDescriptive();
+					break;
+				case 3:
 					result = track.getAudio().ordinal();
 					break;
-				case 3: 
+				case 4: 
 					result = track.getChannels().ordinal();
 					break;
 				default :
@@ -409,7 +421,10 @@ public class AudioSubtitleTable {
 				case 2:
 					result = track.isHearingImpaired();
 					break;
-				case 3: 
+				case 3:
+					result = track.isForced();
+					break;
+				case 4: 
 					result = track.getFormat().getID();
 					break;
 				default :
@@ -437,9 +452,12 @@ public class AudioSubtitleTable {
 					track.setCommentary((Boolean)value);
 					break;
 				case 2:
-					track.setAudio(AudioCodec.values()[(Integer)value]);
+					track.setAudioDescriptive((Boolean)value);
 					break;
 				case 3:
+					track.setAudio(AudioCodec.values()[(Integer)value]);
+					break;
+				case 4:
 					track.setChannels(AudioChannels.values()[(Integer)value]);
 					break;
 				default:
@@ -458,6 +476,9 @@ public class AudioSubtitleTable {
 					track.setHearingImpaired((Boolean)value);
 					break;
 				case 3:
+					track.setForced((Boolean)value);
+					break;
+				case 4:
 					track.setFormat(SubtitleFormat.values()[(Integer)value]);
 					break;
 				default:

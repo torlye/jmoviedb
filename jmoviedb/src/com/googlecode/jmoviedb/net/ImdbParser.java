@@ -80,10 +80,6 @@ public class ImdbParser {
 		return doc.select("meta[property=og:title]").first().attr("content");
 	}
 	
-	private Element getInfoBar() {
-		return doc.select("div[class=infobar]").first();
-	}
-	
 	/**
 	 * Returns the title of the movie, if the open document is a movie page.
 	 * @return the movie title
@@ -151,7 +147,7 @@ public class ImdbParser {
 	 */
 	protected int[] getYear() {
 		String title = getTitleProperty();
-		Pattern patternYear = Pattern.compile("(\\d{4})–(\\d{4})\\)");
+		Pattern patternYear = Pattern.compile("(\\d{4})\u2013(\\d{4})\\)");
 		Matcher matcherYear = patternYear.matcher(title);
 		if (matcherYear.find()) {
 			return new int[] {
@@ -175,7 +171,7 @@ public class ImdbParser {
 	protected ArrayList<Genre> getGenres() {
 		ArrayList<Genre> temp = new ArrayList<Genre>();
 		
-		Elements genreNodes = getInfoBar().select("a[href^=/genre]");
+		Elements genreNodes = doc.select("div[itemprop=genre]").first().select("a[href^=/genre]");
 		for (Element element : genreNodes) {
 			temp.add(Genre.StringToEnum(element.text()));
 		}
@@ -222,12 +218,12 @@ public class ImdbParser {
 	 * @return runtime
 	 */
 	protected int getRuntime() {
-		String time = doc.select("time[itemprop=duration]").text();
+		String time = doc.select("time[itemprop=duration]").attr("datetime");
 		if (time.length()>0) {
-			Pattern patternRuntime = Pattern.compile("[0-9]+");
+			Pattern patternRuntime = Pattern.compile("PT([0-9]+)M");
 			Matcher matcherRuntime = patternRuntime.matcher(time);
 			if(matcherRuntime.find())
-				return Integer.valueOf(matcherRuntime.group());
+				return Integer.valueOf(matcherRuntime.group(1));
 		}
 		return 0;
 	}
@@ -250,7 +246,7 @@ public class ImdbParser {
 	 * @return an ArrayList of languages
 	 */
 	protected ArrayList<Language> getLanguages() throws UnknownLanguageException {
-		Elements languageElements = doc.select("a[href^=/language/]");
+		Elements languageElements = doc.select("a[href~=primary_language]");
 		
 		ArrayList<Language> tempList = new ArrayList<Language>();
 		
@@ -271,7 +267,7 @@ public class ImdbParser {
 	 * @return an ArrayList of countries
 	 */
 	protected ArrayList<Country> getCountries() {
-		Elements countryElements = doc.select("a[href^=/country/]");
+		Elements countryElements = doc.select("a[href~=country_of_origin]");
 		
 		ArrayList<Country> tempList = new ArrayList<Country>(); 
 		
@@ -291,7 +287,7 @@ public class ImdbParser {
 	 * @return the image URL, or null if no image was found.
 	 */
 	protected URL getImageURL() {
-		String urlString = doc.select("meta[property=og:image]").attr("content");
+		String urlString = doc.select("img[itemprop=image]").attr("src");
 		if (urlString.length()>0) {
 			if (urlString.endsWith("imdb-share-logo.png"))
 				return null;
@@ -337,7 +333,7 @@ public class ImdbParser {
 	 * @return an array of directors
 	 */
 	protected ArrayList<Person> getDirectors() {
-		Elements container = doc.select("div[itemprop=director]");
+		Elements container = doc.select("[itemprop=director]");
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
 		for(Element a : container.select("a[itemprop=url]")) {
@@ -361,7 +357,7 @@ public class ImdbParser {
 	 * @return an array of writers
 	 */
 	protected ArrayList<Person> getWriters() {
-		Elements container = doc.select("div[itemprop=creator]");
+		Elements container = doc.select("[itemprop=creator]");
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
 		for(Element a : container.select("a[itemprop=url]")) {

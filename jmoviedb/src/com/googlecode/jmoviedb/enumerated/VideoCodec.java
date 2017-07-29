@@ -30,7 +30,7 @@ public enum VideoCodec {
 	other(0, "", "", null, null),
 	xvid(1, "XviD", "XviD", Settings.getSettings().getLanguageClass().VIDEO_XVID_DESCRIPTION, null),
 	divx(2, "DivX", "DivX 3/4/5/6", Settings.getSettings().getLanguageClass().VIDEO_DIVX_DESCRIPTION, null),
-	h264(3, "H.264", "H.264/AVC", Settings.getSettings().getLanguageClass().VIDEO_H264_DESCRIPTION, null),
+	h264(3, "H.264 AVC", "H.264 AVC MPEG-4 Part 10", Settings.getSettings().getLanguageClass().VIDEO_H264_DESCRIPTION, null),
 	mpeg1(4, "MPEG-1", "", Settings.getSettings().getLanguageClass().VIDEO_MPEG1_DESCRIPTION, null),
 	mpeg2(5, "MPEG-2", "", Settings.getSettings().getLanguageClass().VIDEO_MPEG2_DESCRIPTION, null),
 	mpeg4(6, "MPEG-4", "Generic MPEG-4 video", Settings.getSettings().getLanguageClass().VIDEO_MPEG4_DESCRIPTION, null),
@@ -41,6 +41,8 @@ public enum VideoCodec {
 	real(11, "RealVideo", "", Settings.getSettings().getLanguageClass().VIDEO_REAL_DESCRIPTION, null),
 	vp6(12, "On2 VP6", "On2 VP6", null, null),
 	sorenson3(13, "SVQ3", "Sorenson Video 3", null, null),
+	vp8(14, "VP8", "VP8", null, null),
+	hevc(15, "H.265 HEVC", "H.265 HEVC MPEG-H Part 2", "", null),
 	analog(99, "Analog video", "", "", null);
 	
 	private int id;

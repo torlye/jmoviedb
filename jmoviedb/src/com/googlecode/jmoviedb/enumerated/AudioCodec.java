@@ -45,7 +45,8 @@ public enum AudioCodec {
 	ogg(7, "Vorbis", "Vorbis, aka. Ogg Vorbis", Settings.getSettings().getLanguageClass().AUDIO_VORBIS_DESCRIPTION, null),
 	real(8, "RealAudio", "RealAudio", Settings.getSettings().getLanguageClass().AUDIO_REAL_DESCRIPTION, null),
 	analog(10, "Analog audio", "", "", null),
-	atrac3plus(15, "ATRAC3plus", "", null, null);
+	atrac3plus(15, "ATRAC3plus", "", null, null),
+	flac(19, "FLAC", "", null, null);
 	
 	private int id;
 	private String shortName;

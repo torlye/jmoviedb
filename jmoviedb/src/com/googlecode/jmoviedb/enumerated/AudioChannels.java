@@ -5,13 +5,14 @@ import com.googlecode.jmoviedb.CONST;
 public enum AudioChannels {
 	none(0, ""),
 	mono(1, "Mono 1.0"),
+	mono2(9, "Mono 2.0"),
 	stereo(2, "Stereo 2.0"),
 	surround51(3, "5.1"),
 	surround61(4, "6.1"),
 	surround71(5, "7.1"),
 	surround41(6, "4.1"),
 	surround50(7, "5.0"),
-	surround40(8, "4.0")
+	surround40(8, "4.0"),
 	;
 	
 	private int id;
