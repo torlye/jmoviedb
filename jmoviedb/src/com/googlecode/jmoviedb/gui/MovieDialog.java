@@ -277,13 +277,10 @@ public class MovieDialog extends Dialog {
 					r2.setText("R2");
 					r3.setText("R3");
 					
-					discCombo.select(DiscType.dvd.ordinal());
 				} else if(selectedValue == FormatType.bluray || selectedValue == FormatType.bluray3d) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					
-					resolutionCombo.select(Resolution.p1080.ordinal());
-
 					regionLabel.setVisible(true);
 					r0.setVisible(true);
 					r1.setVisible(true);
@@ -292,16 +289,10 @@ public class MovieDialog extends Dialog {
 					r1.setText("A");
 					r2.setText("B");
 					r3.setText("C");
-					
-					discCombo.select(DiscType.bd.ordinal());
 				} else if(selectedValue == FormatType.uhdbluray) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					
-					resolutionCombo.select(Resolution.p2160.ordinal());
-					
-					discCombo.select(DiscType.uhdbd.ordinal());
-	
 				} else if(selectedValue == FormatType.hddvd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 

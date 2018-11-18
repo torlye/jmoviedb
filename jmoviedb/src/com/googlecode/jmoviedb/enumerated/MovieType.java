@@ -109,10 +109,17 @@ public enum MovieType {
 	public static int abstractMovieToInt(AbstractMovie movie) {
 		if(movie == null)
 			return 0;
+		MovieType type = abstractMovieToEnum(movie);
+		if (type != null)
+			return type.getId();
+		return 0;
+	}
+
+	public static MovieType abstractMovieToEnum(AbstractMovie movie) {
 		for(MovieType type : MovieType.values()) { 
 			if(type.getCl().equals(movie.getClass()))
-				return type.getId();
+				return type;
 		}
-		return 0;
+		return null;
 	}
 }
