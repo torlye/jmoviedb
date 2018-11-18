@@ -44,7 +44,6 @@ public class CSVexport implements IRunnableWithProgress {
 		try {
 			CsvWriter writer = new CsvWriter(filepath, ',', Charset.forName("UTF-8"));
 			
-			EventList<AbstractMovie> list2 = MainWindow.getMainWindow().getDB().getMovieList();
 			ArrayList<AbstractMovie> list  = MainWindow.getMainWindow().getDB().getDatabase().getMovieList();
 				
 			progress.beginTask("Exporting", list.size());
@@ -52,7 +51,7 @@ public class CSVexport implements IRunnableWithProgress {
 			writer.writeComment("MOVIEID, TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, VERSION, PIRATED, SEEN, "
 					+ "LOCATION, FORMAT, DISC,VIDEO,DVDREGION, TVSYSTEM, SCENERELEASENAME,VIDEORESOLUTION,VIDEOASPECT,CONTAINER,COMPLETENESS,YEAR2,"
 					+ "COUNTRY, LANGUAGE, GENRE, DIRECTORS, WRITERS, ACTORS,"
-					+ "AUDIO, SUBTITLES, COVER");
+					+ "AUDIO, SUBTITLES, NOTES, COVER");
 			
 			for (int i = 0; i < list.size(); i++)
 			{
@@ -95,7 +94,8 @@ public class CSVexport implements IRunnableWithProgress {
 						getActors(movie),
 						getAudio(movie),
 						getSubtitle(movie),
-						getCover(movie)
+						movie.getNotes()
+						//getCover(movie)
 					};
 					
 					writer.writeRecord(record);
@@ -131,14 +131,14 @@ public class CSVexport implements IRunnableWithProgress {
 			
 			values.add(
 				"{"
-					+ "'language':'"+ jsonEncode(track.getLanguage().getImdbID()) + "',"
-					+ "'channels':'"+ jsonEncode(track.getChannels().getDescription()) + "',"
-				    + "'format':'"+ jsonEncode(track.getAudio().getShortName()) + "',"
-				    + "'type':'"+ jsonEncode(type) + "'"
+					+ "\"language\":\""+ jsonEncode(track.getLanguage().getImdbID()) + "\","
+					+ "\"channels\":\""+ jsonEncode(track.getChannels().getDescription()) + "\","
+				    + "\"format\":\""+ jsonEncode(track.getAudio().getShortName()) + "\","
+				    + "\"type\":\""+ jsonEncode(type) + "\""
 			+ "}");
 		}
 		
-		return String.join(",", values);
+		return "[" + String.join(",", values) + "]";
 	}
 	
 	public String getSubtitle(AbstractMovie movie) {
@@ -152,33 +152,33 @@ public class CSVexport implements IRunnableWithProgress {
 			
 			values.add(
 				"{"
-					+ "'language':'"+ jsonEncode(track.getLanguage().getImdbID()) + "',"
-					+ "'format':'"+ jsonEncode(track.getFormat().getShortName()) + "',"
-				    + "'type':'"+ jsonEncode(type) + "'"
+					+ "\"language\":\""+ jsonEncode(track.getLanguage().getImdbID()) + "\","
+					+ "\"format\":\""+ jsonEncode(track.getFormat().getShortName()) + "\","
+				    + "\"type\":\""+ jsonEncode(type) + "\""
 			+ "}");
 		}
 		
-		return String.join(",", values);
+		return "[" + String.join(",", values) + "]";
 	}
 	
 	public String getDirectors(AbstractMovie movie) {
 		ArrayList<String> values = new ArrayList<String>();
 		
 		for (Person val : movie.getDirectors()) {
-			values.add("{'name':'"+ jsonEncode(val.getName()) + "','id':'"+ jsonEncode(val.getID()) + "'}");
+			values.add("{\"name\":\""+ jsonEncode(val.getName()) + "\",\"id\":\""+ jsonEncode(val.getID()) + "\"}");
 		}
 		
-		return String.join(",", values);
+		return "[" + String.join(",", values) + "]";
 	}
 	
 	public String getWriters(AbstractMovie movie) {
 		ArrayList<String> values = new ArrayList<String>();
 		
 		for (Person val : movie.getWriters()) {
-			values.add("{'name':'"+ jsonEncode(val.getName()) + "','id':'"+ jsonEncode(val.getID()) + "'}");
+			values.add("{\"name\":\""+ jsonEncode(val.getName()) + "\",\"id\":\""+ jsonEncode(val.getID()) + "\"}");
 		}
 		
-		return String.join(",", values);
+		return "[" + String.join(",", values) + "]";
 	}
 	
 	public String getActors(AbstractMovie movie) {
@@ -196,10 +196,10 @@ public class CSVexport implements IRunnableWithProgress {
 		
 		for (ActorInfo val : actors) 
 		{
-			values.add("{'name':'"+ jsonEncode(val.getPerson().getName()) + "','id':'" + jsonEncode(val.getPerson().getID()) + "','character':'" + jsonEncode(val.getCharacter())+ "'}");
+			values.add("{\"name\":\""+ jsonEncode(val.getPerson().getName()) + "\",\"id\":\"" + jsonEncode(val.getPerson().getID()) + "\",\"character\":\"" + jsonEncode(val.getCharacter())+ "\"}");
 		}
 		
-		return String.join(",", values);
+		return "[" + String.join(",", values) + "]";
 	}
 
 	public String getCountries(AbstractMovie movie) {
@@ -317,6 +317,6 @@ public class CSVexport implements IRunnableWithProgress {
 	
 	private static String jsonEncode(String input)
 	{
-		return input.replace("\\", "\\\\").replace("'", "\\'").replace("\"", "\\\"").replaceAll("\n", " ");
+		return input.replace("\\", "\\\\").replace("\"", "\\\"").replaceAll("\n", " ");
 	}
 }
