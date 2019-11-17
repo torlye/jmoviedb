@@ -46,7 +46,10 @@ public enum AudioCodec {
 	real(8, "RealAudio", "RealAudio", Settings.getSettings().getLanguageClass().AUDIO_REAL_DESCRIPTION, null),
 	analog(10, "Analog audio", "", "", null),
 	atrac3plus(15, "ATRAC3plus", "", null, null),
-	flac(19, "FLAC", "", null, null);
+	flac(19, "FLAC", "", null, null),
+	dtsx(20, "DTS:X", "", null, null),
+	atmos(21, "Dolby Atmos", "", null, null),
+	;
 	
 	private int id;
 	private String shortName;

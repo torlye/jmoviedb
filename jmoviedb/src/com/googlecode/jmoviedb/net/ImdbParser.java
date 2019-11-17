@@ -171,9 +171,15 @@ public class ImdbParser {
 	protected ArrayList<Genre> getGenres() {
 		ArrayList<Genre> temp = new ArrayList<Genre>();
 		
-		Elements genreNodes = doc.select("div[itemprop=genre]").first().select("a[href^=/genre]");
-		for (Element element : genreNodes) {
-			temp.add(Genre.StringToEnum(element.text()));
+		Elements h4nodes = doc.select("h4");
+		for (Element h4 : h4nodes) {
+			if (h4.text().equals("Genres:"))
+			{
+				Elements genreNodes = h4.parent().select("a[href^=/search/title?genres]");
+				for (Element element : genreNodes) {
+					temp.add(Genre.StringToEnum(element.text()));
+				}
+			}
 		}
 		return temp;
 	}
@@ -218,7 +224,7 @@ public class ImdbParser {
 	 * @return runtime
 	 */
 	protected int getRuntime() {
-		String time = doc.select("time[itemprop=duration]").attr("datetime");
+		String time = doc.select("time[datetime]").attr("datetime");
 		if (time.length()>0) {
 			Pattern patternRuntime = Pattern.compile("PT([0-9]+)M");
 			Matcher matcherRuntime = patternRuntime.matcher(time);
@@ -287,7 +293,7 @@ public class ImdbParser {
 	 * @return the image URL, or null if no image was found.
 	 */
 	protected URL getImageURL() {
-		String urlString = doc.select("img[itemprop=image]").attr("src");
+		String urlString = doc.select("img[title$=Poster]").attr("src");
 		if (urlString.length()>0) {
 			if (urlString.endsWith("imdb-share-logo.png"))
 				return null;
@@ -313,11 +319,14 @@ public class ImdbParser {
 		int counter = 0;
 		
 		for (Element row : rows) {
-			String name = row.select("td[itemprop=actor] [itemprop=name]").text();
-			String character = row.select("td[class=character]").text();
-			String href = row.select("td[itemprop=actor] a[itemprop=url]").attr("href");
+			Elements cells = row.select("td");
+			if (cells.size() < 4)
+				continue;
+			String name = cells.get(1).text();
+			String href = cells.get(1).select("a").attr("href");
 			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
 			Matcher matcherId = patternId.matcher(href);
+			String character = row.select("td[class=character]").text();
 			
 			if(matcherId.find()) {
 				templist.add(new ActorInfo(counter, new Person(matcherId.group(1), name), character));

@@ -43,7 +43,15 @@ public enum DiscType {
 	hddvdr(17, "HD DVD-R", "", ""),
 	umd(18, "UMD", "", ""),
 	ld(19, "LD", "", ""),
-	vhs(20, "VHS", "", "");
+	vhs(20, "VHS", "", ""),
+	betamax(22, "Betamax", "", ""),	
+	v2000(23, "Video 2000", "", ""),
+	gba(24, "Game Boy Advance Video Pak", "", ""),
+	film16mm(25, "16mm film reel", "", ""),
+	dvhs(26, "D-VHS", "", ""),
+	video8(27, "Video8", "", ""),
+	mmcmobile(28, "MMCmobile", "", ""),
+	;
 	
 	private int id;
 	private String name;

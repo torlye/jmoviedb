@@ -43,7 +43,18 @@ public enum FormatType {
 	vhs(9, "VHS", "VHS video cassette", "", ""),
 	umd(10, "UMD", "", Settings.getSettings().getLanguageClass().FORMAT_UMD_DESCRIPTION, Settings.getSettings().getLanguageClass().FORMAT_UMD_URL), 
 	laserdisc(11, "LaserDisc", "", "DESCRIPTION", null),
-	avchd(7, "AVCHD", "AVCHD", "", null);
+	avchd(7, "AVCHD", "AVCHD", "", null),
+	v2000(14, "Video 2000", "", "", null),
+	dtheater(15, "D-Theater", "", "", null),
+	gbavideo(16, "Game Boy Advance Video", "", "", null),
+	videonow(17, "VideoNow", "", "", null),
+	videonowcolor(18, "VideoNow Color", "", "", null),
+	film16mm(19, "16mm film", "", "", null),
+	betamax(20, "Betamax", "", "", null),
+	ced(21, "CED", "", "", null),
+	video8(22, "Video8", "", "", null),
+	mmc(23, "MMC", "", "", null),
+	;
 	
 	private int id;
 	private String shortName;
