@@ -34,7 +34,9 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 	private final static Color VCD_COLOR = new Color(Display.getCurrent(), 240, 221, 250); //f0ddfa
 	private final static Color SVCD_COLOR = new Color(Display.getCurrent(), 250, 221, 240); //faddf0
 	private final static Color BLURAY_COLOR = new Color(Display.getCurrent(), 0, 149, 213); //0095d5, the colour in the Blu-Ray logo
-	private final static Color HDDVD_COLOR = new Color(Display.getCurrent(), 160, 37, 45); //approximate colour of the HD-DVD cover - too dark? 
+	private final static Color HDDVD_COLOR = new Color(Display.getCurrent(), 160, 37, 45); //approximate colour of the HD-DVD cover - too dark?
+	private final static Color UHD_COLOR = new Color(Display.getCurrent(), 0, 0, 0);
+	private final static Color LIGHT_TEXT_COLOR = new Color(Display.getCurrent(), 255, 255, 255);
 	private final static int IMAGE_WIDTH = 50;
 	private final static int IMAGE_HEIGHT = 70;
 	
@@ -141,13 +143,15 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 		Image image = new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), true, imgWidth, imgHeight));
 		
 		//Configure table cell background colour
+		gc.setForeground(COLOR_TEXT);
+		
 		if(focus)
 			gc.setBackground(SELECTED_COLOR);
 		else if(!movie.isSeen())
 			gc.setBackground(NOT_SEEN_COLOR);
 		else if(movie.getFormat() == FormatType.dvd)
 			gc.setBackground(DVD_COLOR);
-		else if(movie.getFormat() == FormatType.bluray || movie.getFormat() == FormatType.bluray3d || movie.getFormat() == FormatType.uhdbluray)
+		else if(movie.getFormat() == FormatType.bluray || movie.getFormat() == FormatType.bluray3d)
 			gc.setBackground(BLURAY_COLOR);
 		else if(movie.getFormat() == FormatType.vcd)
 			gc.setBackground(VCD_COLOR);
@@ -155,15 +159,22 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 			gc.setBackground(SVCD_COLOR);
 		else if(movie.getFormat() == FormatType.hddvd)
 			gc.setBackground(HDDVD_COLOR);
+		else if (movie.getFormat() == FormatType.uhdbluray)
+			gc.setBackground(UHD_COLOR);
 		else
 			gc.setBackground(DEFAULT_COLOR);
 		
-		gc.setForeground(COLOR_TEXT);
 		gc.fillRectangle(rect);
 		gc.drawRectangle(rect);
 		gc.drawImage(image, 
 				rect.x+10+(imgWidth-image.getBounds().width)/2, 
 				rect.y+10+(imgHeight-image.getBounds().height)/2);
+		
+		if(focus || !movie.isSeen()) {
+		} else if (movie.getFormat() == FormatType.bluray || movie.getFormat() == FormatType.bluray3d 
+				|| movie.getFormat() == FormatType.hddvd || movie.getFormat() == FormatType.uhdbluray) {
+			gc.setForeground(LIGHT_TEXT_COLOR);
+		}
 		
 		gc.drawString(title, leftColumn, firstRow);
 		gc.drawString(genre, leftColumn, secondRow);

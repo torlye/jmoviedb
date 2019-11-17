@@ -146,8 +146,8 @@ public class MovieDialog extends Dialog {
 	private SelectionListener r0CheckListener;
 	private MouseListener imageClickListener;
 	
-	private final static int COVER_WIDTH = 100;
-	private final static int COVER_HEIGHT = 150;
+	private final static int COVER_WIDTH = 200;
+	private final static int COVER_HEIGHT = 300;
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
