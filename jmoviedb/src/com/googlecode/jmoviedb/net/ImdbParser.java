@@ -329,7 +329,16 @@ public class ImdbParser {
 			String character = row.select("td[class=character]").text();
 			
 			if(matcherId.find()) {
-				templist.add(new ActorInfo(counter, new Person(matcherId.group(1), name), character));
+				String personId = matcherId.group(1);
+				if (personId.length() > 7) {
+					int numericId = Integer.parseInt(personId);
+					personId = "x" + Integer.toString(numericId, 16).toUpperCase();
+					if (personId.length() > 7) {
+						continue;
+					}
+				}
+				
+				templist.add(new ActorInfo(counter, new Person(personId, name), character));
 				counter++;
 			}
 		}
