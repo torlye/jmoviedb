@@ -16,7 +16,7 @@
 	<property name="icon"          location="${installer.dir}/windows-icon.ico" />
 	<property name="jar.browser"   value="BrowserLauncher2-1_3.jar" />
 	<property name="jar.glazed"    value="glazedlists-1.8.0_java15.jar" />
-	<property name="jar.derby"     value="derby-10.9.1.0.jar" />
+	<property name="jar.derby"     value="derby.jar" />
 	<property name="jar.ktable"    value="ktable_2.2.0.jar" />
 	<property name="jar.jface"     value="org.eclipse.jface_3.10.0.v20140604-0740.jar" />
 	<property name="jar.equinox"   value="org.eclipse.equinox.common_3.6.200.v20130402-1505.jar" />

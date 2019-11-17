@@ -76,7 +76,7 @@ public class CONST {
 	/**
 	 * Apache Derby version number
 	 */
-	public static final String VERSION_DERBY = "10.9.1.0";
+	public static final String VERSION_DERBY = "10.14.2.0";
 	
 	/**
 	 * BrowserLauncher2 version number
