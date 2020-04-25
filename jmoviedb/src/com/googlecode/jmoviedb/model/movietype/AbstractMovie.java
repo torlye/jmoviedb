@@ -91,6 +91,9 @@ public abstract class AbstractMovie implements Cloneable {
 	private AspectRatio aspectRatio;
 	private boolean[] dvdRegion;
 	
+	private URL url1;
+	private URL url2;
+	
 	private byte[] imageBytes;
 	
 	/**
@@ -719,6 +722,76 @@ public abstract class AbstractMovie implements Cloneable {
 
 	public void setDvdRegion(boolean[] dvdRegion) {
 		this.dvdRegion = dvdRegion;
+	}
+	
+	private static URL setUrl(String url) {
+		if (url != null && url.length() > 0)
+		{
+			try {
+				return new URL(url);
+			} catch (MalformedURLException e) {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+	
+	public URL getUrl1() {
+		return url1;
+	}
+	
+	public String getUrl1String() {
+		URL url = getUrl1();
+		if (url != null) {
+			return url.toString();
+		}
+		return "";
+	}
+	
+	public String getUrl1StringOrNull() {
+		URL url = getUrl1();
+		if (url != null) {
+			return url.toString();
+		}
+		return null;
+	}
+
+	public void setUrl1(String url) {
+		this.url1 = setUrl(url);
+	}
+	
+	public void setUrl1(URL url) {
+		this.url1 = url;
+	}
+	
+	public URL getUrl2() {
+		return url2;
+	}
+	
+	public String getUrl2String() {
+		URL url = getUrl2();
+		if (url != null) {
+			return url.toString();
+		}
+		return "";
+	}
+	
+	public String getUrl2StringOrNull() {
+		URL url = getUrl2();
+		if (url != null) {
+			return url.toString();
+		}
+		return null;
+	}
+	
+	
+	public void setUrl2(String url) {
+		this.url2 = setUrl(url);
+	}
+
+	public void setUrl2(URL url) {
+		this.url2 = url;
 	}
 	
 	public void setDvdRegionAsInt(int region) {

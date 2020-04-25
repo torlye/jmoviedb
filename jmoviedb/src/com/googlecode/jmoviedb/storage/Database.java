@@ -150,6 +150,46 @@ public class Database {
 				throw e;
 		}
 		
+		//Upgrade
+		try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIE ADD COLUMN URL1 VARCHAR(250)");
+			Statement s2 = connection.createStatement();
+			s2.execute("ALTER TABLE MOVIE ADD COLUMN URL2 VARCHAR(250)");
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
+				
+		
+		/*try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE PERSON ADD COLUMN PERSONID2 CHAR(8)");
+			s.close();
+			PreparedStatement ins = connection.prepareStatement("UPDATE PERSON SET PERSONID2 = ? WHERE PERSONID = ?");
+			s = connection.createStatement();
+			ResultSet result = s.executeQuery("SELECT PERSONID FROM PERSON");
+			while(result.next()) {
+				String id = result.getString("PERSONID");
+				ins.setString(1, id);
+				ins.setString(2, id);
+				ins.execute();
+				ins.clearParameters();
+			}
+			ins.close();
+			result.close();
+			s.close();
+			s = connection.createStatement();
+			s.execute("ALTER TABLE PERSON DROP COLUMN PERSONID");
+			s.close();
+			s = connection.createStatement();
+			s.execute("RENAME COLUMN PERSON.PERSONID2 TO PERSONID");
+			s.close();
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}*/
+		
 		
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
@@ -158,10 +198,12 @@ public class Database {
 				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
 				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
 				"VIDEORESOLUTION, VIDEOASPECT, COVER, CONTAINER, COMPLETENESS, " +
-				"COMPLETENESSDETAIL, YEAR2) " + 
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+				"COMPLETENESSDETAIL, YEAR2, URL1, URL2) " + 
+				"VALUES (" +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
+				"?, ?)", 
 				PreparedStatement.RETURN_GENERATED_KEYS);
 		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
 				"TYPE = ?, IMDBID = ?, TITLE = ?, CUSTOMTITLE = ?, " +
@@ -171,7 +213,7 @@ public class Database {
 				"DISC = ?, VIDEO = ?, MYENCODE = ?, DVDREGION = ?, TVSYSTEM = ?, " +
 				"SCENERELEASENAME = ?, VIDEORESOLUTION = ?, VIDEOASPECT = ?, " +
 				"COVER = ?, CONTAINER = ?, COMPLETENESS = ?, COMPLETENESSDETAIL = ?, " +
-				"YEAR2 = ?" +
+				"YEAR2 = ?, URL1 = ?, URL2 = ?" +
 				"WHERE MOVIEID = ?");
 		getMovieStatement = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
@@ -212,6 +254,7 @@ public class Database {
 	private void createTables() throws SQLException  {
 		String person = "CREATE TABLE PERSON(" +
 				"PERSONID CHAR(7) NOT NULL, " +
+				//"PERSONID CHAR(8) NOT NULL, " +
 				"NAME VARCHAR(250), " +
 				"PRIMARY KEY(PERSONID)" +
 				")";
@@ -247,11 +290,14 @@ public class Database {
 				"CONTAINER SMALLINT, " +
 				"COMPLETENESS SMALLINT, " +
 				"COMPLETENESSDETAIL VARCHAR(50), " +
+				"URL1 VARCHAR(250), " +
+				"URL2 VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID)" +
 				")";
 		String movieActor = "CREATE TABLE MOVIEACTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
+				//"PERSONID CHAR(8) NOT NULL, " +
 				"CHARACTERNUMBER SMALLINT, " +
 				"CHARACTERDESCRIPTION VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
@@ -261,6 +307,7 @@ public class Database {
 		String movieDirector = "CREATE TABLE MOVIEDIRECTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
+				//"PERSONID CHAR(8) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
@@ -269,6 +316,7 @@ public class Database {
 		String movieWriter = "CREATE TABLE MOVIEWRITER(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
+				//"PERSONID CHAR(8) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
@@ -431,6 +479,8 @@ public class Database {
 		statement.setInt(24, m.getResolution().getID());
 		statement.setInt(25, m.getAspectRatio().getID());
 		statement.setInt(30, m.getYear2());
+		statement.setString(31, m.getUrl1StringOrNull());
+		statement.setString(32, m.getUrl2StringOrNull());
 		
 		if (m instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)m;
@@ -449,7 +499,7 @@ public class Database {
 		statement.setInt(27, m.getContainer().getID());
 		
 		if(edit)
-			statement.setInt(31, m.getID());
+			statement.setInt(33, m.getID());
 		
 		statement.execute();
 		
@@ -479,6 +529,9 @@ public class Database {
 		clearDirectors.clearParameters();
 		
 		for(Person p : m.getDirectors()) {
+			if (p.getID().length() > 7)
+				continue;
+			
 			addOrUpdatePerson(p);
 			
 			addDirector.setInt(1, m.getID());
@@ -493,6 +546,9 @@ public class Database {
 		clearWriters.clearParameters();
 		
 		for(Person p : m.getWriters()) {
+			if (p.getID().length() > 7)
+				continue;
+			
 			addOrUpdatePerson(p);
 			
 			addWriter.setInt(1, m.getID());
@@ -508,6 +564,9 @@ public class Database {
 		
 		for(int i=0; i<m.getActors().size(); i++) {
 			ActorInfo a = m.getActors().get(i);
+			if (a.getPerson().getID().length() > 7)
+				continue;
+			
 			addOrUpdatePerson(a.getPerson());
 			
 			addActor.setInt(1, m.getID());
@@ -628,6 +687,8 @@ public class Database {
 		m.setResolution(Resolution.intToEnum(rs.getInt("VIDEORESOLUTION")));
 		m.setAspectRatio(AspectRatio.intToEnum(rs.getInt("VIDEOASPECT")));
 		m.setContainer(ContainerFormat.intToEnum(rs.getInt("CONTAINER")));
+		m.setUrl1(rs.getString("URL1"));
+		m.setUrl2(rs.getString("URL2"));
 		
 		if (m instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)m;

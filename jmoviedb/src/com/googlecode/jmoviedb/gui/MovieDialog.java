@@ -102,6 +102,8 @@ public class MovieDialog extends Dialog {
 //	private Button myEncodeCheck;
 	private Text sceneNameText;
 	private Combo aspectCombo;
+	private Text url1Text;
+	private Text url2Text;
 	
 	private Table actorTable;
 	private TableColumn actorNameColumn;
@@ -790,6 +792,15 @@ public class MovieDialog extends Dialog {
 		sceneNameText = new Text(c, SWT.SINGLE|SWT.BORDER);
 		sceneNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
 		
+		Label urlLabel1 = new Label(c, SWT.CENTER);
+		urlLabel1.setText("Discogs URL");
+		url1Text = new Text(c, SWT.SINGLE|SWT.BORDER);
+		url1Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
+		
+		Label urlLabel2 = new Label(c, SWT.CENTER);
+		urlLabel2.setText("blu-ray.com/lddb.com");
+		url2Text = new Text(c, SWT.SINGLE|SWT.BORDER);
+		url2Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
 		
 		tab4.setControl(c);
 	}
@@ -873,6 +884,8 @@ public class MovieDialog extends Dialog {
 		locationText.setText(m.getLocation());
 //		myEncodeCheck.setSelection(m.isMyEncode());
 		sceneNameText.setText(m.getSceneReleaseName());
+		url1Text.setText(m.getUrl1String());
+		url2Text.setText(m.getUrl2String());
 		
 		actorNameColumn.pack();
 		asColumn.pack();
@@ -1003,6 +1016,8 @@ public class MovieDialog extends Dialog {
 		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
 		movie.setLocation(locationText.getText());
 		movie.setSceneReleaseName(sceneNameText.getText());
+		movie.setUrl1(url1Text.getText());
+		movie.setUrl2(url2Text.getText());
 //		movie.setMyEncode(myEncodeCheck.getSelection());
 		
 		if (movie instanceof AbstractSeries) {

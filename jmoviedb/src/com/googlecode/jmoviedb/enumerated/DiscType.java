@@ -51,6 +51,8 @@ public enum DiscType {
 	dvhs(26, "D-VHS", "", ""),
 	video8(27, "Video8", "", ""),
 	mmcmobile(28, "MMCmobile", "", ""),
+	ced(29, "CED", "", ""),
+	cdi(30, "CD-i", "", ""),
 	;
 	
 	private int id;
