@@ -396,7 +396,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setImdbID(String imdbID) {
 		if(imdbID == null || imdbID.length() == 0)
 			this.imdbID = "";
-		Matcher matcher = Pattern.compile("\\D*(\\d{7})\\D*").matcher(imdbID);
+		Matcher matcher = Pattern.compile("\\D*(\\d{7,8})\\D*").matcher(imdbID);
 		if(matcher.find())
 			this.imdbID = matcher.group(1);
 	}
@@ -406,7 +406,7 @@ public abstract class AbstractMovie implements Cloneable {
 	 * @return IMDb URL
 	 */
 	public String getImdbUrl() {
-		if(getImdbID() == null || getImdbID().length() != 7)
+		if(getImdbID() == null || getImdbID().length() < 7)
 			return "";
 		return Settings.getSettings().getImdbUrl() + getImdbID() + "/";
 	}
@@ -416,7 +416,7 @@ public abstract class AbstractMovie implements Cloneable {
 	 * @return
 	 */
 	public boolean isImdbUrlValid() {
-		if(getImdbID() == null || getImdbID().length() != 7)
+		if(getImdbID() == null || getImdbID().length() < 7)
 			return false;
 		try {
 			new URL(getImdbUrl());

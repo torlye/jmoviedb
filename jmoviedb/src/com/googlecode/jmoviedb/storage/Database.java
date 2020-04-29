@@ -161,39 +161,31 @@ public class Database {
 				throw e;
 		}
 				
-		
-		/*try {
+		try {
 			Statement s = connection.createStatement();
-			s.execute("ALTER TABLE PERSON ADD COLUMN PERSONID2 CHAR(8)");
-			s.close();
-			PreparedStatement ins = connection.prepareStatement("UPDATE PERSON SET PERSONID2 = ? WHERE PERSONID = ?");
+			s.execute("ALTER TABLE PERSON ADD COLUMN PERSONID_LONG VARCHAR(8)");
+			
 			s = connection.createStatement();
-			ResultSet result = s.executeQuery("SELECT PERSONID FROM PERSON");
-			while(result.next()) {
-				String id = result.getString("PERSONID");
-				ins.setString(1, id);
-				ins.setString(2, id);
-				ins.execute();
-				ins.clearParameters();
-			}
-			ins.close();
-			result.close();
-			s.close();
+			s.execute("ALTER TABLE MOVIEACTOR ADD COLUMN PERSONID_LONG VARCHAR(8)");
+			
 			s = connection.createStatement();
-			s.execute("ALTER TABLE PERSON DROP COLUMN PERSONID");
-			s.close();
+			s.execute("ALTER TABLE MOVIEDIRECTOR ADD COLUMN PERSONID_LONG VARCHAR(8)");
+			
 			s = connection.createStatement();
-			s.execute("RENAME COLUMN PERSON.PERSONID2 TO PERSONID");
-			s.close();
+			s.execute("ALTER TABLE MOVIEWRITER ADD COLUMN PERSONID_LONG VARCHAR(8)");
+			
+			s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIE ADD COLUMN IMDBID_LONG VARCHAR(8)");
+			
 		} catch (SQLException e) {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
-		}*/
+		}
 		
 		
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
-				"TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
+				"TYPE, IMDBID_LONG, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
 				"PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, NOTES, VERSION, " +
 				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
 				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
@@ -206,7 +198,7 @@ public class Database {
 				"?, ?)", 
 				PreparedStatement.RETURN_GENERATED_KEYS);
 		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
-				"TYPE = ?, IMDBID = ?, TITLE = ?, CUSTOMTITLE = ?, " +
+				"TYPE = ?, IMDBID_LONG = ?, TITLE = ?, CUSTOMTITLE = ?, " +
 				"MOVIEYEAR = ?, RATING = ?, PLOTOUTLINE = ?, TAGLINE = ?, " +
 				"COLOR = ?, RUNTIME = ?, NOTES = ?, VERSION = ?, " +
 				"CUSTOMFILMVERSION = ?, LEGAL = ?, SEEN = ?, LOCATION = ?, FORMAT = ?, " +
@@ -218,8 +210,8 @@ public class Database {
 		getMovieStatement = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
 		getMovieList = connection.prepareStatement("SELECT MOVIEID FROM MOVIE");
-		addPersonStatement = connection.prepareStatement("INSERT INTO PERSON VALUES (?, ?)");
-		updatePersonStatement = connection.prepareStatement("UPDATE PERSON SET NAME = ? WHERE PERSONID = ?");
+		addPersonStatement = connection.prepareStatement("INSERT INTO PERSON VALUES (?, ?, ?)");
+		updatePersonStatement = connection.prepareStatement("UPDATE PERSON SET NAME = ?, PERSONID_LONG = ? WHERE PERSONID = ?");
 		checkPersonStatement = connection.prepareStatement("SELECT * FROM PERSON WHERE PERSONID = ?");
 		clearActors = connection.prepareStatement("DELETE FROM MOVIEACTOR WHERE MOVIEID = ?");
 		clearDirectors = connection.prepareStatement("DELETE FROM MOVIEDIRECTOR WHERE MOVIEID = ?");
@@ -229,9 +221,9 @@ public class Database {
 		clearLanguages = connection.prepareStatement("DELETE FROM MOVIELANGUAGE WHERE MOVIEID = ?");
 		clearAudioTracks = connection.prepareStatement("DELETE FROM MOVIEAUDIO WHERE MOVIEID = ?");
 		clearSubtitleTracks = connection.prepareStatement("DELETE FROM MOVIESUBTITLE WHERE MOVIEID = ?");
-		addActor = connection.prepareStatement("INSERT INTO MOVIEACTOR VALUES (?, ?, ?, ?)");
-		addDirector = connection.prepareStatement("INSERT INTO MOVIEDIRECTOR VALUES (?, ?, ?)");
-		addWriter = connection.prepareStatement("INSERT INTO MOVIEWRITER VALUES (?, ?, ?)");
+		addActor = connection.prepareStatement("INSERT INTO MOVIEACTOR VALUES (?, ?, ?, ?, ?)");
+		addDirector = connection.prepareStatement("INSERT INTO MOVIEDIRECTOR VALUES (?, ?, ?, ?)");
+		addWriter = connection.prepareStatement("INSERT INTO MOVIEWRITER VALUES (?, ?, ?, ?)");
 		addGenre = connection.prepareStatement("INSERT INTO MOVIEGENRE VALUES(?, ?)");
 		addLanguage = connection.prepareStatement("INSERT INTO MOVIELANGUAGE VALUES(?, ?)");
 		addCountry = connection.prepareStatement("INSERT INTO MOVIECOUNTRY VALUES(?, ?)");
@@ -254,8 +246,8 @@ public class Database {
 	private void createTables() throws SQLException  {
 		String person = "CREATE TABLE PERSON(" +
 				"PERSONID CHAR(7) NOT NULL, " +
-				//"PERSONID CHAR(8) NOT NULL, " +
 				"NAME VARCHAR(250), " +
+				"PERSONID_LONG VARCHAR(8), " +
 				"PRIMARY KEY(PERSONID)" +
 				")";
 		String movie = "CREATE TABLE MOVIE(" +
@@ -292,14 +284,15 @@ public class Database {
 				"COMPLETENESSDETAIL VARCHAR(50), " +
 				"URL1 VARCHAR(250), " +
 				"URL2 VARCHAR(250), " +
+				"IMDBID_LONG VARCHAR(8), " +
 				"PRIMARY KEY (MOVIEID)" +
 				")";
 		String movieActor = "CREATE TABLE MOVIEACTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
-				//"PERSONID CHAR(8) NOT NULL, " +
 				"CHARACTERNUMBER SMALLINT, " +
 				"CHARACTERDESCRIPTION VARCHAR(250), " +
+				"PERSONID_LONG VARCHAR(8), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
 				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
@@ -307,8 +300,8 @@ public class Database {
 		String movieDirector = "CREATE TABLE MOVIEDIRECTOR(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
-				//"PERSONID CHAR(8) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
+				"PERSONID_LONG VARCHAR(8), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
 				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
@@ -316,8 +309,8 @@ public class Database {
 		String movieWriter = "CREATE TABLE MOVIEWRITER(" +
 				"MOVIEID INTEGER NOT NULL, " +
 				"PERSONID CHAR(7) NOT NULL, " +
-				//"PERSONID CHAR(8) NOT NULL, " +
 				"DETAILS VARCHAR(100), " +
+				"PERSONID_LONG VARCHAR(8), " +
 				"PRIMARY KEY (MOVIEID, PERSONID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE, " +
 				"FOREIGN KEY (PERSONID) REFERENCES PERSON ON DELETE CASCADE" +
@@ -529,14 +522,12 @@ public class Database {
 		clearDirectors.clearParameters();
 		
 		for(Person p : m.getDirectors()) {
-			if (p.getID().length() > 7)
-				continue;
-			
 			addOrUpdatePerson(p);
 			
 			addDirector.setInt(1, m.getID());
-			addDirector.setString(2, p.getID());
+			addDirector.setString(2, shortenToSevenDigits(p.getID()));
 			addDirector.setString(3, "");
+			addDirector.setString(4, p.getID());
 			addDirector.execute();
 			addDirector.clearParameters();
 		}
@@ -545,15 +536,13 @@ public class Database {
 		clearWriters.execute();
 		clearWriters.clearParameters();
 		
-		for(Person p : m.getWriters()) {
-			if (p.getID().length() > 7)
-				continue;
-			
+		for(Person p : m.getWriters()) {			
 			addOrUpdatePerson(p);
 			
 			addWriter.setInt(1, m.getID());
-			addWriter.setString(2, p.getID());
+			addWriter.setString(2, shortenToSevenDigits(p.getID()));
 			addWriter.setString(3, "");
+			addWriter.setString(4, p.getID());
 			addWriter.execute(); //TODO fix cases where a writer or director is listed twice
 			addWriter.clearParameters();
 		}
@@ -564,15 +553,14 @@ public class Database {
 		
 		for(int i=0; i<m.getActors().size(); i++) {
 			ActorInfo a = m.getActors().get(i);
-			if (a.getPerson().getID().length() > 7)
-				continue;
 			
 			addOrUpdatePerson(a.getPerson());
 			
 			addActor.setInt(1, m.getID());
-			addActor.setString(2, a.getPerson().getID());
+			addActor.setString(2, shortenToSevenDigits(a.getPerson().getID()));
 			addActor.setInt(3, i);
 			addActor.setString(4, a.getCharacter().substring(0, Math.min(250, a.getCharacter().length())));
+			addActor.setString(5, a.getPerson().getID());
 			addActor.execute();
 			addActor.clearParameters();
 		}
@@ -661,7 +649,7 @@ public class Database {
 		}
 		
 		m.setID(rs.getInt("MOVIEID"));
-		m.setImdbID(rs.getString("IMDBID"));
+		m.setImdbID(resolveShortOrLong(rs, "IMDBID", "IMDBID_LONG"));
 		m.setTitle(rs.getString("TITLE"));
 		m.setCustomTitle(rs.getString("CUSTOMTITLE"));
 		m.setYear(rs.getInt("MOVIEYEAR"));
@@ -723,6 +711,37 @@ public class Database {
 
 		return m;
 	}
+
+	private String resolveShortOrLong(ResultSet rs, String shortColumnID, String longColumnID) throws SQLException {
+		String longVal = rs.getString(longColumnID);
+		if (longVal != null)
+			return longVal;
+		return expandFromSevenDigits(rs.getString(shortColumnID));
+	}
+	
+	private String shortenToSevenDigits(String dec) throws SQLException {
+		if (dec.length() > 7) {
+			int numericId = Integer.parseInt(dec);
+			String hex = "x" + Integer.toString(numericId, 16).toUpperCase();
+			if (hex.length() <= 7) {
+				return hex;
+			}
+			else {
+				throw new SQLException("Could not shorten value " + dec + " to 7 digits (" + hex + ")");
+			}
+		}
+		return dec;
+	}
+	
+	private String expandFromSevenDigits(String hex) {
+		if (hex.startsWith("x"))
+		{
+			int numericId = Integer.parseInt(hex.substring(1), 16);
+			String dec = Integer.toString(numericId, 10);
+			return dec;
+		}
+		return hex;
+	}
 	
 	public AbstractMovie getMovieFull(int id) throws SQLException, IOException {
 		AbstractMovie m = getMovieLite(id);
@@ -732,7 +751,7 @@ public class Database {
 		ArrayList<ActorInfo> actors = new ArrayList<ActorInfo>();
 		
 		while(rsA.next())
-			actors.add(new ActorInfo(rsA.getInt("CHARACTERNUMBER"), new Person(rsA.getString("PERSONID"), rsA.getString("NAME")), rsA.getString("CHARACTERDESCRIPTION")));
+			actors.add(new ActorInfo(rsA.getInt("CHARACTERNUMBER"), new Person(resolveShortOrLong(rsA, "PERSONID", "PERSONID_LONG"), rsA.getString("NAME")), rsA.getString("CHARACTERDESCRIPTION")));
 		Collections.sort(actors);
 		m.setActors(actors);
 		rsA.close();
@@ -741,7 +760,7 @@ public class Database {
 		ResultSet rsD = getDirectors.executeQuery();
 		ArrayList<Person> directors = new ArrayList<Person>();
 		while(rsD.next())
-			directors.add(new Person(rsD.getString("PERSONID"), rsD.getString("NAME")));
+			directors.add(new Person(resolveShortOrLong(rsD, "PERSONID", "PERSONID_LONG"), rsD.getString("NAME")));
 		m.setDirectors(directors);
 		rsD.close();
 		
@@ -749,7 +768,7 @@ public class Database {
 		ResultSet rsW = getWriters.executeQuery();
 		ArrayList<Person> writers = new ArrayList<Person>();
 		while(rsW.next())
-			writers.add(new Person(rsW.getString("PERSONID"), rsW.getString("NAME")));
+			writers.add(new Person(resolveShortOrLong(rsW, "PERSONID", "PERSONID_LONG"), rsW.getString("NAME")));
 		m.setWriters(writers);
 		rsW.close();
 		
@@ -833,14 +852,16 @@ public class Database {
 		if(rs.next()) { //Person exists in database
 			if(rs.getString("NAME") != p.getName()) { //Person's name has changed since last time it was added
 				updatePersonStatement.setString(1, p.getName());
-				updatePersonStatement.setString(2, p.getID());
+				updatePersonStatement.setString(2, shortenToSevenDigits(p.getID()));
+				updatePersonStatement.setString(3, p.getID());
 				updatePersonStatement.execute();
 				updatePersonStatement.clearParameters();
 			}
 		}
 		else { //person does not yet exist in database
-			addPersonStatement.setString(1, p.getID());
+			addPersonStatement.setString(1, shortenToSevenDigits(p.getID()));
 			addPersonStatement.setString(2, p.getName());
+			addPersonStatement.setString(3, p.getID());
 			addPersonStatement.execute();
 			addPersonStatement.clearParameters();
 		}

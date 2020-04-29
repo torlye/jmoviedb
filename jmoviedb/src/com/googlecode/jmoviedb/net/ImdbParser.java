@@ -19,23 +19,22 @@
 
 package com.googlecode.jmoviedb.net;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.*;
-import java.util.*;
-import java.util.regex.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
-import org.xml.sax.InputSource;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.Country;
@@ -48,10 +47,17 @@ import com.googlecode.jmoviedb.model.Person;
 
 public class ImdbParser {
 	private Document doc;
+	private JSONObject json;
 	
 	protected ImdbParser(String html) {
 		System.out.println("Parsing document");
 		doc = Jsoup.parse(html);
+		
+		Elements container = doc.select("script[type=application/ld+json]");
+		if (container.size() == 1) {
+			String text = container.first().data();
+			json = new JSONObject(text);
+		}
 	}
 	
 	/**
@@ -60,7 +66,7 @@ public class ImdbParser {
 	 * @return IMDb ID
 	 */
 	protected String getID() {
-		Pattern patternID = Pattern.compile("/title/tt(\\d{7})/");
+		Pattern patternID = Pattern.compile("/title/tt(\\d{7,8})/");
 		Matcher matcherID = patternID.matcher(doc.baseUri());
 		if (matcherID.find())
 			return matcherID.group(1);
@@ -330,14 +336,6 @@ public class ImdbParser {
 			
 			if(matcherId.find()) {
 				String personId = matcherId.group(1);
-				if (personId.length() > 7) {
-					int numericId = Integer.parseInt(personId);
-					personId = "x" + Integer.toString(numericId, 16).toUpperCase();
-					if (personId.length() > 7) {
-						continue;
-					}
-				}
-				
 				templist.add(new ActorInfo(counter, new Person(personId, name), character));
 				counter++;
 			}
@@ -351,23 +349,48 @@ public class ImdbParser {
 	 * @return an array of directors
 	 */
 	protected ArrayList<Person> getDirectors() {
-		Elements container = doc.select("[itemprop=director]");
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
-		for(Element a : container.select("a[itemprop=url]")) {
-			String name = a.select("[itemprop=name]").text();
-			String href = a.attr("href");
-			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
-			Matcher matcherId = patternId.matcher(href);
-			
-			if(matcherId.find()) {
-				Person p = new Person(matcherId.group(1), name);
-				if(!personArray.contains(p))
+		try {
+			JSONArray array = json.getJSONArray("director");
+			for (Object object : array) {
+				if (object instanceof JSONObject) {
+					Person p = getPerson((JSONObject)object);
+					if (p != null)
+						personArray.add(p);
+				}
+			}
+		}
+		catch (JSONException e) {
+			try {
+				JSONObject director = json.getJSONObject("director");
+				Person p = getPerson(director);
+				if (p != null)
 					personArray.add(p);
 			}
+			catch (JSONException e2) {}
 		}
 		
 		return personArray;
+	}
+	
+	private static Person getPerson(JSONObject jsonObj) {
+		try {
+			String type = jsonObj.getString("@type");
+			String url = jsonObj.getString("url");
+			String name = jsonObj.getString("name");
+			
+			if (type.equals("Person")) {
+				Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
+				Matcher matcherId = patternId.matcher(url);
+				
+				if(matcherId.find()) {
+					return new Person(matcherId.group(1), name);
+				}
+			}
+		} catch (JSONException e) {
+		}
+		return null;
 	}
 	
 	/**
@@ -375,19 +398,25 @@ public class ImdbParser {
 	 * @return an array of writers
 	 */
 	protected ArrayList<Person> getWriters() {
-		Elements container = doc.select("[itemprop=creator]");
+		Elements headers = doc.select("h4.inline");
 		ArrayList<Person> personArray = new ArrayList<Person>();
-
-		for(Element a : container.select("a[itemprop=url]")) {
-			String name = a.select("[itemprop=name]").text();
-			String href = a.attr("href");
-			Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
-			Matcher matcherId = patternId.matcher(href);
-			
-			if(matcherId.find()) {
-				Person p = new Person(matcherId.group(1), name);
-				if(!personArray.contains(p))
-					personArray.add(p);
+		for(Element h : headers)
+		{
+			if (h.text().equals("Writer:") || h.text().equals("Writers:"))
+			{
+				for(Element a : h.siblingElements().select("a")) {
+					String name = a.text();
+					String href = a.attr("href");
+					Pattern patternId = Pattern.compile("/name/nm([0-9]+)");
+					Matcher matcherId = patternId.matcher(href);
+					
+					if(matcherId.find()) {
+						Person p = new Person(matcherId.group(1), name);
+						if(!personArray.contains(p))
+							personArray.add(p);
+					}
+				}
+				break;
 			}
 		}
 		

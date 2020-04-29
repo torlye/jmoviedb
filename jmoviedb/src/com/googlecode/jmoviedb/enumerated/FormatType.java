@@ -55,6 +55,7 @@ public enum FormatType {
 	video8(22, "Video8", "", "", null),
 	mmc(23, "MMC", "", "", null),
 	cdi(24, "CD-i", "", "", null),
+	vhd(25, "VHD", "", "", null),
 	;
 	
 	private int id;

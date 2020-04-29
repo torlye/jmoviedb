@@ -53,6 +53,7 @@ public enum DiscType {
 	mmcmobile(28, "MMCmobile", "", ""),
 	ced(29, "CED", "", ""),
 	cdi(30, "CD-i", "", ""),
+	vhd(31, "VHD", "", ""),
 	;
 	
 	private int id;
