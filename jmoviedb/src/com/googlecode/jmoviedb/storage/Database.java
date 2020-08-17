@@ -847,7 +847,7 @@ public class Database {
 	}
 	
 	private void addOrUpdatePerson(Person p) throws SQLException {
-		checkPersonStatement.setString(1, p.getID());
+		checkPersonStatement.setString(1, shortenToSevenDigits(p.getID()));
 		ResultSet rs = checkPersonStatement.executeQuery();
 		if(rs.next()) { //Person exists in database
 			if(rs.getString("NAME") != p.getName()) { //Person's name has changed since last time it was added

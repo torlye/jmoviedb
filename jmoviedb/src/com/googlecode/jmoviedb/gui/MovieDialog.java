@@ -109,6 +109,7 @@ public class MovieDialog extends Dialog {
 	private TableColumn actorNameColumn;
 	private TableColumn asColumn;
 	private TableColumn characterNameColumn;
+	private TableColumn idColumn;
 	
 	private Combo formatCombo;
 	private Combo videoCodecCombo;
@@ -661,9 +662,11 @@ public class MovieDialog extends Dialog {
 */		actorNameColumn = new TableColumn(actorTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		asColumn = new TableColumn(actorTable, SWT.NONE);
 		characterNameColumn = new TableColumn(actorTable, SWT.NONE);
+		idColumn = new TableColumn(actorTable, SWT.NONE);
 		actorNameColumn.setText("Actor");
 		asColumn.setText("");
 		characterNameColumn.setText("Character");
+		idColumn.setText("ID");
 		
 		//TODO find out why auto column width is a little too small
 //		actorNameColumn.setResizable(false);
@@ -861,6 +864,7 @@ public class MovieDialog extends Dialog {
 			i.setText(0, a.getPerson().getName());
 			i.setText(1, "as");
 			i.setText(2, a.getCharacter());
+			i.setText(3, ""+a.getPerson().getID());
 		}
 		
 		formatCombo.select(m.getFormat().ordinal());
@@ -890,6 +894,7 @@ public class MovieDialog extends Dialog {
 		actorNameColumn.pack();
 		asColumn.pack();
 		characterNameColumn.pack();
+		idColumn.pack();
 		
 		audioTable.setModel(movie.getAudioTracks());
 		subtitleTable.setModel(movie.getSubtitles());
