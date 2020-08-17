@@ -56,6 +56,9 @@ public enum FormatType {
 	mmc(23, "MMC", "", "", null),
 	cdi(24, "CD-i", "", "", null),
 	vhd(25, "VHD", "", "", null),
+	super8(26, "Super 8", "", "", null),
+	regular8(27, "Regular 8 mm", "", "", null),
+	divx(28, "DIVX", "", "", null)
 	;
 	
 	private int id;

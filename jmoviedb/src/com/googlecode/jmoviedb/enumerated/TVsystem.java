@@ -25,7 +25,9 @@ public enum TVsystem {
 	none(0, "", ""),
 	ntsc(1, "NTSC", ""),
 	pal(2, "PAL", ""),
-	film(3, "Film", "");
+	film(3, "Film (24 fps)", ""),
+	silent(4, "Silent film (18 fps)", ""),
+	secam(5, "SECAM", "");
 	
 	private int id;
 	private String shortName;
