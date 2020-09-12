@@ -34,6 +34,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -49,6 +50,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
 import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
@@ -149,23 +151,33 @@ public class MovieDialog extends Dialog {
 	private SelectionListener r0CheckListener;
 	private MouseListener imageClickListener;
 	
-	private final static int COVER_WIDTH = 200;
-	private final static int COVER_HEIGHT = 300;
+	private final static int COVER_WIDTH = Math.round(200 * MainWindow.DPI_SCALE);
+	private final static int COVER_HEIGHT = Math.round(300 * MainWindow.DPI_SCALE);
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
+//		this.setShellStyle(SWT.CLOSE|SWT.RESIZE);
 		
-		mainTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).createImage();
-		taglineTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).createImage();
-		actorTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).createImage();
-		formatTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).createImage();
-		audioTabIcon = ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB).createImage();
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
+		mainTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).createImage(), iconSize, iconSize);
+		taglineTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).createImage(), iconSize, iconSize);
+		actorTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).createImage(), iconSize, iconSize);
+		formatTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).createImage(), iconSize, iconSize);
+		audioTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB).createImage(), iconSize, iconSize);
 		
 		this.movie = movie;
 		
 		//TODO Sets keyboard focus to the save button
 //		saveButton.setFocus();
 	}
+	
+//	protected boolean isResizable() {
+//		return true;
+//	}
+//	
+//	protected Point getInitialSize() {
+//		return new Point(1000, 900);
+//	}
 	
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
@@ -174,23 +186,25 @@ public class MovieDialog extends Dialog {
 	
 	protected Control createDialogArea(Composite parent) {
 		Composite c = new Composite(parent, SWT.NONE);
+//		Composite c = new Composite(parent, SWT.FILL);
+//		c.setBackground(this.getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
 		
 		GridLayout gridLayout = new GridLayout(3, false);
-		c.setLayout(gridLayout);
 		gridLayout.marginWidth = 8;
 		gridLayout.marginHeight = 8;
 		gridLayout.verticalSpacing = 6;
 		gridLayout.horizontalSpacing = 6;
+		c.setLayout(gridLayout);
 		
 		GridData tabFolderGD = new GridData();
 		tabFolderGD.horizontalSpan = 3;
-		tabFolderGD.horizontalAlignment = SWT.FILL;
-		tabFolderGD.verticalAlignment = SWT.FILL;
+		tabFolderGD.horizontalAlignment = SWT.FILL/*|SWT.RESIZE*/;
+		tabFolderGD.verticalAlignment = SWT.FILL/*|SWT.RESIZE*/;
 		tabFolderGD.grabExcessVerticalSpace = true;
 				
-		final CTabFolder tabFolder = new CTabFolder(c, SWT.BORDER);
+		final CTabFolder tabFolder = new CTabFolder(c, SWT.BORDER/*|SWT.RESIZE*/);
 		tabFolder.setSimple(false);
-		tabFolder.setTabHeight(24);
+		tabFolder.setTabHeight(Math.round(24*MainWindow.DPI_SCALE));
 		tabFolder.marginHeight = 0;
 		tabFolder.marginWidth = 0;
 		tabFolder.setBorderVisible(true);
@@ -584,7 +598,7 @@ public class MovieDialog extends Dialog {
 		languageText.setEditable(false);
 		
 		tab1.setControl(c1);
-		c1.setSize(700, 300);
+		//c1.setSize(700, 300);
 	}
 	
 	
@@ -916,8 +930,7 @@ public class MovieDialog extends Dialog {
 	}
 
 	private void setImageAreaFromModel() {
-		imageArea.setImage(new Image(MainWindow.getMainWindow().getShell().getDisplay(), 
-				CONST.scaleImage(movie.getImageData(), false, COVER_WIDTH, COVER_HEIGHT)));
+		imageArea.setImage(Utils.resizePreserveAspect(movie.getImageData(), COVER_WIDTH, COVER_HEIGHT));
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {

@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -27,6 +28,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
 import com.googlecode.jmoviedb.enumerated.FormatType;
@@ -59,16 +61,17 @@ public class AudioSubtitleTable {
 		this.audio = audio;
 		this.formatCombo = formatCombo;
 		
-		tickImage = ImageDescriptor.createFromURL(CONST.ICON_TICK12).createImage();
-		addImage = ImageDescriptor.createFromURL(CONST.ICON_ADD).createImage();
-		removeImage = ImageDescriptor.createFromURL(CONST.ICON_DELETE).createImage();
-		upImage = ImageDescriptor.createFromURL(CONST.ICON_UP).createImage();
-		downImage = ImageDescriptor.createFromURL(CONST.ICON_DOWN).createImage();
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
+		tickImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_TICK12).getImageData(), iconSize, iconSize);
+		addImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADD).getImageData(), iconSize, iconSize);
+		removeImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DELETE).getImageData(), iconSize, iconSize);
+		upImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_UP).getImageData(), iconSize, iconSize);
+		downImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DOWN).getImageData(), iconSize, iconSize);
 		
 		if(audio)
-			columnNames = new String[] {"Language","Commentary track","Audio descriptive","Format","Channels"};
+			columnNames = new String[] {"#", "Language","Commentary track","Audio descriptive","Format","Channels"};
 		else
-			columnNames = new String[] {"Language","Commentary track","Hearing impaired","Forced","Format"};
+			columnNames = new String[] {"#", "Language","Commentary track","Hearing impaired","Forced","Format"};
 		
 		// Create the table 
 		createTable(parent);
@@ -85,6 +88,9 @@ public class AudioSubtitleTable {
 	public void setModel(ArrayList arrayList) {
 		this.model = arrayList;
 		tableViewer.setInput(arrayList);
+		for (TableColumn col : table.getColumns()) {
+			col.pack();
+		}
 	}
 	
 	public ArrayList getModel() {
@@ -114,9 +120,9 @@ public class AudioSubtitleTable {
 
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalSpan = 4;
+		gridData.horizontalSpan = 5;
 		gridData.minimumHeight = 100;
-		table.setLayoutData(gridData);		
+		table.setLayoutData(gridData);
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -124,9 +130,9 @@ public class AudioSubtitleTable {
 		TableColumn column;
 		
 		for(int i=0; i<columnNames.length; i++) {
-			column = new TableColumn(table, SWT.CENTER, i);		
+			column = new TableColumn(table, SWT.LEFT, i);		
 			column.setText(columnNames[i]);
-			column.setWidth(100);
+			column.setWidth(Math.round(100 * MainWindow.DPI_SCALE));
 		}
 
 	}
@@ -143,16 +149,17 @@ public class AudioSubtitleTable {
 
 		// Create the cell editors
 		CellEditor[] editors = new CellEditor[columnNames.length];
-		editors[0] = new ComboBoxCellEditor(table, Language.getStringArray(), SWT.READ_ONLY);
-		editors[1] = new CheckboxCellEditor(table);
+		editors[0] = new TextCellEditor(table);
+		editors[1] = new ComboBoxCellEditor(table, Language.getStringArray(), SWT.READ_ONLY);
+		editors[2] = new CheckboxCellEditor(table);
 		if(audio) {
-			editors[2] = new CheckboxCellEditor(table);
-			editors[3] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
-			editors[4] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
-		} else {
-			editors[2] = new CheckboxCellEditor(table);
 			editors[3] = new CheckboxCellEditor(table);
-			editors[4] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
+			editors[4] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
+			editors[5] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
+		} else {
+			editors[3] = new CheckboxCellEditor(table);
+			editors[4] = new CheckboxCellEditor(table);
+			editors[5] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
 		}
 
 		// Assign the cell editors to the viewer 
@@ -315,20 +322,23 @@ public class AudioSubtitleTable {
 		public String getColumnText(Object element, int columnIndex) {
 			String result = "";
 			switch (columnIndex) {
-			case 0:  // COMPLETED_COLUMN
+			case 0:
+				result = (AudioSubtitleTable.this.getModel().indexOf(element)+1)+"";
+				break;
+			case 1:  // COMPLETED_COLUMN
 				if(audio)
 					result += ((AudioTrack)element).getLanguage().getName();
 				else
 					result += ((SubtitleTrack)element).getLanguage().getName();
 				break;
-			case 1:
 			case 2:
-				break;
 			case 3:
+				break;
+			case 4:
 				if(audio)
 					result += ((AudioTrack)element).getAudio().getShortName();
 				break;
-			case 4 :
+			case 5 :
 				if(audio)
 					result += ((AudioTrack)element).getChannels().getDescription();
 				else
@@ -345,20 +355,20 @@ public class AudioSubtitleTable {
 		 */
 		public Image getColumnImage(Object element, int columnIndex) {
 			if(audio) {
-				if(columnIndex == 1)
+				if(columnIndex == 2)
 					if(((AudioTrack)element).isCommentary())
 						return tickImage;
-				if(columnIndex == 2)
+				if(columnIndex == 3)
 					if(((AudioTrack)element).isAudioDescriptive())
 						return tickImage;
 			} else {
-				if(columnIndex == 1)
+				if(columnIndex == 2)
 					if(((SubtitleTrack)element).isCommentary())
 						return tickImage;
-				if(columnIndex == 2)
+				if(columnIndex == 3)
 					if(((SubtitleTrack)element).isHearingImpaired())
 						return tickImage;
-				if(columnIndex == 3)
+				if(columnIndex == 4)
 					if(((SubtitleTrack)element).isForced())
 						return tickImage;
 			}
@@ -373,8 +383,10 @@ public class AudioSubtitleTable {
 		 * @see org.eclipse.jface.viewers.ICellModifier#canModify(java.lang.Object, java.lang.String)
 		 */
 		public boolean canModify(Object element, String property) {
-			System.out.println("CellModifier canModify "+element+" "+property);
-			return true;
+			// System.out.println("CellModifier canModify "+element+" "+property);
+			int columnIndex = Arrays.asList(columnNames).indexOf(property);
+			
+			return columnIndex != 0;
 		}
 
 		/**
@@ -389,19 +401,19 @@ public class AudioSubtitleTable {
 				AudioTrack track = (AudioTrack)element;
 
 				switch(columnIndex) {
-				case 0: 
+				case 1: 
 					result = track.getLanguage().ordinal();
 					break;
-				case 1:
+				case 2:
 					result = track.isCommentary();
 					break;
-				case 2:
+				case 3:
 					result = track.isAudioDescriptive();
 					break;
-				case 3:
+				case 4:
 					result = track.getAudio().ordinal();
 					break;
-				case 4: 
+				case 5: 
 					result = track.getChannels().ordinal();
 					break;
 				default :
@@ -411,20 +423,20 @@ public class AudioSubtitleTable {
 				SubtitleTrack track = (SubtitleTrack)element;
 
 				switch(columnIndex) {
-				case 0: 
+				case 1: 
 //					result = Arrays.asList(Language.values()).indexOf(track);
 					result = track.getLanguage().ordinal();
 					break;
-				case 1:
+				case 2:
 					result = track.isCommentary();
 					break;
-				case 2:
+				case 3:
 					result = track.isHearingImpaired();
 					break;
-				case 3:
+				case 4:
 					result = track.isForced();
 					break;
-				case 4: 
+				case 5: 
 					result = track.getFormat().getID();
 					break;
 				default :
@@ -445,19 +457,19 @@ public class AudioSubtitleTable {
 				AudioTrack track = (AudioTrack)(((TableItem)element).getData());
 
 				switch (columnIndex) {
-				case 0:
+				case 1:
 					track.setLanguage(Language.values()[(Integer)value]);
 					break;
-				case 1:
+				case 2:
 					track.setCommentary((Boolean)value);
 					break;
-				case 2:
+				case 3:
 					track.setAudioDescriptive((Boolean)value);
 					break;
-				case 3:
+				case 4:
 					track.setAudio(AudioCodec.values()[(Integer)value]);
 					break;
-				case 4:
+				case 5:
 					track.setChannels(AudioChannels.values()[(Integer)value]);
 					break;
 				default:
@@ -466,19 +478,19 @@ public class AudioSubtitleTable {
 				SubtitleTrack track = (SubtitleTrack)(((TableItem)element).getData());
 
 				switch (columnIndex) {
-				case 0:
+				case 1:
 					track.setLanguage(Language.values()[(Integer)value]);
 					break;
-				case 1:
+				case 2:
 					track.setCommentary((Boolean)value);
 					break;
-				case 2:
+				case 3:
 					track.setHearingImpaired((Boolean)value);
 					break;
-				case 3:
+				case 4:
 					track.setForced((Boolean)value);
 					break;
-				case 4:
+				case 5:
 					track.setFormat(SubtitleFormat.values()[(Integer)value]);
 					break;
 				default:
