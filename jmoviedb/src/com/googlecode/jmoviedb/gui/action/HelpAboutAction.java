@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.AboutDialog;
 import com.googlecode.jmoviedb.gui.MainWindow;
 
@@ -34,7 +35,8 @@ public class HelpAboutAction extends Action {
 		this.window = window;
 		setText("About JMoviedb");
 		setToolTipText("About JMoviedb");
-		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ABOUT));
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ABOUT), iconSize, iconSize));
 	}
 	
 	public void run() {

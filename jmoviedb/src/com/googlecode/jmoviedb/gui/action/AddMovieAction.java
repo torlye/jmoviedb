@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.language.GuiLanguage;
 import com.googlecode.jmoviedb.model.movietype.Film;
@@ -39,37 +40,37 @@ public class AddMovieAction extends Action {
 	public AddMovieAction(int movieType) {
 		super("");
 		this.movieType = movieType;
-
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
 		switch(movieType) {
 		case CONST.MOVIETYPE_FILM:
 			setText(GuiLanguage.ADDFILM + "...");
 			setToolTipText(GuiLanguage.ADDFILM);
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDFILM));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDFILM), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_VIDEOMOVIE:
 			setText(GuiLanguage.ADDVIDEOMOVIE + "...");
 			setToolTipText(GuiLanguage.ADDVIDEOMOVIE);
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDVIDEOMOVIE));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDVIDEOMOVIE), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_TVMOVIE:
 			setText(GuiLanguage.ADDTVMOVIE + "...");
 			setToolTipText(GuiLanguage.ADDTVMOVIE);
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDTVMOVIE));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDTVMOVIE), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_TVSERIES:
 			setText(GuiLanguage.ADDTVSERIES + "...");
 			setToolTipText(GuiLanguage.ADDTVSERIES);
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDTVSERIES));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDTVSERIES), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_MINISERIES:
 			setText(GuiLanguage.ADDMINISERIES + "...");
 			setToolTipText(GuiLanguage.ADDMINISERIES);
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDMINISERIES));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDMINISERIES), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_MOVIESERIAL:
 			setText(GuiLanguage.ADDMOVIESERIAL + "...");
 			setToolTipText(GuiLanguage.ADDMOVIESERIAL);
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_ADDMOVIESERIAL));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDMOVIESERIAL), iconSize, iconSize));
 			break;
 		}
 	}

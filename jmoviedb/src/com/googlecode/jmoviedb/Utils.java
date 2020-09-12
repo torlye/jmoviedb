@@ -6,11 +6,85 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 public class Utils {
+	public static ImageDescriptor resizePreserveAspect(ImageDescriptor imageDesc, int maxWidth, int maxHeight) {
+		ImageData imageData = imageDesc.getImageData();
+		
+		if (imageData.width==maxWidth || imageData.height==maxHeight)
+			return imageDesc;
+		
+		return ImageDescriptor.createFromImage(resizePreserveAspect(imageData, maxWidth, maxHeight));
+	}
+	
+	public static Image resizePreserveAspect(ImageData imageData, int maxWidth, int maxHeight) {
+		Image image = new Image(Display.getCurrent(), imageData);
+		return resizePreserveAspect(image, maxWidth, maxHeight);
+	}
+	
+	public static Image resizePreserveAspect(Image image, int maxWidth, int maxHeight) {
+		ImageData imageData = image.getImageData();
+		
+		if (imageData.width==maxWidth || imageData.height==maxHeight)
+			return image;
+		
+		float widthfactor = (float)maxWidth/(float)imageData.width;
+		float heightFactor = (float)maxHeight/(float)imageData.height;
+		
+		float scale = Math.min(widthfactor, heightFactor);
+		int newWidth = Math.round(scale * imageData.width);
+	    int newHeight = Math.round(scale * imageData.height);
+	    
+	    return resize(image, newWidth, newHeight);
+	}
+	
+	public static Image resize(Image image, int newWidth, int newHeight) {
+		Image scaled = new Image(Display.getCurrent(), newWidth, newHeight);
+		GC gc = new GC(scaled);
+		try
+		{
+			// This method of scaling yields high quality, but does not preserve transparency.
+		    gc.setAntialias(SWT.ON);
+		    gc.setInterpolation(SWT.HIGH);
+		    gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, newWidth, newHeight);
+		    ImageData interpolatedScaledImageData = scaled.getImageData();
+		    
+		    switch (image.getImageData().getTransparencyType()) {
+		    case SWT.TRANSPARENCY_PIXEL:
+		    	interpolatedScaledImageData.transparentPixel = image.getImageData().transparentPixel;
+		    	scaled.dispose();
+		    	return new Image(Display.getCurrent(), interpolatedScaledImageData);
+		    	
+		    case SWT.TRANSPARENCY_ALPHA:
+		    	// The simple linear scaling of ImageData.scaledTo handles alpha; but yields poor image quality.
+		    	// We copy only the scaled alpha and add it to our good interpolated scaled image.
+		    	ImageData simpleScaledImgData = image.getImageData().scaledTo(newWidth, newHeight);
+		    	byte[] alpha = simpleScaledImgData.alphaData;
+		    	interpolatedScaledImageData.alphaData = alpha;
+		    	scaled.dispose();
+		    	return new Image(Display.getCurrent(), interpolatedScaledImageData);
+		    	
+		    case SWT.TRANSPARENCY_MASK:
+		    	System.out.println("Transparency mask not implemented");
+		    case SWT.TRANSPARENCY_NONE:
+	    	default:
+	    		return scaled;	    		
+		    }
+		}
+		finally {
+			gc.dispose();
+			image.dispose();
+		}
+	}
+	
 	/**
 	 * Resizes an image, using the given scaling factor. Constructs a new image resource, please take care of resource
 	 * disposal if you no longer need the original one. This method is optimized for quality, not for speed.

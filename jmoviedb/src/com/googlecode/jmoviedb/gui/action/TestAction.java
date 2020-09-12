@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 
 import org.eclipse.jface.action.Action;
@@ -34,10 +35,11 @@ public class TestAction extends Action {
 		setToolTipText(message);
 		this.message = message;
 		this.exception = exception;
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
 		if(exception)
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_EXCLAMATION));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_EXCLAMATION), iconSize, iconSize));
 		else
-			setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_PREFERENCES));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_PREFERENCES), iconSize, iconSize));
 	}
 	
 	/**

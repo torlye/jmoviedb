@@ -21,6 +21,7 @@ package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.language.GuiLanguage;
 
@@ -40,7 +41,8 @@ public class FileSaveAsAction extends Action {
 	public FileSaveAsAction() {
 		setText(GuiLanguage.SAVEAS + "...");
 		setToolTipText(GuiLanguage.SAVEAS);
-		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_SAVEAS));
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_SAVEAS), iconSize, iconSize));
 	}
 	
 	private String saveFileDialog() {

@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 
 import org.eclipse.jface.action.Action;
@@ -32,7 +33,8 @@ public class FileOpenAction extends Action {
 	public FileOpenAction() {
 		setText("Open...");
 		setToolTipText("Open");
-		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_OPEN));
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_OPEN), iconSize, iconSize));
 	}
 	
 	private String openFileDialog() {

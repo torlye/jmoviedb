@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.SQLWizard;
 
@@ -25,7 +26,8 @@ public class CustomSQLaction extends Action {
 	public CustomSQLaction() {
 		setText("Custom SQL Query...");
 		setToolTipText("Run a custom SQL Query");
-		setImageDescriptor(ImageDescriptor.createFromURL(CONST.ICON_DATABASE_EDIT));
+		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DATABASE_EDIT), iconSize, iconSize));
 	}
 
 	public void run() {
