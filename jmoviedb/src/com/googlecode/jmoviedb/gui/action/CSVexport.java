@@ -51,7 +51,7 @@ public class CSVexport implements IRunnableWithProgress {
 			writer.writeComment("MOVIEID, TYPE, IMDBID, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, VERSION, PIRATED, SEEN, "
 					+ "LOCATION, FORMAT, DISC,VIDEO,DVDREGION, TVSYSTEM, SCENERELEASENAME,VIDEORESOLUTION,VIDEOASPECT,CONTAINER,COMPLETENESS,YEAR2,"
 					+ "COUNTRY, LANGUAGE, GENRE, DIRECTORS, WRITERS, ACTORS,"
-					+ "AUDIO, SUBTITLES, NOTES, COVER");
+					+ "AUDIO, SUBTITLES, NOTES, URL1, URL2, COVER");
 			
 			for (int i = 0; i < list.size(); i++)
 			{
@@ -94,7 +94,9 @@ public class CSVexport implements IRunnableWithProgress {
 						getActors(movie),
 						getAudio(movie),
 						getSubtitle(movie),
-						movie.getNotes()
+						movie.getNotes(),
+						movie.getUrl1StringOrNull(),
+						movie.getUrl2StringOrNull(),
 						//getCover(movie)
 					};
 					

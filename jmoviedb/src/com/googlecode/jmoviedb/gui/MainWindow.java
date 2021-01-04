@@ -240,6 +240,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		
 		MenuManager exportMenu = new MenuManager("&Export");
 		exportMenu.add(exportCSVaction);
+		exportMenu.add(new ExportCsvLetterboxdAction());
 		menuManager.add(exportMenu);
 		
 		/*MenuManager editMenu = new MenuManager("&Edit");
