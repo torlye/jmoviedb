@@ -204,7 +204,7 @@ public abstract class AbstractMovie implements Cloneable {
 		this.notes = "";
 		this.version = FilmVersion.unspecified;
 		this.customVersion = "";
-		this.legal = false;
+		this.legal = true;
 		this.seen = false;
 		this.format = FormatType.other;
 		this.container = ContainerFormat.other;

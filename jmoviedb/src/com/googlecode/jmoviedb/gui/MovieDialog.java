@@ -20,6 +20,7 @@
 package com.googlecode.jmoviedb.gui;
 
 import java.awt.Event;
+import java.awt.PageAttributes.MediaType;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -104,7 +105,7 @@ public class MovieDialog extends Dialog {
 //	private Button myEncodeCheck;
 	private Text sceneNameText;
 	private Combo aspectCombo;
-	private Text url1Text;
+//	private Text url1Text;
 	private Text url2Text;
 	
 	private Table actorTable;
@@ -275,6 +276,7 @@ public class MovieDialog extends Dialog {
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					containerCombo.select(ContainerFormat.vob.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
+					discCombo.select(DiscType.dvd.ordinal());
 					
 					videoCodecCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
@@ -297,6 +299,7 @@ public class MovieDialog extends Dialog {
 				} else if(selectedValue == FormatType.bluray || selectedValue == FormatType.bluray3d) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
+					discCombo.select(DiscType.bd.ordinal());
 					
 					regionLabel.setVisible(true);
 					r0.setVisible(true);
@@ -309,10 +312,11 @@ public class MovieDialog extends Dialog {
 				} else if(selectedValue == FormatType.uhdbluray) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
+					discCombo.select(DiscType.uhdbd.ordinal());
 					
 				} else if(selectedValue == FormatType.hddvd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
-
+					discCombo.select(DiscType.hddvd.ordinal());
 					containerCombo.setEnabled(false);
 					
 				} else if(selectedValue == FormatType.avchd) {
@@ -326,6 +330,7 @@ public class MovieDialog extends Dialog {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg1.ordinal());
 					resolutionCombo.select(Resolution.cif.ordinal());
+					discCombo.select(DiscType.cd.ordinal());
 
 					containerCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
@@ -335,6 +340,7 @@ public class MovieDialog extends Dialog {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
+					discCombo.select(DiscType.cd.ordinal());
 					
 					containerCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
@@ -354,8 +360,30 @@ public class MovieDialog extends Dialog {
 				} else if(selectedValue == FormatType.vhs) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
-					resolutionCombo.select(Resolution.cif.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
 					discCombo.select(DiscType.vhs.ordinal());
+
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					discCombo.setEnabled(false);
+					
+				} else if(selectedValue == FormatType.betamax) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					videoCodecCombo.select(VideoCodec.analog.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					discCombo.select(DiscType.betamax.ordinal());
+
+					containerCombo.setEnabled(false);
+					containerCombo.setEnabled(false);
+					resolutionCombo.setEnabled(false);
+					discCombo.setEnabled(false);
+					
+				} else if(selectedValue == FormatType.video8) {
+					containerCombo.select(ContainerFormat.medianative.ordinal());
+					videoCodecCombo.select(VideoCodec.analog.ordinal());
+					resolutionCombo.select(Resolution.sd.ordinal());
+					discCombo.select(DiscType.video8.ordinal());
 
 					containerCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
@@ -809,10 +837,10 @@ public class MovieDialog extends Dialog {
 		sceneNameText = new Text(c, SWT.SINGLE|SWT.BORDER);
 		sceneNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
 		
-		Label urlLabel1 = new Label(c, SWT.CENTER);
-		urlLabel1.setText("Discogs URL");
-		url1Text = new Text(c, SWT.SINGLE|SWT.BORDER);
-		url1Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
+//		Label urlLabel1 = new Label(c, SWT.CENTER);
+//		urlLabel1.setText("Discogs URL");
+//		url1Text = new Text(c, SWT.SINGLE|SWT.BORDER);
+//		url1Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
 		
 		Label urlLabel2 = new Label(c, SWT.CENTER);
 		urlLabel2.setText("blu-ray.com/lddb.com");
@@ -902,7 +930,7 @@ public class MovieDialog extends Dialog {
 		locationText.setText(m.getLocation());
 //		myEncodeCheck.setSelection(m.isMyEncode());
 		sceneNameText.setText(m.getSceneReleaseName());
-		url1Text.setText(m.getUrl1String());
+//		url1Text.setText(m.getUrl1String());
 		url2Text.setText(m.getUrl2String());
 		
 		actorNameColumn.pack();
@@ -1034,7 +1062,7 @@ public class MovieDialog extends Dialog {
 		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
 		movie.setLocation(locationText.getText());
 		movie.setSceneReleaseName(sceneNameText.getText());
-		movie.setUrl1(url1Text.getText());
+//		movie.setUrl1(url1Text.getText());
 		movie.setUrl2(url2Text.getText());
 //		movie.setMyEncode(myEncodeCheck.getSelection());
 		
