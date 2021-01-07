@@ -58,7 +58,8 @@ public enum FormatType {
 	vhd(25, "VHD", "", "", null),
 	super8(26, "Super 8", "", "", null),
 	regular8(27, "Regular 8 mm", "", "", null),
-	divx(28, "DIVX", "", "", null)
+	divx(28, "DIVX", "", "", null),
+	moviecd(29, "MovieCD", "", "", null),
 	;
 	
 	private int id;
