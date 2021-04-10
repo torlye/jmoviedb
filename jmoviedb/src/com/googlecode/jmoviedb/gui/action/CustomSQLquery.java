@@ -79,6 +79,7 @@ public class CustomSQLquery implements IRunnableWithProgress {
 				results = resultsList.toArray(new String[resultsList.size()][]);
 				resultsList = null;
 				rs.getStatement().close();
+				rs.close();
 				
 			} else if(sqlResult instanceof Integer) {
 				columnNames = new String[]{"SQL update"};

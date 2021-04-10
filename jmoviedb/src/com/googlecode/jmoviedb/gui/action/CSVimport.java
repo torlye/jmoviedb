@@ -40,9 +40,9 @@ import com.csvreader.CsvReader;
  */
 public class CSVimport implements IRunnableWithProgress {
 	
-	private String filePath;
-	private int read;
-	private int skipped;
+	protected String filePath;
+	protected int read;
+	protected int skipped;
 	
 	/**
 	 * The default constructor.

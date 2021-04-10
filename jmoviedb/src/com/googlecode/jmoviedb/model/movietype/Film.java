@@ -74,7 +74,7 @@ public class Film extends AbstractMovie {
 	 * @param comment user comment from IMDb. Ignored in the current implementation.
 	 * @param country list of countries, separated by slashes. Example: &quot;Belgium / USA&quot;. Ignored in the current implementation.
 	 * @param year the year in which the movie was made.
-	 * @param runtime movie runtime in minutes. Ignored in the current implementation.
+	 * @param runtime movie runtime in minutes.
 	 * @param rate movie rating from IMDb. Ignored in the current implementation.
 	 * @param subLanguages list of subtitle languages.
 	 */
@@ -93,6 +93,7 @@ public class Film extends AbstractMovie {
 		
 		setImdbID(imdbURL);
 		setYear(year);
+		setRunTime(runtime);
 		
 		//parse the format parameter
 		if(format.toLowerCase().contains("dvd")) {
@@ -147,6 +148,12 @@ public class Film extends AbstractMovie {
 			setContainer(ContainerFormat.ratdvd);
 		} else if(format.toLowerCase().contains("h264")) {
 			setVideo(VideoCodec.h264);
+		} else if(format.toLowerCase().contains("3d blu-ray")) {
+			setFormat(FormatType.bluray3d);
+		} else if(format.toLowerCase().contains("blu-ray")) {
+			setFormat(FormatType.bluray);
+		} else if(format.toLowerCase().contains("vhs")) {
+			setFormat(FormatType.vhs);
 		} else {
 			System.out.println("Did not recognise format \"" + format + "\"");
 		}

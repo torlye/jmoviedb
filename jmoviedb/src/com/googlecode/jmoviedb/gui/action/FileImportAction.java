@@ -20,20 +20,23 @@
 package com.googlecode.jmoviedb.gui.action;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.gui.MainWindow;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 
 public class FileImportAction extends Action {
 	
-	public FileImportAction() {
-		setText("Import...");
-		setToolTipText("Import"); 
+	public FileImportAction(int type) {
+		this.type = type;
+		setText(type == 1 ? "Import Moviedb" : "Import E.F.");
+		setToolTipText(type == 1 ? "Import from the classic Moviedb app" : "Import from E.F. Access database"); 
 	}
 	
 	public void run() {
@@ -42,7 +45,7 @@ public class FileImportAction extends Action {
 		if(filePath != null) {
 			try {
 				//Create and run a dialog with a progress monitor
-				CSVimport importWorker = new CSVimport(filePath);
+				CSVimport importWorker = type == 1 ? new CSVimport(filePath) : new CSVimportEF(filePath);
 				new ProgressMonitorDialog(MainWindow.getMainWindow().getShell()).run(false, false, importWorker);
 				
 				// Display message box to show how the operation went
@@ -63,9 +66,17 @@ public class FileImportAction extends Action {
 	private String openFile() {
 		FileDialog dialog = new FileDialog(MainWindow.getMainWindow().getShell(), SWT.OPEN);
 		dialog.setText("Import CSV file");
-        String[] fileExtensions = {"*.csv"};
-        dialog.setFilterExtensions(fileExtensions);
+        ArrayList<String> fileExtensions = new ArrayList<String>();
+        if (type == 1) {
+        	fileExtensions.add("*.csv");
+        }
+        else {
+        	fileExtensions.add("*.txt");
+        }
+        dialog.setFilterExtensions(fileExtensions.toArray(new String[0]));
         String path = dialog.open();
         return path;
 	}
+	
+	private int type;
 }

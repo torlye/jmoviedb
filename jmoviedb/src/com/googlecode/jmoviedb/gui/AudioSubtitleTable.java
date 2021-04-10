@@ -285,11 +285,11 @@ public class AudioSubtitleTable {
 		
 		if(format == FormatType.dvd) {
 			audioformat = AudioCodec.ac3;
-			channels = AudioChannels.surround51;
+			channels = AudioChannels.none;
 			subformat = SubtitleFormat.vobsub;
 		} else if(format == FormatType.bluray||format == FormatType.hddvd||format == FormatType.avchd||format == FormatType.bluray3d||format == FormatType.uhdbluray) {
-			audioformat = AudioCodec.ac3;
-			channels = AudioChannels.surround51;
+			audioformat = AudioCodec.other;
+			channels = AudioChannels.none;
 			subformat = SubtitleFormat.medianative;
 		} else if(format == FormatType.vcd) {
 			audioformat = AudioCodec.mp2;

@@ -98,7 +98,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private OpenPreviousAction openPreviousAction2;
 	private OpenPreviousAction openPreviousAction3;
 	private OpenPreviousAction openPreviousAction4;
-	private FileImportAction fileImportAction;
 	private FileExitAction fileExitAction;
 	
 	private SortParameterAction sortByIdAction;
@@ -176,7 +175,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		newAction = new FileNewAction();
 		fileOpenAction = new FileOpenAction();
 		printAction = new PrintAction();
-		fileImportAction = new FileImportAction();
 		createRecentFilesMenu();
 		fileExitAction = new FileExitAction();
 		sortAscendingAction = new SortParameterAction(CONST.SORT_ASCENDING);
@@ -228,8 +226,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		fileMenu.add(new Separator());
 		fileMenu.add(printAction);
 		fileMenu.add(new Separator());
-		fileMenu.add(fileImportAction);
-		fileMenu.add(new Separator());
 		fileMenu.add(openPreviousAction1);
 		fileMenu.add(openPreviousAction2);
 		fileMenu.add(openPreviousAction3);
@@ -238,7 +234,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		fileMenu.add(fileExitAction);
 		menuManager.add(fileMenu);
 		
-		MenuManager exportMenu = new MenuManager("&Export");
+		MenuManager exportMenu = new MenuManager("&Import/Export");
+		exportMenu.add(new FileImportAction(1));
+		exportMenu.add(new FileImportAction(2));
 		exportMenu.add(exportCSVaction);
 		exportMenu.add(new ExportCsvLetterboxdAction());
 		menuManager.add(exportMenu);
