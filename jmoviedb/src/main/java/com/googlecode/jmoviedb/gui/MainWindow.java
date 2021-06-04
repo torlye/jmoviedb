@@ -34,13 +34,9 @@ import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swt.EventKTableModel;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
+import com.googlecode.jmoviedb.*;
 import com.googlecode.jmoviedb.gui.action.*;
-import com.googlecode.jmoviedb.gui.action.sort.FormatSorter;
-import com.googlecode.jmoviedb.gui.action.sort.IdSorter;
-import com.googlecode.jmoviedb.gui.action.sort.RatingSorter;
-import com.googlecode.jmoviedb.gui.action.sort.TitleSorter;
-import com.googlecode.jmoviedb.gui.action.sort.YearSorter;
+import com.googlecode.jmoviedb.gui.action.sort.*;
 import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
@@ -86,7 +82,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private static final int toolBarStyle = SWT.FLAT;
 	
 	private static MainWindow instance;
-	private static Settings settings;
 	
 	//actions
 	private FileNewAction newAction;
@@ -133,7 +128,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private EventKTableModel viewer;
 	
 	private SearchField searchField;
-        private SearchDropDownMenu dropdownMenu;
+    private SearchDropDownMenu dropdownMenu;
 //	private ClearSearchfieldAction clearSearchfieldAction;
         
 	private StatusLineThreadManager statusLine;
@@ -143,6 +138,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	
 	private int tableCellFontHeight = 17;
 	
+	private Settings settings;
+	
 	public static final int DPI_CURRENT = Display.getDefault().getDPI().x;
 	public static final float DPI_DEFAULT = 96.0f;
 	public static final float DPI_SCALE = DPI_CURRENT / DPI_DEFAULT;
@@ -151,7 +148,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		super(null);
 		instance = this;
 		cmdLineArgs = args;
-		Settings.getSettings().addListener(this);
+		this.settings = Settings.getSettings();
+		this.settings.addListener(this);
 		exceptionHandler = new ExceptionHandler();
 		setExceptionHandler(exceptionHandler);
 		try {
@@ -918,47 +916,4 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 ////			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());			
 ////		return null;
 //	}
-
-	/**
-	 * The main method that launches the application.
-	 * @param args - not currently used
-	 */
-	public static void main(String[] args) {
-		for(String s : args)
-			System.out.println("CmdLineArg: "+s);
-		
-		//Disable creation of the derby.log file
-		System.setProperty("derby.stream.error.method", 
-				"MainWindow.derbyNullLogger");
-		
-		settings = Settings.getSettings();
-		
-		MainWindow m = new MainWindow(args);
-
-		/*MessageDialog.openInformation(m.getShell(), "Warning", 
-				"This is a very early test version of JMoviedb. " +
-				"It has several errors and missing features. " +
-				"Use it for testing only!");*/
-		m.run();
-		
-		
-		/**
-		 * More magic
-		 */
-		new org.eclipse.jface.wizard.Wizard() {
-			public boolean performFinish() {
-				new org.eclipse.jface.dialogs.TitleAreaDialog(null);
-				new org.eclipse.jface.preference.PreferenceDialog(null, null);
-				return false;
-			}
-		};
-	}
-	
-	public static java.io.OutputStream derbyNullLogger(){
-	     return new java.io.OutputStream() {
-	         public void write(int b) throws IOException {
-	             // Ignore all log messages
-	         }
-	     };
-	}
 }
