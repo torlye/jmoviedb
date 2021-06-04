@@ -963,6 +963,10 @@ public abstract class AbstractMovie implements Cloneable {
 		movie.aspectRatio = this.aspectRatio;
 		movie.dvdRegion = this.dvdRegion;
 		movie.imageBytes = this.imageBytes;
+		movie.url1 = this.url1;
+		movie.url2 = this.url2;
+		movie.tmdbId = this.tmdbId;
+		movie.tmdbType = this.tmdbType;
 		return movie;
 	}
 	

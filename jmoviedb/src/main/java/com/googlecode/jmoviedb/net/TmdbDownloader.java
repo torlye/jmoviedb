@@ -9,8 +9,11 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.Genre;
+import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
+import com.googlecode.jmoviedb.model.movietype.TVmovie;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbFind;
@@ -76,7 +79,11 @@ public class TmdbDownloader implements IRunnableWithProgress {
 							.collect(Collectors.toList()));
 					
 					boolean isTvMovie = !tmdbEntry.getGenres().stream().noneMatch(g -> g.getId() == 10770);
-					
+					if (isTvMovie && !(movie instanceof TVmovie)) {
+						TVmovie tvm = new TVmovie();
+						movie.copyTo(tvm);
+						movie = tvm;
+					}
 				}
 			
 			}
