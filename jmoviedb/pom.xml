@@ -110,7 +110,7 @@
             <archive>
               <manifest>
                 <addClasspath>true</addClasspath>
-                <mainClass>com.googlecode.jmoviedb.gui.MainWindow</mainClass>
+                <mainClass>com.googlecode.jmoviedb.Main</mainClass>
               </manifest>
             </archive>
           </configuration>
