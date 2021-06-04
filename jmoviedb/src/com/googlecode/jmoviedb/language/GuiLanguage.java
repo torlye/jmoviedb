@@ -109,6 +109,7 @@ public class GuiLanguage {
 	public static String GENRE_THRILLER = "Thriller";
 	public static String GENRE_WAR = "War";
 	public static String GENRE_WESTERN = "Western";
+	public static String GENRE_ACTIONADVENTURE = "Action & Adventure";
 
 	public static String FORMAT_FILE_DESCRIPTION = "";
 	public static String FORMAT_DVD_DESCRIPTION = "";

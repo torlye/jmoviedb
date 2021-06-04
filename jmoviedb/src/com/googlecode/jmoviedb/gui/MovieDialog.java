@@ -66,6 +66,7 @@ import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
 import com.googlecode.jmoviedb.model.movietype.Film;
 import com.googlecode.jmoviedb.net.ImdbWorker;
+import com.googlecode.jmoviedb.net.TmdbWorker;
 
 /**
  * A MovieDialog is a tabbed dialog box that is used to display or edit information about an AbstractMovie subclass.
@@ -80,6 +81,7 @@ public class MovieDialog extends Dialog {
 	private Label imageArea;
 	private Combo typeCombo;
 	private Text imdbText;
+	private Text tmdbText;
 	private Text titleText;
 	private Text altTitleText;
 	private Text yearText;
@@ -620,7 +622,16 @@ public class MovieDialog extends Dialog {
 			}
 		});
 		
-//		Disable widgets until their respective functions are implememnted.
+		Label tmdbLabel = new Label(c1, SWT.CENTER);
+		tmdbLabel.setText("TMDb address:");
+		tmdbText = new Text(c1, SWT.SINGLE|SWT.BORDER);
+		tmdbText.setToolTipText("If a valid TMDb URL is present, you won't have to select the correct movie " +
+				"when running TMDb updates.");
+		tmdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		Button tmdbGotoButton = new Button(c1, SWT.PUSH);
+		tmdbGotoButton.setText("Go to website");
+		
+//		Disable widgets until their respective functions are implemented.
 		genreText.setEditable(false);
 		countryText.setEditable(false);
 		languageText.setEditable(false);
@@ -879,6 +890,7 @@ public class MovieDialog extends Dialog {
 		this.getShell().setText("Movie info - " + m.getDisplayTitle() + " (" + m.getYear() + ")");
 		typeCombo.select(MovieType.abstractMovieToInt(m));
 		imdbText.setText(m.getImdbUrl());
+		tmdbText.setText(m.getTmdbUrl());
 		titleText.setText(m.getTitle());
 		altTitleText.setText(m.getCustomTitle());
 		if(m.getYear() != 0)
@@ -962,7 +974,7 @@ public class MovieDialog extends Dialog {
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.DETAILS_ID, "IMDb update", false);
+		createButton(parent, IDialogConstants.DETAILS_ID, "TMDb update", false);
 		createButton(parent, IDialogConstants.OK_ID, "OK", true);
 		createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", false);
 		createButton(parent, IDialogConstants.ABORT_ID, "Remove movie", false);
@@ -985,7 +997,7 @@ public class MovieDialog extends Dialog {
 		else if(buttonId == IDialogConstants.DETAILS_ID) { //IMDb update
 			try {
 				save();
-				ImdbWorker w = new ImdbWorker();
+				TmdbWorker w = new TmdbWorker();
 				movie = w.update(movie, getShell());
 				setModel(movie);
 			} catch (Exception e) {

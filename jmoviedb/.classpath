@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi_3.10.0.v20140606-1445.jar"/>
 	<classpathentry kind="lib" path="lib/derby.jar"/>
 	<classpathentry kind="lib" path="lib/json-20190722.jar"/>
+	<classpathentry kind="lib" path="lib/themoviedbapi-1.12.jar" sourcepath="lib/themoviedbapi-1.12-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

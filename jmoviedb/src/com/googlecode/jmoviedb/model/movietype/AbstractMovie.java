@@ -28,6 +28,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +55,8 @@ public abstract class AbstractMovie implements Cloneable {
 
 	//imdb data
 	private String imdbID;
+	private Integer tmdbId;
+	private String tmdbType;
 	private String title;
 	private int year;
 	private int year2;
@@ -375,6 +378,10 @@ public abstract class AbstractMovie implements Cloneable {
 		this.genres = genres;
 	}
 
+	public void setGenres(Collection<Genre> genres) {
+		this.genres = new ArrayList<Genre>(genres);
+	}
+
 	public int getID() {
 		return ID;
 	}
@@ -420,6 +427,63 @@ public abstract class AbstractMovie implements Cloneable {
 			return false;
 		try {
 			new URL(getImdbUrl());
+		} catch (MalformedURLException e) {
+			return false;
+		}
+		return true;
+	}
+	
+
+	public Integer getTmdbID() {
+		return tmdbId;
+	}
+
+	public String getTmdbType() {
+		return tmdbType;
+	}
+	
+	public void setTmdbID(Integer val) {
+		tmdbId = val;
+	}
+
+	public void setTmdbType(String val) {
+		tmdbType = val;
+	}
+
+	/**
+	 * Sets the TMDb ID and type from a string containing  
+	 * the TMDb URL.
+	 * @param url a string containing the TMDb URL
+	 */
+	public void setTmdbID(String url) {
+		if(url == null || url.isEmpty())
+			this.tmdbType = null;
+		Matcher matcher = Pattern.compile("/([a-zA-z]+)/(\\d{1,8})\\D*").matcher(url);
+		if(matcher.find()) {
+			this.tmdbType = matcher.group(1);
+			this.tmdbId = Integer.parseInt(matcher.group(2));
+		}
+	}
+	
+	/**
+	 * Returns the TMDb URL (as a String) of the current movie. 
+	 * @return TMDb URL
+	 */
+	public String getTmdbUrl() {
+		if(getTmdbType() == null || getImdbID().length() == 0 || getTmdbID() == null)
+			return "";
+		return "https://www.themoviedb.org/"+getTmdbType()+"/"+getTmdbID();
+	}
+	
+	/**
+	 * Checks whether or not the TMDb URL will be valid if it is requested now
+	 * @return
+	 */
+	public boolean isTmdbUrlValid() {
+		if(getTmdbType() == null || getImdbID().length() == 0 || getTmdbID() == null)
+			return false;
+		try {
+			new URL(getTmdbUrl());
 		} catch (MalformedURLException e) {
 			return false;
 		}
