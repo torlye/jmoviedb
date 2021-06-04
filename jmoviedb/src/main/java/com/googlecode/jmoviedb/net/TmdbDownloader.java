@@ -54,7 +54,7 @@ public class TmdbDownloader implements IRunnableWithProgress {
 				
 				if(originalTitle != null) {
 					movie.setTitle(originalTitle);
-					if(title != null)
+					if(title != null && title != originalTitle)
 						movie.setCustomTitle(title);
 				} 
 				else if(title != null)
@@ -68,12 +68,16 @@ public class TmdbDownloader implements IRunnableWithProgress {
 				
 				movie.setRating(tmdbEntry.getVoteAverage());
 				movie.setPlotOutline(tmdbEntry.getOverview());
-				movie.setGenres(tmdbEntry.getGenres().stream()
-						.map(g -> Genre.tmdbGenreToEnum(g))
-						.filter(v -> v != null)
-						.collect(Collectors.toList()));
 				
-				boolean foo = tmdbEntry.getGenres().stream().noneMatch(g -> g.getId() == 10770);
+				if (tmdbEntry.getGenres() != null) {
+					movie.setGenres(tmdbEntry.getGenres().stream()
+							.map(g -> Genre.tmdbGenreToEnum(g))
+							.filter(v -> v != null)
+							.collect(Collectors.toList()));
+					
+					boolean isTvMovie = !tmdbEntry.getGenres().stream().noneMatch(g -> g.getId() == 10770);
+					
+				}
 			
 			}
 		
