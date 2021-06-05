@@ -52,10 +52,10 @@ public enum Genre {
 	war(25, "War", GuiLanguage.GENRE_WAR, 10752), 
 	western(26, "Western", GuiLanguage.GENRE_WESTERN, 37),
 	actionAdventure(27, "Action & Adventure", GuiLanguage.GENRE_ACTIONADVENTURE, 10759),
-	kids(28, "Kids", null, 10762),
-	scifiFantasy(29, "Sci-Fi & Fantasy", null, 10765),
-	soap(30, "Soap", null, 10766),
-	warPolitics(31, "War & Politics", null, 10768);
+	kids(28, "Kids", "Kids", 10762),
+	scifiFantasy(29, "Sci-Fi & Fantasy", "Sci-Fi & Fantasy", 10765),
+	soap(30, "Soap", "Soap", 10766),
+	warPolitics(31, "War & Politics", "War & Politics", 10768);
 	
 	private int id;
 	private Integer tmdbId;
@@ -112,7 +112,7 @@ public enum Genre {
 	
 	public static Genre tmdbGenreToEnum(info.movito.themoviedbapi.model.Genre genre) {
 		for(Genre g : Genre.values())
-			if(genre.getId() == g.tmdbId)
+			if(g.tmdbId != null && genre.getId() == g.tmdbId)
 				return g;
 		if(CONST.DEBUG_MODE)
 			System.out.println("Unrecognised genre ID: " + genre.getId());

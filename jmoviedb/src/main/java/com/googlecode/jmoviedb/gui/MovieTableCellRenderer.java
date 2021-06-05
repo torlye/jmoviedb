@@ -9,7 +9,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
-import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.FormatType;
@@ -22,11 +21,10 @@ import com.googlecode.jmoviedb.model.movietype.TVseries;
 import com.googlecode.jmoviedb.model.movietype.VideoMovie;
 import com.googlecode.jmoviedb.model.movietype.WebSeries;
 
-import de.kupzog.ktable.KTableCellRenderer;
 import de.kupzog.ktable.KTableModel;
 import de.kupzog.ktable.renderers.DefaultCellRenderer;
 
-public class MovieTableCellRenderer extends DefaultCellRenderer implements KTableCellRenderer {
+public class MovieTableCellRenderer extends DefaultCellRenderer {
 	
 	private final static Color SELECTED_COLOR = new Color(Display.getCurrent(), 255, 159, 117); //ff9f75
 	private final static Color NOT_SEEN_COLOR = new Color(Display.getCurrent(), 250, 247, 221); //faf7dd
@@ -38,8 +36,8 @@ public class MovieTableCellRenderer extends DefaultCellRenderer implements KTabl
 	private final static Color HDDVD_COLOR = new Color(Display.getCurrent(), 160, 37, 45); //approximate colour of the HD-DVD cover - too dark?
 	private final static Color UHD_COLOR = new Color(Display.getCurrent(), 0, 0, 0);
 	private final static Color LIGHT_TEXT_COLOR = new Color(Display.getCurrent(), 255, 255, 255);
-	private final static int IMAGE_WIDTH = 50;
-	private final static int IMAGE_HEIGHT = 70;
+	// private final static int IMAGE_WIDTH = 50;
+	// private final static int IMAGE_HEIGHT = 70;
 	
 	static Font FONT = new Font(Display.getCurrent(), 
 			Display.getCurrent().getSystemFont().getFontData()[0].getName(), 10, SWT.BOLD);

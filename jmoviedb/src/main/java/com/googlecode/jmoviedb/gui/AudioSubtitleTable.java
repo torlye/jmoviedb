@@ -34,18 +34,18 @@ import com.googlecode.jmoviedb.enumerated.AudioCodec;
 import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.enumerated.SubtitleFormat;
+import com.googlecode.jmoviedb.model.AudioOrSubtitleTrack;
 import com.googlecode.jmoviedb.model.AudioTrack;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
 
-public class AudioSubtitleTable {
+public class AudioSubtitleTable<T extends AudioOrSubtitleTrack> {
 
 	private boolean audio;
 	private Table table;
 	private TableViewer tableViewer;
 	//	private Button closeButton;
 
-	@SuppressWarnings("unchecked")
-	private ArrayList model;
+	private ArrayList<T> model;
 
 	// column names
 	private String[] columnNames;
@@ -85,7 +85,7 @@ public class AudioSubtitleTable {
 		createButtons(parent);
 	}
 	
-	public void setModel(ArrayList arrayList) {
+	public void setModel(ArrayList<T> arrayList) {
 		this.model = arrayList;
 		tableViewer.setInput(arrayList);
 		for (TableColumn col : table.getColumns()) {
@@ -93,7 +93,7 @@ public class AudioSubtitleTable {
 		}
 	}
 	
-	public ArrayList getModel() {
+	public ArrayList<T> getModel() {
 		return model;
 	}
 
@@ -205,7 +205,7 @@ public class AudioSubtitleTable {
 				if (track != null) {
 					int currentIndex = model.indexOf(track);
 					if(currentIndex > 0) {
-						Object temp = model.get(currentIndex);
+						T temp = model.get(currentIndex);
 						model.set(currentIndex, model.get(currentIndex-1));
 						model.set(currentIndex-1, temp);
 						tableViewer.refresh();
@@ -227,7 +227,7 @@ public class AudioSubtitleTable {
 				if (track != null) {
 					int currentIndex = model.indexOf(track);
 					if(currentIndex < model.size()-1 && model.size() > 1) {
-						Object temp = model.get(currentIndex);
+						T temp = model.get(currentIndex);
 						model.set(currentIndex, model.get(currentIndex+1));
 						model.set(currentIndex+1, temp);
 						tableViewer.refresh();
@@ -248,7 +248,7 @@ public class AudioSubtitleTable {
 		add.setLayoutData(gridData);
 		add.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				model.add(getNewTrack());
+				model.add((T)getNewTrack());
 				tableViewer.refresh();
 			}
 		});
@@ -275,7 +275,7 @@ public class AudioSubtitleTable {
 		});
 	}
 	
-	private Object getNewTrack() {
+	private AudioOrSubtitleTrack getNewTrack() {
 		FormatType format = FormatType.values()[formatCombo.getSelectionIndex()];
 		
 		Language lang = Language.english;

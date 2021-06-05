@@ -56,9 +56,9 @@ public class ExceptionHandler implements IExceptionHandler, BrowserLauncherError
 				"forget to backup your data.\n\nYou are encouraged to file a bug report at "+
 				CONST.WEBSITE+" If you do, please include the following information:";
 		
-		MessageDialog dialog = new ExceptionDialog(MainWindow.getMainWindow().getShell(), "Crash!", null, 
-				message, MessageDialog.ERROR, new String[]{"OK"}, 0, e);
-		int returnCode = dialog.open();
+		MessageDialog dialog = new ExceptionDialog(MainWindow.getMainWindow().getShell(), "Crash!", 
+				message, e);
+		dialog.open();
 	}
 
 	/**
@@ -68,38 +68,5 @@ public class ExceptionHandler implements IExceptionHandler, BrowserLauncherError
 	public void handleException(Exception ex) {
 		handleException((Throwable)ex);
 	}
-	
-	/**
-	 * Displays a MessageDialog containing information and a stack trace.
-	 * @author Tor
-	 *
-	 */
-	private class ExceptionDialog extends MessageDialog {	
-		private Throwable exception;
-
-		public ExceptionDialog(Shell parentShell, String dialogTitle, Image dialogTitleImage, String dialogMessage, 
-				int dialogImageType, String[] dialogButtonLabels, int defaultIndex, Throwable t) {
-			super(parentShell, dialogTitle, dialogTitleImage, dialogMessage, dialogImageType, dialogButtonLabels, defaultIndex);
-			exception = t;
-		}
-		
-		protected Control createCustomArea(Composite parent) {
-			Text text = new Text(parent, SWT.MULTI|SWT.READ_ONLY|SWT.BORDER|SWT.H_SCROLL|SWT.V_SCROLL);
-
-			String message = "JMoviedb "
-					+CONST.MAJOR_VERSION+"."+CONST.MINOR_VERSION+"."+CONST.RELEASE_VERSION+" "+CONST.DEVELOPMENT_STAGE+"\n"+ 
-					"Operating system: "+System.getProperty("os.name")+" "+System.getProperty("os.version")+" "+System.getProperty("os.arch")+"\n"+
-					"Java VM: "+System.getProperty("java.vendor")+" "+System.getProperty("java.version")+"\n\n"
-					+exception.getClass().toString()+"\n"+exception.getMessage()+"\n\n";
-			StackTraceElement[] stackTrace = exception.getStackTrace();
-			for(StackTraceElement el : stackTrace) {
-				message += el.toString() + "\n";
-			}
-			
-			text.setText(message);
-			return text;
-		}
-
-	}
-
 }
+

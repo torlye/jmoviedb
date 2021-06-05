@@ -20,11 +20,9 @@
 package com.googlecode.jmoviedb.net;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -32,8 +30,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.googlecode.jmoviedb.CONST;
 
@@ -94,15 +90,15 @@ public class DownloadWorker {
 		
 	}
 
-	private String getContentCharset(String contentType) {
-		if (contentType == null || contentType.length() == 0)
-			return null;
-		Pattern pattern = Pattern.compile("charset=([A-Za-z0-9\\-\\.:_]+)");
-		Matcher matcher = pattern.matcher(contentType);
-		if (matcher.find())
-			return matcher.group(1);
-		return null;
-	}
+	// private String getContentCharset(String contentType) {
+	// 	if (contentType == null || contentType.length() == 0)
+	// 		return null;
+	// 	Pattern pattern = Pattern.compile("charset=([A-Za-z0-9\\-\\.:_]+)");
+	// 	Matcher matcher = pattern.matcher(contentType);
+	// 	if (matcher.find())
+	// 		return matcher.group(1);
+	// 	return null;
+	// }
 
 	private URLConnection openConnection() throws IOException {
 		URLConnection connection = url.openConnection(proxy);

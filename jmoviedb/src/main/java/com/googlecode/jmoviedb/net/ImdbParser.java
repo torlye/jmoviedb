@@ -45,7 +45,7 @@ import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Person;
 
 
-public class ImdbParser {
+public class ImdbParser implements IParser {
 	private Document doc;
 	private JSONObject json;
 	
@@ -65,7 +65,7 @@ public class ImdbParser {
 	 * The ID is usually already known, so this method is used only in certain special cases. 
 	 * @return IMDb ID
 	 */
-	protected String getID() {
+	public String getImdbID() {
 		Pattern patternID = Pattern.compile("/title/tt(\\d{7,8})/");
 		Matcher matcherID = patternID.matcher(doc.baseUri());
 		if (matcherID.find())
@@ -90,7 +90,7 @@ public class ImdbParser {
 	 * Returns the title of the movie, if the open document is a movie page.
 	 * @return the movie title
 	 */
-	protected String getTitle() {
+	public String getTitle() {
 		String title = getTitleProperty();
 		Pattern patternTitle = Pattern.compile("([^<\\(]+)");
 		Matcher matcherTitle = patternTitle.matcher(title);
@@ -107,7 +107,7 @@ public class ImdbParser {
 	}
 	
 	
-	protected String getOriginalTitle() {
+	public String getOriginalTitle() {
 		String title = null;
 		Element titleElement = doc.select("span[class=title-extra]").first();
 		if (titleElement == null) return null;
@@ -120,7 +120,7 @@ public class ImdbParser {
 		return title;
 	}
 	
-	protected MovieType getType(MovieType currentType) {
+	public MovieType getType(MovieType currentType) {
 		if(currentType == MovieType.webseries || currentType == MovieType.movieserial)
 			return currentType;
 		
@@ -151,7 +151,7 @@ public class ImdbParser {
 	 * Returns the movie's production year, if the open document is a movie page.
 	 * @return a year
 	 */
-	protected int[] getYear() {
+	public int[] getYear() {
 		String title = getTitleProperty();
 		Pattern patternYear = Pattern.compile("(\\d{4})\u2013(\\d{4})\\)");
 		Matcher matcherYear = patternYear.matcher(title);
@@ -174,7 +174,7 @@ public class ImdbParser {
 	 * Returns an array of the movie's genres, if the open document is a movie page.
 	 * @return an array of genres, or an empty array if none were found.
 	 */
-	protected ArrayList<Genre> getGenres() {
+	public ArrayList<Genre> getGenres() {
 		ArrayList<Genre> temp = new ArrayList<Genre>();
 		
 		Elements h4nodes = doc.select("h4");
@@ -205,7 +205,7 @@ public class ImdbParser {
 	 * Returns the movie's plot outline, if the open document is a movie page.
 	 * @return the plot outline
 	 */
-	protected String getPlot() {
+	public String getPlot() {
 		Element h2 = doc.select("h2:matchesOwn(Storyline)").first();
 		if (h2 == null) return "";
 		Element el = h2.siblingElements().select("p").first();
@@ -217,7 +217,7 @@ public class ImdbParser {
 	 * Returns the movie's IMDb rating, if the open document is a movie page.
 	 * @return the rating
 	 */
-	protected double getRating() {
+	public double getRating() {
 		String starText = doc.select("[itemprop=ratingValue]").first().text();
 		if (!starText.isEmpty())
 			return Double.valueOf(starText).doubleValue();
@@ -229,7 +229,7 @@ public class ImdbParser {
 	 * Returns the movie's runtime, if the open document is a movie page.
 	 * @return runtime
 	 */
-	protected int getRuntime() {
+	public int getRuntime() {
 		String time = doc.select("time[datetime]").attr("datetime");
 		if (time.length()>0) {
 			Pattern patternRuntime = Pattern.compile("PT([0-9]+)M");
@@ -257,7 +257,7 @@ public class ImdbParser {
 	 * Returns the movie's languages, if the open document is a movie page.
 	 * @return an ArrayList of languages
 	 */
-	protected ArrayList<Language> getLanguages() throws UnknownLanguageException {
+	public ArrayList<Language> getLanguages() {
 		Elements languageElements = doc.select("a[href~=primary_language]");
 		
 		ArrayList<Language> tempList = new ArrayList<Language>();
@@ -278,7 +278,7 @@ public class ImdbParser {
 	 * Returns the countries in which the movie is made, if the open document is a movie page.
 	 * @return an ArrayList of countries
 	 */
-	protected ArrayList<Country> getCountries() {
+	public ArrayList<Country> getCountries() {
 		Elements countryElements = doc.select("a[href~=country_of_origin]");
 		
 		ArrayList<Country> tempList = new ArrayList<Country>(); 
@@ -298,7 +298,7 @@ public class ImdbParser {
 	 * Returns the URL for the movie's poster image, if the open document is a movie page.
 	 * @return the image URL, or null if no image was found.
 	 */
-	protected URL getImageURL() {
+	public URL getImageURL() {
 		String urlString = doc.select("img[title$=Poster]").attr("src");
 		if (urlString.length()>0) {
 			if (urlString.endsWith("imdb-share-logo.png"))
@@ -316,7 +316,7 @@ public class ImdbParser {
 	 * Returns the movie's actors, if the open document is a movie page.
 	 * @return an ArrayList of ActorInfo objects
 	 */
-	protected ArrayList<ActorInfo> getActors() {
+	public ArrayList<ActorInfo> getActors() {
 		ArrayList<ActorInfo> templist = new ArrayList<ActorInfo>();
 		Element castListTable = doc.select("table[class=cast_list]").first();
 		if (castListTable == null) return templist;
@@ -348,7 +348,7 @@ public class ImdbParser {
 	 * Returns the movie's directors, if the open document is a movie page.
 	 * @return an array of directors
 	 */
-	protected ArrayList<Person> getDirectors() {
+	public ArrayList<Person> getDirectors() {
 		ArrayList<Person> personArray = new ArrayList<Person>();
 
 		try {
@@ -397,7 +397,7 @@ public class ImdbParser {
 	 * Returns the movie's writers, if the open document is a movie page.
 	 * @return an array of writers
 	 */
-	protected ArrayList<Person> getWriters() {
+	public ArrayList<Person> getWriters() {
 		Elements headers = doc.select("h4.inline");
 		ArrayList<Person> personArray = new ArrayList<Person>();
 		for(Element h : headers)
@@ -438,7 +438,7 @@ public class ImdbParser {
 		if(doc.select("h1").size() > 0) {
 			getTitleProperty();
 			if(CONST.DEBUG_MODE) System.out.println("Only one search result, was redirected to movie page");
-			return new ImdbSearchResult[]{new ImdbSearchResult(getID(), MovieType.film, getTitle(), "" + getYear(), new String[0])};
+			return new ImdbSearchResult[]{new ImdbSearchResult(getImdbID(), MovieType.film, getTitle(), "" + getYear(), new String[0])};
 		}
 		
 		/*
@@ -596,6 +596,16 @@ public class ImdbParser {
 		if(templist.size() > 0) {
 			return templist.toArray(new String[0]);
 		}
+		return null;
+	}
+
+	@Override
+	public Integer getTmdbID() {
+		return null;
+	}
+
+	@Override
+	public String getTmdbType() {
 		return null;
 	}
 }

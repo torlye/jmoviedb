@@ -21,25 +21,11 @@ package com.googlecode.jmoviedb.net;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import ca.odell.glazedlists.EventList;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.enumerated.*;
-import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.gui.SearchResultDialog;
-import com.googlecode.jmoviedb.model.*;
+import com.googlecode.jmoviedb.gui.ExceptionDialog;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class TmdbWorker {
@@ -51,14 +37,13 @@ public class TmdbWorker {
 	 * @return the updated movie
 	 * @throws IOException
 	 */
-	public AbstractMovie update(AbstractMovie movie, Shell parentShell) throws IOException { //TODO dialog instead of throwing an exception
+	public AbstractMovie update(AbstractMovie movie, Shell parentShell) {
 		if(!movie.isImdbUrlValid() && !movie.isTmdbUrlValid()) {
 			/*
 			 * We end up here if the movie doesn't have a URL yet, or if it is malformed.
 			 */
 			MessageDialog.openInformation(parentShell, "Missing information", "You must enter a TMDb or IMDb URL before you can download information.");
 			return movie;
-
 		}
 
 		//At this point we have a valid IMDb URL
@@ -67,7 +52,9 @@ public class TmdbWorker {
 		try {
 			new ProgressMonitorDialog(parentShell).run(true, false, downloader);
 		} catch (InvocationTargetException e) {
-			// handle exception
+			MessageDialog dialog = new ExceptionDialog(parentShell, "Import failed", 
+				"TMDB import failed.", e);
+			dialog.open();
 		} catch (InterruptedException e) {
 			//Not used
 		}

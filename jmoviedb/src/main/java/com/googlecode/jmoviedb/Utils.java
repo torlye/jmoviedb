@@ -214,4 +214,8 @@ public class Utils {
 	    }
 	    return null;
 	}
+
+	public static boolean isNullOrEmpty(String param) { 
+		return param == null || param.isEmpty();
+	}
 }

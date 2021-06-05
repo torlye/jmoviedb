@@ -88,13 +88,12 @@ public class ZipWorker {
 	 * Extracts files from zipFileName to extractPath
 	 * @throws IOException 
 	 */
-	@SuppressWarnings("unchecked")
 	public void extract() throws IOException {
 		File destinationPath = new File(extractPath);
 		File source = new File(zipFileName);
 		
 		ZipFile zip = new ZipFile(source, ZipFile.OPEN_READ);
-		Enumeration entries = zip.entries();
+		Enumeration<? extends ZipEntry> entries = zip.entries();
 		
 		while(entries.hasMoreElements()) {
 			ZipEntry entry = (ZipEntry)(entries.nextElement());

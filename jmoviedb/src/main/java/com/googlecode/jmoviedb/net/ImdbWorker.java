@@ -31,9 +31,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import ca.odell.glazedlists.EventList;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.enumerated.*;
@@ -134,7 +131,7 @@ public class ImdbWorker {
 		}
 	}
 
-	private class ImdbDownloader implements IRunnableWithProgress {
+	private class ImdbDownloader extends AbstractDownloader implements IRunnableWithProgress {
 		protected AbstractMovie movie;
 		public ImdbDownloader(AbstractMovie m) {
 			movie = m;
@@ -155,103 +152,7 @@ public class ImdbWorker {
 				
 				monitor.subTask("Importing data");
 				
-				MovieType imdbType = parser.getType(MovieType.objectToEnum(movie));
-				System.out.println("Testing movie type, old: "+MovieType.objectToEnum(movie).getName() + 
-						" new: " + imdbType.getName());
-				if(MovieType.objectToEnum(movie) != imdbType) {
-					if(CONST.DEBUG_MODE)
-						System.out.println("Switching movie type from "+MovieType.objectToEnum(movie).getName() + 
-								" to " + imdbType.getName());
-					AbstractMovie newMovie = MovieType.intToAbstractMovie(imdbType.getId());
-					newMovie = movie.copyTo(newMovie);
-					movie = newMovie;
-				}
-				
-				String title = parser.getTitle();
-				String originalTitle = parser.getOriginalTitle();
-				if(originalTitle != null) {
-					movie.setTitle(originalTitle);
-					if(title != null)
-						movie.setCustomTitle(title);
-				} 
-				else if(title != null)
-					movie.setTitle(title);
-				
-				int[] year = parser.getYear();
-				if(year.length>0) movie.setYear(year[0]);
-				if(year.length>1) movie.setYear2(year[1]);
-				
-				int runtime = parser.getRuntime();
-				if(runtime>0) movie.setRunTime(runtime);
-				
-				double rating = parser.getRating();
-				if(rating>0) movie.setRating(rating);
-				
-				//boolean color = parser.isColor();
-				//if (!color)
-				//	movie.setColor(color);
-				
-				movie.setPlotOutline(parser.getPlot());
-				movie.setTagline(parser.getTagline());
-
-				movie.setLanguages(parser.getLanguages());
-				movie.setCountries(parser.getCountries());
-				movie.setGenres(parser.getGenres());
-				movie.setDirectors(parser.getDirectors());
-				movie.setWriters(parser.getWriters());
-				movie.setActors(parser.getActors());
-
-				URL imageUrl = parser.getImageURL();
-				if (imageUrl != null) {
-					monitor.subTask("Downloading cover image");
-					movie.setImageBytes(new DownloadWorker(imageUrl).downloadImage());
-				}
-
-				/*if(CONST.DEBUG_MODE) {
-					System.out.println("");
-					System.out.println("------- BEGIN IMDB DATA DUMP -------");
-					System.out.println("Title: " + title);
-					System.out.println("Year: " + year);
-					System.out.println("Runtime: " + runtime);
-					System.out.println("Rating: " + rating);
-					System.out.println("Color: " + parser.isColor());
-					System.out.println("Tagline: " + parser.getTagline());
-					System.out.println("Plot outline: " + parser.getPlot());
-
-					String languages = "Languages:";
-					for(Language l : parser.getLanguages())
-						languages += " " + l.getName();
-					System.out.println(languages);
-
-					String countries = "Countries:";
-					for(Country c : parser.getCountries())
-						countries += " " + c.getName();
-					System.out.println(countries);
-
-					String genres = "Genres:";
-					for(Genre g : parser.getGenres())
-						genres += " " + g;
-					System.out.println(genres);			
-
-					String directors = "Directors:";
-					for(Person d : parser.getDirectors())
-						directors += " " + d.getName();
-					System.out.println(directors);
-
-					String writers = "Writers:";
-					for(Person w : parser.getWriters())
-						writers += " " + w.getName();
-					System.out.println(writers);
-
-					String actors = "\nActors:";
-					for(ActorInfo a : parser.getActors())
-						actors += "\n" + a.toString();
-					System.out.println(actors + "\n");
-
-					System.out.println("Image URL: " + imageUrl);
-					System.out.println("------- END IMDB DATA DUMP -------");
-					System.out.println("");
-				}*/
+				importData(parser, movie, monitor);
 			
 			} catch (Exception e) {
 				System.out.println(e);

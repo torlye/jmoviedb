@@ -19,9 +19,6 @@
 
 package com.googlecode.jmoviedb.gui;
 
-import java.awt.Event;
-import java.awt.PageAttributes.MediaType;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -35,7 +32,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -62,6 +58,8 @@ import com.googlecode.jmoviedb.enumerated.Resolution;
 import com.googlecode.jmoviedb.enumerated.TVsystem;
 import com.googlecode.jmoviedb.enumerated.VideoCodec;
 import com.googlecode.jmoviedb.model.ActorInfo;
+import com.googlecode.jmoviedb.model.AudioTrack;
+import com.googlecode.jmoviedb.model.SubtitleTrack;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
 import com.googlecode.jmoviedb.model.movietype.Film;
@@ -130,8 +128,8 @@ public class MovieDialog extends Dialog {
 	private Button r6;
 	private Button r7;
 	private Button r8;
-	private AudioSubtitleTable audioTable;
-	private AudioSubtitleTable subtitleTable;
+	private AudioSubtitleTable<AudioTrack> audioTable;
+	private AudioSubtitleTable<SubtitleTrack> subtitleTable;
 	
 	private static final int MARGIN_WIDTH = 7;
 	private static final int MARGIN_HEIGHT = 7;
@@ -614,11 +612,12 @@ public class MovieDialog extends Dialog {
 				"when running IMDb updates.");
 		imdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		Button imdbGotoButton = new Button(c1, SWT.PUSH);
-		imdbGotoButton.setText("Go to website");
+		imdbGotoButton.setText("Open");
 		imdbGotoButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
-				MainWindow.getMainWindow().launchBrowser(imdbText.getText());
+				if (!imdbText.getText().isEmpty())
+					MainWindow.getMainWindow().launchBrowser(imdbText.getText());
 			}
 		});
 		
@@ -629,7 +628,14 @@ public class MovieDialog extends Dialog {
 				"when running TMDb updates.");
 		tmdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		Button tmdbGotoButton = new Button(c1, SWT.PUSH);
-		tmdbGotoButton.setText("Go to website");
+		tmdbGotoButton.setText("Open");
+		tmdbGotoButton.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				if (!tmdbText.getText().isEmpty())
+					MainWindow.getMainWindow().launchBrowser(tmdbText.getText());
+			}
+		});
 		
 //		Disable widgets until their respective functions are implemented.
 		genreText.setEditable(false);
@@ -876,8 +882,8 @@ public class MovieDialog extends Dialog {
 		layout.marginWidth = 4;
 		c.setLayout(layout);
 		
-		audioTable = new AudioSubtitleTable(c, true, formatCombo);
-		subtitleTable = new AudioSubtitleTable(c, false, formatCombo);
+		audioTable = new AudioSubtitleTable<AudioTrack>(c, true, formatCombo);
+		subtitleTable = new AudioSubtitleTable<SubtitleTrack>(c, false, formatCombo);
 		
 		tab5.setControl(c);
 	}
@@ -1028,7 +1034,6 @@ public class MovieDialog extends Dialog {
 		return super.close();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void save() {
 		System.out.println("Movie type: " + MovieType.objectToEnum(movie));
 		System.out.println("Selection: " + MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())));
@@ -1039,6 +1044,7 @@ public class MovieDialog extends Dialog {
 		}
 		
 		movie.setImdbID(imdbText.getText());
+		movie.setTmdbID(tmdbText.getText());
 		movie.setTitle(titleText.getText());
 		movie.setCustomTitle(altTitleText.getText());
 		movie.setYear(yearText.getText());

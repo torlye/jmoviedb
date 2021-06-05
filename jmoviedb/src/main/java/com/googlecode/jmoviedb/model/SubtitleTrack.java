@@ -29,10 +29,8 @@ import com.googlecode.jmoviedb.enumerated.SubtitleFormat;
  * @see SubtitleFormat
  * @see Language
  */
-public class SubtitleTrack {
-	private Language language;
+public class SubtitleTrack extends AudioOrSubtitleTrack {
 	private SubtitleFormat format;
-	private boolean commentary;
 	private boolean hearingImpaired;
 	private boolean forced;
 	
@@ -57,23 +55,11 @@ public class SubtitleTrack {
 	public void setFormat(SubtitleFormat format) {
 		this.format = format;
 	}
-	public boolean isCommentary() {
-		return commentary;
-	}
-	public void setCommentary(boolean commentary) {
-		this.commentary = commentary;
-	}
 	public boolean isHearingImpaired() {
 		return hearingImpaired;
 	}
 	public void setHearingImpaired(boolean hearingImpaired) {
 		this.hearingImpaired = hearingImpaired;
-	}
-	public Language getLanguage() {
-		return language;
-	}
-	public void setLanguage(Language language) {
-		this.language = language;
 	}
 
 	public boolean isForced() {

@@ -176,7 +176,16 @@ public class Database {
 			
 			s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIE ADD COLUMN IMDBID_LONG VARCHAR(8)");
-			
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
+
+		try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIE ADD COLUMN TMDBID INT");
+			s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIE ADD COLUMN TMDBTYPE VARCHAR(10)");
 		} catch (SQLException e) {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
@@ -190,12 +199,12 @@ public class Database {
 				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
 				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
 				"VIDEORESOLUTION, VIDEOASPECT, COVER, CONTAINER, COMPLETENESS, " +
-				"COMPLETENESSDETAIL, YEAR2, URL1, URL2) " + 
+				"COMPLETENESSDETAIL, YEAR2, URL1, URL2, TMDBID, TMDBTYPE) " + 
 				"VALUES (" +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-				"?, ?)", 
+				"?, ?, ?, ?)", 
 				PreparedStatement.RETURN_GENERATED_KEYS);
 		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
 				"TYPE = ?, IMDBID_LONG = ?, TITLE = ?, CUSTOMTITLE = ?, " +
@@ -205,7 +214,7 @@ public class Database {
 				"DISC = ?, VIDEO = ?, MYENCODE = ?, DVDREGION = ?, TVSYSTEM = ?, " +
 				"SCENERELEASENAME = ?, VIDEORESOLUTION = ?, VIDEOASPECT = ?, " +
 				"COVER = ?, CONTAINER = ?, COMPLETENESS = ?, COMPLETENESSDETAIL = ?, " +
-				"YEAR2 = ?, URL1 = ?, URL2 = ?" +
+				"YEAR2 = ?, URL1 = ?, URL2 = ?, TMDBID = ?, TMDBTYPE = ?" +
 				"WHERE MOVIEID = ?");
 		getMovieStatement = connection.prepareStatement("SELECT * FROM MOVIE WHERE MOVIEID = ?");
 		deleteMovieStatement = connection.prepareStatement("DELETE FROM MOVIE WHERE MOVIEID = ?");
@@ -285,6 +294,7 @@ public class Database {
 				"URL1 VARCHAR(250), " +
 				"URL2 VARCHAR(250), " +
 				"IMDBID_LONG VARCHAR(8), " +
+				"TMDBID INT, TMDBTYPE VARCHAR(10), " +
 				"PRIMARY KEY (MOVIEID)" +
 				")";
 		String movieActor = "CREATE TABLE MOVIEACTOR(" +
@@ -474,6 +484,8 @@ public class Database {
 		statement.setInt(30, m.getYear2());
 		statement.setString(31, m.getUrl1StringOrNull());
 		statement.setString(32, m.getUrl2StringOrNull());
+		statement.setInt(33, m.getTmdbID());
+		statement.setString(34, m.getTmdbType());
 		
 		if (m instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)m;
@@ -492,7 +504,7 @@ public class Database {
 		statement.setInt(27, m.getContainer().getID());
 		
 		if(edit)
-			statement.setInt(33, m.getID());
+			statement.setInt(35, m.getID());
 		
 		statement.execute();
 		
@@ -650,6 +662,8 @@ public class Database {
 		
 		m.setID(rs.getInt("MOVIEID"));
 		m.setImdbID(resolveShortOrLong(rs, "IMDBID", "IMDBID_LONG"));
+		m.setTmdbID(rs.getObject("TMDBID", Integer.class));
+		m.setTmdbType(rs.getString("TMDBTYPE"));
 		m.setTitle(rs.getString("TITLE"));
 		m.setCustomTitle(rs.getString("CUSTOMTITLE"));
 		m.setYear(rs.getInt("MOVIEYEAR"));
@@ -880,7 +894,7 @@ public class Database {
 			return s.getResultSet();
 		int count = s.getUpdateCount();
 		if(count>-1)
-			return new Integer(count);
+			return Integer.valueOf(count);
 		throw new SQLException("getUpdateCount() returned -1");
 	}
 }

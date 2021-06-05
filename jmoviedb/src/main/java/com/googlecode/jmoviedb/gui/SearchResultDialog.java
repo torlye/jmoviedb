@@ -19,13 +19,10 @@
 
 package com.googlecode.jmoviedb.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.enumerated.MovieType;
-import com.googlecode.jmoviedb.model.movietype.Film;
 import com.googlecode.jmoviedb.net.ImdbSearchResult;
 
 import org.eclipse.jface.dialogs.Dialog;

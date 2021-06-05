@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
 import com.googlecode.jmoviedb.enumerated.Country;
@@ -378,10 +379,6 @@ public abstract class AbstractMovie implements Cloneable {
 		this.genres = genres;
 	}
 
-	public void setGenres(Collection<Genre> genres) {
-		this.genres = new ArrayList<Genre>(genres);
-	}
-
 	public int getID() {
 		return ID;
 	}
@@ -435,6 +432,8 @@ public abstract class AbstractMovie implements Cloneable {
 	
 
 	public Integer getTmdbID() {
+		if (tmdbId == null || tmdbId <= 0)
+			return null;
 		return tmdbId;
 	}
 
@@ -447,7 +446,10 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	public void setTmdbType(String val) {
-		tmdbType = val;
+		if (val != null && (val.equals(CONST.TMDB_TYPE_MOVIE) || val.equals(CONST.TMDB_TYPE_TV)))
+			tmdbType = val;
+		else
+			tmdbType = null;
 	}
 
 	/**
@@ -470,7 +472,7 @@ public abstract class AbstractMovie implements Cloneable {
 	 * @return TMDb URL
 	 */
 	public String getTmdbUrl() {
-		if(getTmdbType() == null || getImdbID().length() == 0 || getTmdbID() == null)
+		if(Utils.isNullOrEmpty(getTmdbType()) || getTmdbID() == null)
 			return "";
 		return "https://www.themoviedb.org/"+getTmdbType()+"/"+getTmdbID();
 	}
@@ -480,7 +482,7 @@ public abstract class AbstractMovie implements Cloneable {
 	 * @return
 	 */
 	public boolean isTmdbUrlValid() {
-		if(getTmdbType() == null || getImdbID().length() == 0 || getTmdbID() == null)
+		if(Utils.isNullOrEmpty(getTmdbType()) || getTmdbID() == null)
 			return false;
 		try {
 			new URL(getTmdbUrl());
@@ -541,7 +543,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 	
 	public int getRatingAsInt() {
-		Double r = new Double(rating*10);
+		Double r = Double.valueOf(rating*10);
 		return r.intValue();
 	}
 

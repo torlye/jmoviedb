@@ -21,11 +21,9 @@ package com.googlecode.jmoviedb.model;
 
 import com.googlecode.jmoviedb.enumerated.*;
 
-public class AudioTrack {
-	private Language language;
+public class AudioTrack extends AudioOrSubtitleTrack {
 	private AudioCodec audio;
 	private AudioChannels channels;
-	private boolean commentary;
 	private boolean audioDescriptive;
 	
 	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive) {
@@ -42,22 +40,6 @@ public class AudioTrack {
 
 	public void setAudio(AudioCodec audio) {
 		this.audio = audio;
-	}
-
-	public boolean isCommentary() {
-		return commentary;
-	}
-
-	public void setCommentary(boolean commentary) {
-		this.commentary = commentary;
-	}
-
-	public Language getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(Language language) {
-		this.language = language;
 	}
 
 	public AudioChannels getChannels() {
