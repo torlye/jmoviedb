@@ -47,15 +47,14 @@ public abstract class AbstractDownloader {
         movie.setLanguages(parser.getLanguages());
         movie.setCountries(parser.getCountries());
         movie.setGenres(parser.getGenres());
+        movie.setActors(parser.getActors());
         movie.setDirectors(parser.getDirectors());
         movie.setWriters(parser.getWriters());
-        movie.setActors(parser.getActors());
 
         URL imageUrl = parser.getImageURL();
         if (imageUrl != null) {
-            monitor.subTask("Downloading cover image");
             try {
-                movie.setImageBytes(new DownloadWorker(imageUrl).downloadImage());
+                movie.setImageBytes(new DownloadWorker(imageUrl).downloadImage(monitor));
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Unable to download image.");

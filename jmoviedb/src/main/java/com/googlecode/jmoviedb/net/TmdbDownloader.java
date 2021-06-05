@@ -10,7 +10,10 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbPeople;
 import info.movito.themoviedbapi.TmdbFind.ExternalSource;
+import info.movito.themoviedbapi.TmdbMovies.MovieMethod;
+import info.movito.themoviedbapi.TmdbTV.TvMethod;
 import info.movito.themoviedbapi.model.FindResults;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.tv.TvSeries;
@@ -47,7 +50,7 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 				
 				if (mList.size() == 1 && tvList.isEmpty()) {
 					MovieDb tmdbMovie = mList.get(0);
-					IParser parser = new TmdbMovieParser(tmdbMovie);
+					IParser parser = new TmdbMovieParser(tmdbMovie, api, monitor);
 					movie = importData(parser, movie, monitor);
 					importMovieData(monitor, api);
 				}
@@ -74,14 +77,14 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 	}
 
 	private void importTvData(IProgressMonitor monitor, TmdbApi api) {
-		TvSeries series = api.getTvSeries().getSeries(movie.getTmdbID(), lang);
+		TvSeries series = api.getTvSeries().getSeries(movie.getTmdbID(), lang, TvMethod.credits);
 		IParser parser = new TmdbSeriesParser(series);
 		movie = importData(parser, movie, monitor);
 	}
 
 	private void importMovieData(IProgressMonitor monitor, TmdbApi api) {
-		MovieDb tmdbMovie = api.getMovies().getMovie(movie.getTmdbID(), lang);
-		IParser parser = new TmdbMovieParser(tmdbMovie);
+		MovieDb tmdbMovie = api.getMovies().getMovie(movie.getTmdbID(), lang, MovieMethod.credits);
+		IParser parser = new TmdbMovieParser(tmdbMovie, api, monitor);
 		movie = importData(parser, movie, monitor);
 	}
 

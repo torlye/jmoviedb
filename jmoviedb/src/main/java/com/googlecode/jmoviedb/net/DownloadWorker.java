@@ -33,6 +33,8 @@ import java.util.List;
 
 import com.googlecode.jmoviedb.CONST;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 public class DownloadWorker {
 	private URL url;
 	private Proxy proxy;
@@ -84,7 +86,7 @@ public class DownloadWorker {
 	 * @throws IOException
 	 */
 	public String downloadHtml() throws IOException {
-		byte[] bytes = downloadBytes();
+		byte[] bytes = downloadBytes(null);
 		
 		return new String (bytes, "UTF-8");
 		
@@ -117,8 +119,8 @@ public class DownloadWorker {
 //		return connection.getInputStream();
 //	}
 	
-	public byte[] downloadImage() throws IOException {
-		byte[] bytes = downloadBytes();
+	public byte[] downloadImage(IProgressMonitor monitor) throws IOException {
+		byte[] bytes = downloadBytes(monitor);
 		// Check for valid data
 		if(CONST.isValidImage(bytes))
 			return bytes;
@@ -132,7 +134,7 @@ public class DownloadWorker {
 	 * @return a byte array containing the downloaded data
 	 * @throws IOException
 	 */
-	private byte[] downloadBytes() throws IOException {
+	private byte[] downloadBytes(IProgressMonitor monitor) throws IOException {
 		if(url == null)
 			return null;
 
@@ -148,6 +150,9 @@ public class DownloadWorker {
 			try
 			{
 				URLConnection connection = openConnection();
+				if (monitor != null)
+					monitor.beginTask("Downloading image", connection.getContentLength());
+
 				InputStream istream = connection.getInputStream();
 				stream = new BufferedInputStream(istream);
 				
@@ -155,7 +160,10 @@ public class DownloadWorker {
 				byte[] buf = new byte[4096];
 				
 				while(true) {
-					int len = stream.read(buf); 
+					int len = stream.read(buf);
+					
+					if (monitor != null)
+						monitor.worked(len);
 					
 					if (len <= 0)
 						break;

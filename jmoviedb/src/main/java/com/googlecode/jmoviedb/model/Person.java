@@ -24,15 +24,18 @@ public class Person {
 	private String name;
 	
 	public Person(String id, String name) {
-		this.ID = id;
-		this.name = name;
+		this.setID(id);
+		this.setName(name);
 	}
 	
 	public String getID() {
 		return ID;
 	}
 	public void setID(String id) {
-		ID = id;
+		if (id != null && id.startsWith("nm"))
+			ID = id.substring(2);
+		else
+			ID = id;
 	}
 	public String getName() {
 		return name;

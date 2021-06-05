@@ -17,12 +17,20 @@ import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Person;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbPeople;
 import info.movito.themoviedbapi.model.MovieDb;
 
 public class TmdbMovieParser implements IParser {
     private MovieDb movieEntry;
-    public TmdbMovieParser(MovieDb movieEntry) {
+    private TmdbApi api;
+    private IProgressMonitor monitor;
+    public TmdbMovieParser(MovieDb movieEntry, TmdbApi api, IProgressMonitor monitor) {
         this.movieEntry = movieEntry;
+        this.api = api;
+        this.monitor = monitor;
     }
 
     @Override
@@ -99,20 +107,66 @@ public class TmdbMovieParser implements IParser {
 
     @Override
     public ArrayList<Person> getDirectors() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Person>();
+        var directorsList = new ArrayList<Person>();
+        TmdbPeople people = api.getPeople();
+
+        if (movieEntry.getCrew() != null)
+        {
+            var directors = movieEntry.getCrew().stream()
+                .filter(c -> c.getJob().equals("Director"))
+                .collect(Collectors.toList());
+            
+            this.monitor.beginTask("Getting director info", directors.size());
+            for (int i = 0; i < directors.size(); i++) {
+                var pc = directors.get(i);
+                var pp = people.getPersonInfo(pc.getId());
+                if (!Utils.isNullOrEmpty(pp.getImdbId()))
+                    directorsList.add(new Person(pp.getImdbId(), pc.getName()));
+                this.monitor.worked(1);
+            }
+        }
+        return directorsList;
     }
 
     @Override
     public ArrayList<Person> getWriters() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Person>();
+        var writersList = new ArrayList<Person>();
+        TmdbPeople people = api.getPeople();
+
+        if (movieEntry.getCrew() != null)
+        {
+            var writers = movieEntry.getCrew().stream()
+                .filter(c -> c.getDepartment().equals("Writing"))
+                .collect(Collectors.toList());
+            
+            this.monitor.beginTask("Getting writer info", writers.size());
+            for (int i = 0; i < writers.size(); i++) {
+                var pc = writers.get(i);
+                var pp = people.getPersonInfo(pc.getId());
+                if (!Utils.isNullOrEmpty(pp.getImdbId()))
+                    writersList.add(new Person(pp.getImdbId(), pc.getName()));
+                this.monitor.worked(1);
+            }
+        }
+        return writersList;
     }
 
     @Override
     public ArrayList<ActorInfo> getActors() {
-        // TODO Auto-generated method stub
-        return new ArrayList<ActorInfo>();
+        TmdbPeople people = api.getPeople();
+        var cast = movieEntry.getCast();
+        var actors = new ArrayList<ActorInfo>();
+        if (cast != null) {
+            this.monitor.beginTask("Getting actor info", cast.size());
+            for (int i = 0; i < cast.size(); i++) {
+                var castInfo = cast.get(i);
+                var pp = people.getPersonInfo(castInfo.getId());
+                if (!Utils.isNullOrEmpty(pp.getImdbId()))
+                    actors.add(new ActorInfo(i, new Person(pp.getImdbId(), castInfo.getName()), castInfo.getCharacter()));
+                this.monitor.worked(1);
+            }
+        }
+        return actors;
     }
 
     @Override

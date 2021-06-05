@@ -78,7 +78,7 @@ public class ImdbSearchResult {
 		if (imageURL != null && imageURL.length() > 0) {
 			try {
 				URL url = new URL(imageURL);
-				byte[] bytes = new DownloadWorker(url).downloadImage();
+				byte[] bytes = new DownloadWorker(url).downloadImage(null);
 				id = new ImageData(new ByteArrayInputStream(bytes));
 			} catch (IOException e) {
 				e.printStackTrace();
