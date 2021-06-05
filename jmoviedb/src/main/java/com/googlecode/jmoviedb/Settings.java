@@ -25,6 +25,7 @@ import com.googlecode.jmoviedb.language.*;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.dialogs.DialogSettings;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.Point;
@@ -67,6 +68,10 @@ public class Settings {
 	private final static String IMDB_URL = "ImdbUrl";
 	private final static String IMDB_SEARCH_URL = "ImdbSearchUrl";
 	private final static String IMDB_PERSON_URL = "ImdbPersonUrl";
+	private final static String SECTION_TMDB = "TmdbSettings";
+	private final static String TMDB_API_KEY = "TmdbApiKey";
+	private final static String TMDB_IMG_URL = "TmdbImgUrl";
+	private final static String TMDB_IMG_SIZE = "TmdbImgSize";
 	
 	public static Settings getSettings() {
 		if(settingsInstance == null) {
@@ -86,6 +91,7 @@ public class Settings {
 		dSettings = new DialogSettings("JMoviedb");
 		try {
 			dSettings.load(fileName);
+			update();
 		} catch (IOException e) {
 			create();
 		}
@@ -128,9 +134,29 @@ public class Settings {
 		imdb.put(IMDB_SEARCH_URL, "http://www.imdb.com/find?s=tt&q=");
 		imdb.put(IMDB_PERSON_URL, "http://www.imdb.com/name/nm");
 		
+		DialogSettings tmdb = new DialogSettings(SECTION_TMDB);
+		dSettings.addSection(tmdb);
+		tmdb.put(TMDB_IMG_URL, "https://image.tmdb.org/t/p/");
+		tmdb.put(TMDB_IMG_SIZE, "w342");
+
 		save();
 	}
 	
+	private void update() {
+		IDialogSettings tmdb = dSettings.getSection(SECTION_TMDB);
+		if (tmdb == null) {
+			tmdb = new DialogSettings(SECTION_TMDB);
+			dSettings.addSection(tmdb);
+		}
+		if (Utils.isNullOrEmpty(tmdb.get(TMDB_IMG_URL)))
+			tmdb.put(TMDB_IMG_URL, "https://image.tmdb.org/t/p/");
+		
+		if (Utils.isNullOrEmpty(tmdb.get(TMDB_IMG_SIZE)))
+			tmdb.put(TMDB_IMG_SIZE, "w342");
+
+		if (tmdb.get(TMDB_API_KEY) == null)
+			tmdb.put(TMDB_API_KEY, "place API key here");
+	}
 	
 	public void save() {
 		try {
@@ -263,6 +289,18 @@ public class Settings {
 	
 	public String getImdbPersonUrl() {
 		return dSettings.getSection(SECTION_IMDB).get(IMDB_PERSON_URL);
+	}
+
+	public String getTmdbApiKey() {
+		return dSettings.getSection(SECTION_TMDB).get(TMDB_API_KEY);
+	}
+
+	public String getTmdbImgUrl() {
+		return dSettings.getSection(SECTION_TMDB).get(TMDB_IMG_URL);
+	}
+
+	public String getTmdbImgSize() {
+		return dSettings.getSection(SECTION_TMDB).get(TMDB_IMG_SIZE);
 	}
 	
 	public String getSettingsFile() {

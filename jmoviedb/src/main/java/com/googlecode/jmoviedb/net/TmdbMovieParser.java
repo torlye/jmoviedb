@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.Genre;
@@ -173,7 +174,7 @@ public class TmdbMovieParser implements IParser {
     public URL getImageURL() {
         try {
             if (!Utils.isNullOrEmpty(movieEntry.getPosterPath()))
-                return new URL("https://image.tmdb.org/t/p/" + "w342" + movieEntry.getPosterPath());
+                return new URL(Settings.getSettings().getTmdbImgUrl() + Settings.getSettings().getTmdbImgSize() + movieEntry.getPosterPath());
         } catch (MalformedURLException e) {
             return null;
         }

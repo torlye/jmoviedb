@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 import info.movito.themoviedbapi.TmdbApi;
@@ -34,7 +35,7 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try {
 			monitor.beginTask("Importing information from TMDb", IProgressMonitor.UNKNOWN);
-			TmdbApi api = new TmdbApi("c51bf3dd883efc813c9d6b2477465bf8");
+			TmdbApi api = new TmdbApi(Settings.getSettings().getTmdbApiKey());
 			if (movie.isTmdbUrlValid() && movie.getTmdbType().equals(CONST.TMDB_TYPE_MOVIE))
 			{
 				importMovieData(monitor, api);	
