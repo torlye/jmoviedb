@@ -33,7 +33,6 @@ import ca.odell.glazedlists.EventList;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
-import com.googlecode.jmoviedb.enumerated.*;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.SearchResultDialog;
 import com.googlecode.jmoviedb.model.*;

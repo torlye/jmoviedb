@@ -138,4 +138,11 @@ public class TmdbSeriesParser implements IParser {
     public String getTmdbType() {
         return CONST.TMDB_TYPE_TV;
     }
+
+    @Override
+    public String getTagline() {
+        //return seriesEntry.getTagline();
+        // TODO missing tagline in API
+        return "";
+    }
 }

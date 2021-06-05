@@ -147,4 +147,9 @@ public class TmdbMovieParser implements IParser {
         
         return null;
     }
+
+    @Override
+    public String getTagline() {
+        return movieEntry.getTagline();
+    }
 }

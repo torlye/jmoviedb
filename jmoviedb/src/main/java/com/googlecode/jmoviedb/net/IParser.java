@@ -28,4 +28,5 @@ public interface IParser {
     URL getImageURL();
     Integer getTmdbID();
     String getTmdbType();
+    String getTagline();
 }

@@ -194,7 +194,7 @@ public class ImdbParser implements IParser {
 	 * Returns the movie's tagline, if the open document is a movie page.
 	 * @return the tagline
 	 */
-	protected String getTagline() {
+	public String getTagline() {
 		Element h4 = doc.select("h4:matchesOwn(Taglines:)").first();
 		if (h4 == null) return "";
 		String text = h4.parent().ownText();

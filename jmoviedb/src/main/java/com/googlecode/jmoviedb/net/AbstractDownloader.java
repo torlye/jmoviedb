@@ -42,7 +42,7 @@ public abstract class AbstractDownloader {
         //	movie.setColor(color);
         
         movie.setPlotOutline(parser.getPlot());
-        movie.setTagline(parser.getTitle());
+        movie.setTagline(parser.getTagline());
 
         movie.setLanguages(parser.getLanguages());
         movie.setCountries(parser.getCountries());
