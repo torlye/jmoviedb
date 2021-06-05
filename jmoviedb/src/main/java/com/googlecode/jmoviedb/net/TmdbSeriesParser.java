@@ -15,11 +15,15 @@ import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Person;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.tv.TvSeries;
 
-public class TmdbSeriesParser implements IParser {
+public class TmdbSeriesParser extends TmdbParser implements IParser {
     private TvSeries seriesEntry;
-    public TmdbSeriesParser(TvSeries seriesEntry) {
+    public TmdbSeriesParser(TvSeries seriesEntry, TmdbApi api, IProgressMonitor monitor) {
+        super(api, monitor);
         this.seriesEntry = seriesEntry;
     }
 
@@ -48,8 +52,8 @@ public class TmdbSeriesParser implements IParser {
 
     @Override
     public int[] getYear() {
-        Integer yearStart = TmdbMovieParser.parseYearFromDate(seriesEntry.getFirstAirDate());
-        Integer yearEnd = TmdbMovieParser.parseYearFromDate(seriesEntry.getLastAirDate());
+        Integer yearStart = parseYearFromDate(seriesEntry.getFirstAirDate());
+        Integer yearEnd = parseYearFromDate(seriesEntry.getLastAirDate());
 
         if (yearStart != null && yearEnd == null)
             return new int[] { yearStart };
@@ -102,20 +106,17 @@ public class TmdbSeriesParser implements IParser {
 
     @Override
     public ArrayList<Person> getDirectors() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Person>();
+        return getDirectors(seriesEntry.getCredits().getCrew());
     }
 
     @Override
     public ArrayList<Person> getWriters() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Person>();
+        return getWriters(seriesEntry.getCredits().getCrew());
     }
 
     @Override
     public ArrayList<ActorInfo> getActors() {
-        // TODO Auto-generated method stub
-        return new ArrayList<ActorInfo>();
+        return getActors(seriesEntry.getCredits().getCast());
     }
 
     @Override

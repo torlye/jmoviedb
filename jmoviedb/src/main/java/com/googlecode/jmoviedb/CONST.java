@@ -45,7 +45,7 @@ public class CONST {
 	 * The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int MAJOR_VERSION = 0;
+	public static final int MAJOR_VERSION = 1;
 	
 	/**
 	 * The "minor" part of the current version number.
@@ -59,14 +59,14 @@ public class CONST {
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 7;
+	public static final int RELEASE_VERSION = 1;
 	
 	/**
 	 * The current development stage expressed as a string.
 	 * The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final String DEVELOPMENT_STAGE = "Pre-alpha";
+	public static final String DEVELOPMENT_STAGE = "";
 	
 	/**
 	 * SWT version number
@@ -101,7 +101,7 @@ public class CONST {
 	/**
 	 * This program's website
 	 */
-	public static final String WEBSITE = "http://jmoviedb.googlecode.com";
+	public static final String WEBSITE = "https://github.com/torlye/jmoviedb";
 	
 	/**
 	 * SWT website

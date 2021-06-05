@@ -162,13 +162,15 @@ public class DownloadWorker {
 				while(true) {
 					int len = stream.read(buf);
 					
-					if (monitor != null)
-						monitor.worked(len);
-					
 					if (len <= 0)
-						break;
+					break;
 					
 					outbytes.write(buf, 0, len);
+					
+					if (monitor != null) {
+						monitor.worked(len);
+						monitor.subTask(outbytes.size() + " bytes");
+					}
 				}
 				
 				byte [] byteArray = outbytes.toByteArray();

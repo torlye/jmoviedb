@@ -11,7 +11,6 @@ import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 import info.movito.themoviedbapi.TmdbApi;
-import info.movito.themoviedbapi.TmdbPeople;
 import info.movito.themoviedbapi.TmdbFind.ExternalSource;
 import info.movito.themoviedbapi.TmdbMovies.MovieMethod;
 import info.movito.themoviedbapi.TmdbTV.TvMethod;
@@ -57,7 +56,7 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 				}
 				else if (tvList.size() == 1 && mList.isEmpty()) {
 					TvSeries series = tvList.get(0);
-					IParser parser = new TmdbSeriesParser(series);
+					IParser parser = new TmdbSeriesParser(series, api, monitor);
 					movie = importData(parser, movie, monitor);
 					importTvData(monitor, api);
 				}
@@ -79,7 +78,7 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 
 	private void importTvData(IProgressMonitor monitor, TmdbApi api) {
 		TvSeries series = api.getTvSeries().getSeries(movie.getTmdbID(), lang, TvMethod.credits);
-		IParser parser = new TmdbSeriesParser(series);
+		IParser parser = new TmdbSeriesParser(series, api, monitor);
 		movie = importData(parser, movie, monitor);
 	}
 
