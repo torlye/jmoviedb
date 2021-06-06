@@ -24,37 +24,37 @@ import com.googlecode.jmoviedb.*;
 @SuppressWarnings("static-access")
 
 public enum Country {
-	albania(1, "Albania", Settings.getSettings().getLanguageClass().COUNTRY_ALBANIA),
-	argentina(2, "Argentina", Settings.getSettings().getLanguageClass().COUNTRY_ARGENTINA),
-	australia(3, "Australia", Settings.getSettings().getLanguageClass().COUNTRY_AUSTRALIA),
-	austria(4, "Austria", Settings.getSettings().getLanguageClass().COUNTRY_AUSTRIA),
-	belgium(5, "Belgium", Settings.getSettings().getLanguageClass().COUNTRY_BELGIUM),
-	brazil(6, "Brazil", Settings.getSettings().getLanguageClass().COUNTRY_BRAZIL),
-	bulgaria(7, "Bulgaria", Settings.getSettings().getLanguageClass().COUNTRY_BULGARIA),
-	canada(8, "Canada", Settings.getSettings().getLanguageClass().COUNTRY_CANADA),
-	chile(9, "Chile", Settings.getSettings().getLanguageClass().COUNTRY_CHILE),
-	china(10, "China", Settings.getSettings().getLanguageClass().COUNTRY_CHINA),
-	colombia(11, "Colombia", Settings.getSettings().getLanguageClass().COUNTRY_COLOMBIA),
-	croatia(12, "Croatia", Settings.getSettings().getLanguageClass().COUNTRY_CROATIA),
-	cuba(13, "Cuba", Settings.getSettings().getLanguageClass().COUNTRY_CUBA),
-	czechrepublic(14, "CzechRepublic", Settings.getSettings().getLanguageClass().COUNTRY_CZECHREPUBLIC),
-	czechoslovakia(15, "Czechoslovakia", Settings.getSettings().getLanguageClass().COUNTRY_CZECHOSLOVAKIA),
-	denmark(16, "Denmark", Settings.getSettings().getLanguageClass().COUNTRY_DENMARK),
-	eastgermany(17, "EastGermany", Settings.getSettings().getLanguageClass().COUNTRY_EASTGERMANY),
-	egypt(18, "Egypt", Settings.getSettings().getLanguageClass().COUNTRY_EGYPT),
-	finland(19, "Finland", Settings.getSettings().getLanguageClass().COUNTRY_FINLAND),
-	france(20, "France", Settings.getSettings().getLanguageClass().COUNTRY_FRANCE),
-	germany(21, "Germany", Settings.getSettings().getLanguageClass().COUNTRY_GERMANY),
-	greece(22, "Greece", Settings.getSettings().getLanguageClass().COUNTRY_GREECE),
-	hongkong(23, "HongKong", Settings.getSettings().getLanguageClass().COUNTRY_HONGKONG),
-	hungary(24, "Hungary", Settings.getSettings().getLanguageClass().COUNTRY_HUNGARY),
-	india(25, "India", Settings.getSettings().getLanguageClass().COUNTRY_INDIA),
-	indonesia(26, "Indonesia", Settings.getSettings().getLanguageClass().COUNTRY_INDONESIA),
-	iran(27, "Iran", Settings.getSettings().getLanguageClass().COUNTRY_IRAN),
-	ireland(28, "Ireland", Settings.getSettings().getLanguageClass().COUNTRY_IRELAND),
-	israel(29, "Israel", Settings.getSettings().getLanguageClass().COUNTRY_ISRAEL),
-	italy(30, "Italy", Settings.getSettings().getLanguageClass().COUNTRY_ITALY),
-	japan(31, "Japan", Settings.getSettings().getLanguageClass().COUNTRY_JAPAN),
+	albania(1, "Albania", Settings.getSettings().getLanguageClass().COUNTRY_ALBANIA, "AL"),
+	argentina(2, "Argentina", Settings.getSettings().getLanguageClass().COUNTRY_ARGENTINA, "AR"),
+	australia(3, "Australia", Settings.getSettings().getLanguageClass().COUNTRY_AUSTRALIA, "AU"),
+	austria(4, "Austria", Settings.getSettings().getLanguageClass().COUNTRY_AUSTRIA, "AT"),
+	belgium(5, "Belgium", Settings.getSettings().getLanguageClass().COUNTRY_BELGIUM, "BE"),
+	brazil(6, "Brazil", Settings.getSettings().getLanguageClass().COUNTRY_BRAZIL, "BR"),
+	bulgaria(7, "Bulgaria", Settings.getSettings().getLanguageClass().COUNTRY_BULGARIA, "BG"),
+	canada(8, "Canada", Settings.getSettings().getLanguageClass().COUNTRY_CANADA, "CA"),
+	chile(9, "Chile", Settings.getSettings().getLanguageClass().COUNTRY_CHILE, "CL"),
+	china(10, "China", Settings.getSettings().getLanguageClass().COUNTRY_CHINA, "CN"),
+	colombia(11, "Colombia", Settings.getSettings().getLanguageClass().COUNTRY_COLOMBIA, "CO"),
+	croatia(12, "Croatia", Settings.getSettings().getLanguageClass().COUNTRY_CROATIA, "HR"),
+	cuba(13, "Cuba", Settings.getSettings().getLanguageClass().COUNTRY_CUBA, "CU"),
+	czechrepublic(14, "CzechRepublic", Settings.getSettings().getLanguageClass().COUNTRY_CZECHREPUBLIC, "CZ"),
+	czechoslovakia(15, "Czechoslovakia", Settings.getSettings().getLanguageClass().COUNTRY_CZECHOSLOVAKIA, "CS"),
+	denmark(16, "Denmark", Settings.getSettings().getLanguageClass().COUNTRY_DENMARK, "DK"),
+	eastgermany(17, "EastGermany", Settings.getSettings().getLanguageClass().COUNTRY_EASTGERMANY, "DD"),
+	egypt(18, "Egypt", Settings.getSettings().getLanguageClass().COUNTRY_EGYPT, "EG"),
+	finland(19, "Finland", Settings.getSettings().getLanguageClass().COUNTRY_FINLAND, "FI"),
+	france(20, "France", Settings.getSettings().getLanguageClass().COUNTRY_FRANCE, "FR"),
+	germany(21, "Germany", Settings.getSettings().getLanguageClass().COUNTRY_GERMANY, "DE"),
+	greece(22, "Greece", Settings.getSettings().getLanguageClass().COUNTRY_GREECE, "GR"),
+	hongkong(23, "HongKong", Settings.getSettings().getLanguageClass().COUNTRY_HONGKONG, "HK"),
+	hungary(24, "Hungary", Settings.getSettings().getLanguageClass().COUNTRY_HUNGARY, "HU"),
+	india(25, "India", Settings.getSettings().getLanguageClass().COUNTRY_INDIA, "IN"),
+	indonesia(26, "Indonesia", Settings.getSettings().getLanguageClass().COUNTRY_INDONESIA, "ID"),
+	iran(27, "Iran", Settings.getSettings().getLanguageClass().COUNTRY_IRAN, "IR"),
+	ireland(28, "Ireland", Settings.getSettings().getLanguageClass().COUNTRY_IRELAND, "IE"),
+	israel(29, "Israel", Settings.getSettings().getLanguageClass().COUNTRY_ISRAEL, "IL"),
+	italy(30, "Italy", Settings.getSettings().getLanguageClass().COUNTRY_ITALY, "IT"),
+	japan(31, "Japan", Settings.getSettings().getLanguageClass().COUNTRY_JAPAN, "JP"),
 	mexico(32, "Mexico", Settings.getSettings().getLanguageClass().COUNTRY_MEXICO),
 	netherlands(33, "Netherlands", Settings.getSettings().getLanguageClass().COUNTRY_NETHERLANDS),
 	newzealand(34, "NewZealand", Settings.getSettings().getLanguageClass().COUNTRY_NEWZEALAND),
@@ -67,17 +67,17 @@ public enum Country {
 	russia(41, "Russia", Settings.getSettings().getLanguageClass().COUNTRY_RUSSIA),
 	southafrica(42, "SouthAfrica", Settings.getSettings().getLanguageClass().COUNTRY_SOUTHAFRICA),
 	southkorea(43, "SouthKorea", Settings.getSettings().getLanguageClass().COUNTRY_SOUTHKOREA),
-	sovietunion(44, "SovietUnion", Settings.getSettings().getLanguageClass().COUNTRY_SOVIETUNION),
+	sovietunion(44, "SovietUnion", Settings.getSettings().getLanguageClass().COUNTRY_SOVIETUNION, "SU"),
 	spain(45, "Spain", Settings.getSettings().getLanguageClass().COUNTRY_SPAIN),
 	sweden(46, "Sweden", Settings.getSettings().getLanguageClass().COUNTRY_SWEDEN),
 	switzerland(47, "Switzerland", Settings.getSettings().getLanguageClass().COUNTRY_SWITZERLAND),
 	taiwan(48, "Taiwan", Settings.getSettings().getLanguageClass().COUNTRY_TAIWAN),
 	turkey(49, "Turkey", Settings.getSettings().getLanguageClass().COUNTRY_TURKEY),
-	uk(50, "UK", Settings.getSettings().getLanguageClass().COUNTRY_UK),
-	usa(51, "USA", Settings.getSettings().getLanguageClass().COUNTRY_USA),
+	uk(50, "UK", Settings.getSettings().getLanguageClass().COUNTRY_UK, "GB"),
+	usa(51, "USA", Settings.getSettings().getLanguageClass().COUNTRY_USA, "US"),
 	venezuela(52, "Venezuela", Settings.getSettings().getLanguageClass().COUNTRY_VENEZUELA),
 	westgermany(53, "WestGermany", Settings.getSettings().getLanguageClass().COUNTRY_WESTGERMANY),
-	yugoslavia(54, "Yugoslavia", Settings.getSettings().getLanguageClass().COUNTRY_YUGOSLAVIA),
+	yugoslavia(54, "Yugoslavia", Settings.getSettings().getLanguageClass().COUNTRY_YUGOSLAVIA, "YU"),
 	afghanistan(55, "Afghanistan", Settings.getSettings().getLanguageClass().COUNTRY_AFGHANISTAN),
 	algeria(56, "Algeria", Settings.getSettings().getLanguageClass().COUNTRY_ALGERIA),
 	andorra(57, "Andorra", Settings.getSettings().getLanguageClass().COUNTRY_ANDORRA),
@@ -220,6 +220,7 @@ public enum Country {
 	private int id;
 	private String imdbID;
 	private String name;
+	private String iso3166;
 	
 	/**
 	 * Constructor.
@@ -232,6 +233,11 @@ public enum Country {
 		this.imdbID = imdbID;
 		this.name = name;
 	}
+
+	Country(int id, String imdbID, String name, String iso3166) {
+		this(id, imdbID, name);
+		this.iso3166 = iso3166;
+	}
 	
 	public String getImdbID() {
 		return imdbID;
@@ -243,6 +249,10 @@ public enum Country {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getIso3166_1_alpha_2() {
+		return iso3166;
 	}
 	
 	/**
@@ -281,6 +291,15 @@ public enum Country {
 				return c;
 		if(CONST.DEBUG_MODE)
 			System.out.println("Unrecognised country ID: " + id);
+		return null;
+	}
+	
+	public static Country iso3166ToEnum(String isoCode) {
+		for(Country c : Country.values())
+			if(c.iso3166 != null && isoCode.equals(c.iso3166))
+				return c;
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised ISO country code: " + isoCode);
 		return null;
 	}
 }

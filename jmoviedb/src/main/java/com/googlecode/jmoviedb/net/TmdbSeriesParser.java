@@ -82,41 +82,40 @@ public class TmdbSeriesParser extends TmdbParser implements IParser {
 
     @Override
     public ArrayList<Language> getLanguages() {
+        // TODO missing access to spoken_languages and languages and original_language
         // TODO Auto-generated method stub
         return new ArrayList<Language>();
     }
 
     @Override
     public ArrayList<Country> getCountries() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Country>();
+        return getCountries(seriesEntry.getOriginCountry());
     }
 
     @Override
     public ArrayList<Genre> getGenres() {
-        if (seriesEntry.getGenres() != null) {
-            List<Genre> list = seriesEntry.getGenres().stream()
-                .map(g -> Genre.tmdbGenreToEnum(g))
-                .filter(v -> v != null)
-                .collect(Collectors.toList());
-            return new ArrayList<Genre>(list);
-        }
-        return new ArrayList<Genre>();
+        return getGenres(seriesEntry.getGenres());
     }
 
     @Override
     public ArrayList<Person> getDirectors() {
-        return getDirectors(seriesEntry.getCredits().getCrew());
+        if (seriesEntry.getCredits() != null)
+            return getDirectors(seriesEntry.getCredits().getCrew());
+        return new ArrayList<Person>();
     }
 
     @Override
     public ArrayList<Person> getWriters() {
-        return getWriters(seriesEntry.getCredits().getCrew());
+        if (seriesEntry.getCredits() != null)
+            return getWriters(seriesEntry.getCredits().getCrew());
+        return new ArrayList<Person>();
     }
 
     @Override
     public ArrayList<ActorInfo> getActors() {
-        return getActors(seriesEntry.getCredits().getCast());
+        if (seriesEntry.getCredits() != null)
+            return getActors(seriesEntry.getCredits().getCast());
+        return new ArrayList<ActorInfo>();
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.ProductionCountry;
 
 public class TmdbMovieParser extends TmdbParser implements IParser {
     private MovieDb movieEntry;
@@ -78,26 +79,23 @@ public class TmdbMovieParser extends TmdbParser implements IParser {
 
     @Override
     public ArrayList<Language> getLanguages() {
+        List<info.movito.themoviedbapi.model.Language> languages = movieEntry.getSpokenLanguages();
         // TODO Auto-generated method stub
         return new ArrayList<Language>();
     }
 
     @Override
     public ArrayList<Country> getCountries() {
-        // TODO Auto-generated method stub
+        List<ProductionCountry> countries = movieEntry.getProductionCountries();
+        if (countries != null) {
+            return getCountries(countries.stream().map(c -> c.getIsoCode()).collect(Collectors.toList()));
+        }
         return new ArrayList<Country>();
     }
 
     @Override
     public ArrayList<Genre> getGenres() {
-        if (movieEntry.getGenres() != null) {
-            List<Genre> list = movieEntry.getGenres().stream()
-                .map(g -> Genre.tmdbGenreToEnum(g))
-                .filter(v -> v != null)
-                .collect(Collectors.toList());
-            return new ArrayList<Genre>(list);
-        }
-        return new ArrayList<Genre>();
+        return getGenres(movieEntry.getGenres());
     }
 
     @Override

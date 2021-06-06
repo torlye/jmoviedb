@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.googlecode.jmoviedb.Utils;
+import com.googlecode.jmoviedb.enumerated.Country;
+import com.googlecode.jmoviedb.enumerated.Genre;
 import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Person;
 
@@ -108,5 +110,28 @@ public abstract class TmdbParser {
             }
         }
         return actors;
+    }
+
+    public ArrayList<Genre> getGenres(List<info.movito.themoviedbapi.model.Genre> genres) {
+        if (genres != null) {
+            List<Genre> list = genres.stream()
+                .map(g -> Genre.tmdbGenreToEnum(g))
+                .filter(v -> v != null)
+                .collect(Collectors.toList());
+            return new ArrayList<Genre>(list);
+        }
+        return new ArrayList<Genre>();
+    }
+
+    public ArrayList<Country> getCountries(List<String> countryCodes) {
+        if (countryCodes != null)
+        {
+            List<Country> list = countryCodes.stream()
+                .map(c -> Country.iso3166ToEnum(c))
+                .filter(c -> c != null)
+                .collect(Collectors.toList());
+            return new ArrayList<Country>(list);
+        }
+        return new ArrayList<Country>();
     }
 }
