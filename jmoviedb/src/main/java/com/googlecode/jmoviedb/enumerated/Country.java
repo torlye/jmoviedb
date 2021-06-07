@@ -302,4 +302,25 @@ public enum Country {
 			System.out.println("Unrecognised ISO country code: " + isoCode);
 		return null;
 	}
+	
+	public static Country nameToEnum(String countryName) {
+		for(Country c : Country.values())
+			if(countryName.equals(c.name))
+				return c;
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised ISO country code: " + countryName);
+		return null;
+	}
+	
+	public static Country tmdbCountryToEnum(info.movito.themoviedbapi.model.ProductionCountry tmdbCountry) {
+		Country country = iso3166ToEnum(tmdbCountry.getIsoCode());
+		if (country != null) return country;
+
+		country = nameToEnum(tmdbCountry.getName());
+		if (country != null) return country;
+
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised ISO country code: " + tmdbCountry);
+		return null;
+	}
 }

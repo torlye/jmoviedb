@@ -3,8 +3,6 @@ package com.googlecode.jmoviedb.net;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
@@ -20,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.model.MovieDb;
-import info.movito.themoviedbapi.model.ProductionCountry;
 
 public class TmdbMovieParser extends TmdbParser implements IParser {
     private MovieDb movieEntry;
@@ -79,18 +76,12 @@ public class TmdbMovieParser extends TmdbParser implements IParser {
 
     @Override
     public ArrayList<Language> getLanguages() {
-        List<info.movito.themoviedbapi.model.Language> languages = movieEntry.getSpokenLanguages();
-        // TODO Auto-generated method stub
-        return new ArrayList<Language>();
+        return getLanguages(movieEntry.getSpokenLanguages());
     }
 
     @Override
     public ArrayList<Country> getCountries() {
-        List<ProductionCountry> countries = movieEntry.getProductionCountries();
-        if (countries != null) {
-            return getCountries(countries.stream().map(c -> c.getIsoCode()).collect(Collectors.toList()));
-        }
-        return new ArrayList<Country>();
+        return getCountriesFromProductionCountries(movieEntry.getProductionCountries());
     }
 
     @Override

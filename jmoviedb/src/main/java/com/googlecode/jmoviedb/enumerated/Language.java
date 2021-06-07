@@ -30,16 +30,16 @@ import com.googlecode.jmoviedb.*;
  */
 public enum Language {
 	none(0, "None", Settings.getSettings().getLanguageClass().LANGUAGE_NONE),
-	albanian(1, "Albanian", Settings.getSettings().getLanguageClass().LANGUAGE_ALBANIAN),
-	arabic(2, "Arabic", Settings.getSettings().getLanguageClass().LANGUAGE_ARABIC),
-	bengali(3, "Bengali", Settings.getSettings().getLanguageClass().LANGUAGE_BENGALI),
-	bulgarian(4, "Bulgarian", Settings.getSettings().getLanguageClass().LANGUAGE_BULGARIAN),
+	albanian(1, "Albanian", Settings.getSettings().getLanguageClass().LANGUAGE_ALBANIAN, "sq"),
+	arabic(2, "Arabic", Settings.getSettings().getLanguageClass().LANGUAGE_ARABIC, "ar"),
+	bengali(3, "Bengali", Settings.getSettings().getLanguageClass().LANGUAGE_BENGALI, "bn"),
+	bulgarian(4, "Bulgarian", Settings.getSettings().getLanguageClass().LANGUAGE_BULGARIAN, "bg"),
 	cantonese(5, "Cantonese", Settings.getSettings().getLanguageClass().LANGUAGE_CANTONESE),
 	catalan(6, "Catalan", Settings.getSettings().getLanguageClass().LANGUAGE_CATALAN),
 	czech(7, "Czech", Settings.getSettings().getLanguageClass().LANGUAGE_CZECH),
 	danish(8, "Danish", Settings.getSettings().getLanguageClass().LANGUAGE_DANISH),
 	dutch(9, "Dutch", Settings.getSettings().getLanguageClass().LANGUAGE_DUTCH),
-	english(10, "English", Settings.getSettings().getLanguageClass().LANGUAGE_ENGLISH),
+	english(10, "English", Settings.getSettings().getLanguageClass().LANGUAGE_ENGLISH, "en"),
 	filipino(11, "Filipino", Settings.getSettings().getLanguageClass().LANGUAGE_FILIPINO),
 	finnish(12, "Finnish", Settings.getSettings().getLanguageClass().LANGUAGE_FINNISH),
 	french(13, "French", Settings.getSettings().getLanguageClass().LANGUAGE_FRENCH),
@@ -50,7 +50,7 @@ public enum Language {
 	hindi(18, "Hindi", Settings.getSettings().getLanguageClass().LANGUAGE_HINDI),
 	hungarian(19, "Hungarian", Settings.getSettings().getLanguageClass().LANGUAGE_HUNGARIAN),
 	italian(20, "Italian", Settings.getSettings().getLanguageClass().LANGUAGE_ITALIAN),
-	japanese(21, "Japanese", Settings.getSettings().getLanguageClass().LANGUAGE_JAPANESE),
+	japanese(21, "Japanese", Settings.getSettings().getLanguageClass().LANGUAGE_JAPANESE, "ja"),
 	korean(22, "Korean", Settings.getSettings().getLanguageClass().LANGUAGE_KOREAN),
 	malayalam(23, "Malayalam", Settings.getSettings().getLanguageClass().LANGUAGE_MALAYALAM),
 	mandarin(24, "Mandarin", Settings.getSettings().getLanguageClass().LANGUAGE_MANDARIN),
@@ -330,6 +330,7 @@ public enum Language {
 	private int id;
 	private String imdbID;
 	private String name;
+	private String iso639;
 	
 	/**
 	 * Constructor.
@@ -341,6 +342,11 @@ public enum Language {
 		this.id = id;
 		this.imdbID = imdbID;
 		this.name = name;
+	}
+
+	Language(int id, String imdbID, String name, String iso639) {
+		this(id, imdbID, name);
+		this.iso639 = iso639;
 	}
 	
 	public String getImdbID() {
@@ -389,5 +395,35 @@ public enum Language {
 		for(int i = 0; i < Language.values().length; i++)
 			strings[i] = Language.values()[i].getImdbID();
 		return strings;
+	}
+	
+	public static Language iso639ToEnum(String isoCode) {
+		for(Language l : Language.values())
+			if(l.iso639 != null && isoCode.equals(l.iso639))
+				return l;
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised ISO language code: " + isoCode);
+		return null;
+	}
+	
+	public static Language nameToEnum(String languageName) {
+		for(Language l : Language.values())
+			if(languageName.equals(l.name))
+				return l;
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised language name: " + languageName);
+		return null;
+	}
+	
+	public static Language tmdbLanguageToEnum(info.movito.themoviedbapi.model.Language tmdbLanguage) {
+		Language lan = iso639ToEnum(tmdbLanguage.getIsoCode());
+		if (lan != null) return lan;
+
+		lan = nameToEnum(tmdbLanguage.getName());
+		if (lan != null) return lan;
+
+		if(CONST.DEBUG_MODE)
+			System.out.println("Unrecognised ISO language code: " + tmdbLanguage);
+		return null;
 	}
 }

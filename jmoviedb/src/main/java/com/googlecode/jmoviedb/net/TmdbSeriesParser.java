@@ -3,8 +3,6 @@ package com.googlecode.jmoviedb.net;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
@@ -83,7 +81,6 @@ public class TmdbSeriesParser extends TmdbParser implements IParser {
     @Override
     public ArrayList<Language> getLanguages() {
         // TODO missing access to spoken_languages and languages and original_language
-        // TODO Auto-generated method stub
         return new ArrayList<Language>();
     }
 

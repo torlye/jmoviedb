@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.Genre;
+import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.Person;
 
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbPeople;
+import info.movito.themoviedbapi.model.ProductionCountry;
 import info.movito.themoviedbapi.model.people.PersonCast;
 import info.movito.themoviedbapi.model.people.PersonCrew;
 import info.movito.themoviedbapi.model.people.PersonPeople;
@@ -133,5 +135,29 @@ public abstract class TmdbParser {
             return new ArrayList<Country>(list);
         }
         return new ArrayList<Country>();
+    }
+
+    public ArrayList<Country> getCountriesFromProductionCountries(List<ProductionCountry> countryCodes) {
+        if (countryCodes != null)
+        {
+            List<Country> list = countryCodes.stream()
+                .map(c -> Country.tmdbCountryToEnum(c))
+                .filter(c -> c != null)
+                .collect(Collectors.toList());
+            return new ArrayList<Country>(list);
+        }
+        return new ArrayList<Country>();
+    }
+
+    public ArrayList<Language> getLanguages(List<info.movito.themoviedbapi.model.Language> languages) {
+        if (languages != null)
+        {
+            List<Language> list = languages.stream()
+                .map(c -> Language.tmdbLanguageToEnum(c))
+                .filter(c -> c != null)
+                .collect(Collectors.toList());
+            return new ArrayList<Language>(list);
+        }
+        return new ArrayList<Language>();
     }
 }
