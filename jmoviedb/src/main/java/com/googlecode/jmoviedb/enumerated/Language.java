@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of JMoviedb.
  * 
  * Copyright (C) Tor Arne Lye torarnelye@gmail.com
