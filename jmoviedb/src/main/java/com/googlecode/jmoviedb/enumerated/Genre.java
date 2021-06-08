@@ -27,26 +27,26 @@ public enum Genre {
 	action(0, "Action", GuiLanguage.GENRE_ACTION, 28), 
 	adventure(1, "Adventure", GuiLanguage.GENRE_ADVENTURE, 12),
 	animation(2, "Animation", GuiLanguage.GENRE_ANIMATION, 16), 
-	biography(3, "Biography", GuiLanguage.GENRE_BIOGRAPHY, null),
+	biography(3, "Biography", GuiLanguage.GENRE_BIOGRAPHY),
 	comedy(4, "Comedy", GuiLanguage.GENRE_COMEDY, 35), 
 	crime(5, "Crime", GuiLanguage.GENRE_CRIME, 80), 
 	documentary(6, "Documentary", GuiLanguage.GENRE_DOCUMENTARY, 99), 
 	drama(7, "Drama", GuiLanguage.GENRE_DRAMA, 18),
 	family(8, "Family", GuiLanguage.GENRE_FAMILY, 10751), 
 	fantasy(9, "Fantasy", GuiLanguage.GENRE_FANTASY, 14), 
-	filmnoir(10, "Film-Noir", GuiLanguage.GENRE_FILMNOIR, null), 
-	gameshow(11, "Game-Show", GuiLanguage.GENRE_GAMESHOW, null),
+	filmnoir(10, "Film-Noir", GuiLanguage.GENRE_FILMNOIR), 
+	gameshow(11, "Game-Show", GuiLanguage.GENRE_GAMESHOW),
 	history(12, "History", GuiLanguage.GENRE_HISTORY, 36), 
 	horror(13, "Horror", GuiLanguage.GENRE_HORROR, 27), 
 	music(14, "Music", GuiLanguage.GENRE_MUSIC, 10402), 
-	musical(15, "Musical", GuiLanguage.GENRE_MUSICAL, null),
+	musical(15, "Musical", GuiLanguage.GENRE_MUSICAL),
 	mystery(16, "Mystery", GuiLanguage.GENRE_MYSTERY, 9648), 
 	news(17, "News", GuiLanguage.GENRE_NEWS, 10763), 
 	realitytv(18, "Reality-TV", GuiLanguage.GENRE_REALITYTV, 10764), 
 	romance(19, "Romance", GuiLanguage.GENRE_ROMANCE, 10749),
 	scifi(20, "Sci-Fi", GuiLanguage.GENRE_SCIFI, 878), 
-	shortmovie(21, "Short", GuiLanguage.GENRE_SHORT, null), 
-	sport(22, "Sport", GuiLanguage.GENRE_SPORT, null), 
+	shortmovie(21, "Short", GuiLanguage.GENRE_SHORT), 
+	sport(22, "Sport", GuiLanguage.GENRE_SPORT), 
 	talkshow(23, "Talk-Show", GuiLanguage.GENRE_TALKSHOW, 10767),
 	thriller(24, "Thriller", GuiLanguage.GENRE_THRILLER, 53), 
 	war(25, "War", GuiLanguage.GENRE_WAR, 10752), 
@@ -62,10 +62,14 @@ public enum Genre {
 	private String IMDBname;
 	private String guiLanguageName;
 	
-	Genre(int id, String IMDBname, String guiLanguageName, Integer tmdbID) {
+	Genre(int id, String IMDBname, String guiLanguageName) {
 		this.id = id;
 		this.IMDBname = IMDBname;
 		this.guiLanguageName = guiLanguageName;
+	}
+
+	Genre(int id, String IMDBname, String guiLanguageName, Integer tmdbID) {
+		this(id, IMDBname, guiLanguageName);
 		this.tmdbId = tmdbID;
 	}
 	

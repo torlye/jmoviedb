@@ -484,7 +484,7 @@ public class Database {
 		statement.setInt(30, m.getYear2());
 		statement.setString(31, m.getUrl1StringOrNull());
 		statement.setString(32, m.getUrl2StringOrNull());
-		statement.setInt(33, m.getTmdbID());
+		setInteger(statement, 33, m.getTmdbID());
 		statement.setString(34, m.getTmdbType());
 		
 		if (m instanceof AbstractSeries) {
@@ -520,6 +520,13 @@ public class Database {
 		statement.clearParameters();
 		
 		updateRelations(m);
+	}
+
+	private static void setInteger(PreparedStatement statement, int parameterIndex, Integer value) throws SQLException {
+		if (value == null)
+			statement.setNull(parameterIndex, java.sql.Types.INTEGER);
+		else
+			statement.setInt(parameterIndex, value);
 	}
 	
 	/**

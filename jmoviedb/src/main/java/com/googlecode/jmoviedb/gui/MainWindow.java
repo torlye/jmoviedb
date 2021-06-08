@@ -841,13 +841,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public void launchBrowser(String url) {
 		System.out.println("Browse to " + url);
 		if(browserLauncher!=null) {
-			if(CONST.DEBUG_MODE) {
-				String message = "Found browsers:";
-				for (Object browser : browserLauncher.getBrowserList()) {
-					message += " "+browser.toString();
-				}
-				System.out.println(message);
-			}
 			browserLauncher.openURLinBrowser(url);
 		}
 		else

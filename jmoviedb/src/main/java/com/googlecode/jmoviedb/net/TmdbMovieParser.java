@@ -3,8 +3,6 @@ package com.googlecode.jmoviedb.net;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
@@ -78,26 +76,17 @@ public class TmdbMovieParser extends TmdbParser implements IParser {
 
     @Override
     public ArrayList<Language> getLanguages() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Language>();
+        return getLanguages(movieEntry.getSpokenLanguages());
     }
 
     @Override
     public ArrayList<Country> getCountries() {
-        // TODO Auto-generated method stub
-        return new ArrayList<Country>();
+        return getCountriesFromProductionCountries(movieEntry.getProductionCountries());
     }
 
     @Override
     public ArrayList<Genre> getGenres() {
-        if (movieEntry.getGenres() != null) {
-            List<Genre> list = movieEntry.getGenres().stream()
-                .map(g -> Genre.tmdbGenreToEnum(g))
-                .filter(v -> v != null)
-                .collect(Collectors.toList());
-            return new ArrayList<Genre>(list);
-        }
-        return new ArrayList<Genre>();
+        return getGenres(movieEntry.getGenres());
     }
 
     @Override
