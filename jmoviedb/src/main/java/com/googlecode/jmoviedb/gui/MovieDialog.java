@@ -919,6 +919,7 @@ public class MovieDialog extends Dialog {
 		plotText.setText(m.getPlotOutline());
 		notesText.setText(m.getNotes());
 		
+		actorTable.removeAll();
 		for(ActorInfo a : movie.getActors()) {
 			TableItem i = new TableItem(actorTable, SWT.NONE);
 			i.setText(0, a.getPerson().getName());

@@ -2,6 +2,7 @@ package com.googlecode.jmoviedb.net;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -105,8 +106,13 @@ public abstract class TmdbParser {
             for (int i = 0; i < cast.size(); i++) {
                 PersonCast castInfo = cast.get(i);
                 PersonPeople pp = people.getPersonInfo(castInfo.getId());
-                if (!Utils.isNullOrEmpty(pp.getImdbId()))
-                    actors.add(new ActorInfo(i, new Person(pp.getImdbId(), castInfo.getName()), castInfo.getCharacter()));
+                if (!Utils.isNullOrEmpty(pp.getImdbId())) {
+                    Optional<ActorInfo> existingActorInfo = actors.stream().filter(ai -> ("nm"+ai.getPerson().getID()).equals(pp.getImdbId())).findAny();
+                    if (existingActorInfo.isPresent())
+                        existingActorInfo.get().setCharacter(existingActorInfo.get().getCharacter() + ", " + castInfo.getCharacter());
+                    else
+                        actors.add(new ActorInfo(i, new Person(pp.getImdbId(), castInfo.getName()), castInfo.getCharacter()));
+                }
                 this.monitor.subTask(castInfo.getName());
                 this.monitor.worked(1);
             }
@@ -119,6 +125,7 @@ public abstract class TmdbParser {
             List<Genre> list = genres.stream()
                 .map(g -> Genre.tmdbGenreToEnum(g))
                 .filter(v -> v != null)
+                .distinct()
                 .collect(Collectors.toList());
             return new ArrayList<Genre>(list);
         }
@@ -131,6 +138,7 @@ public abstract class TmdbParser {
             List<Country> list = countryCodes.stream()
                 .map(c -> Country.iso3166ToEnum(c))
                 .filter(c -> c != null)
+                .distinct()
                 .collect(Collectors.toList());
             return new ArrayList<Country>(list);
         }
@@ -143,6 +151,7 @@ public abstract class TmdbParser {
             List<Country> list = countryCodes.stream()
                 .map(c -> Country.tmdbCountryToEnum(c))
                 .filter(c -> c != null)
+                .distinct()
                 .collect(Collectors.toList());
             return new ArrayList<Country>(list);
         }
@@ -155,6 +164,7 @@ public abstract class TmdbParser {
             List<Language> list = languages.stream()
                 .map(c -> Language.tmdbLanguageToEnum(c))
                 .filter(c -> c != null)
+                .distinct()
                 .collect(Collectors.toList());
             return new ArrayList<Language>(list);
         }
