@@ -44,7 +44,10 @@ public class TmdbSeriesParser extends TmdbParser implements IParser {
 
     @Override
     public MovieType getType(MovieType objectToEnum) {
-        // if (seriesEntry.getMediaType())
+        if (seriesEntry.getKeywords() != null) {
+            boolean isMiniseries = !seriesEntry.getKeywords().stream().noneMatch(k -> k.getId() == 11162);
+            if (isMiniseries) return MovieType.miniseries;
+        }
         return MovieType.tvseries;
     }
 
@@ -119,7 +122,7 @@ public class TmdbSeriesParser extends TmdbParser implements IParser {
     public URL getImageURL() {
         try {
             if (!Utils.isNullOrEmpty(seriesEntry.getPosterPath()))
-                return new URL("https://image.tmdb.org/t/p/" + "w342" + seriesEntry.getPosterPath());
+                return constructImageUrl(seriesEntry.getPosterPath());
         } catch (MalformedURLException e) {
             return null;
         }

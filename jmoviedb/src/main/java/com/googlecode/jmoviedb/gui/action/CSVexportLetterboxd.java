@@ -27,7 +27,6 @@ public class CSVexportLetterboxd implements IRunnableWithProgress {
 	
 	@Override
 	public void run(IProgressMonitor progress) throws InvocationTargetException, InterruptedException {
-		// TODO Auto-generated method stub
 		try {
 			ArrayList<AbstractMovie> list = MainWindow.getMainWindow().getDB().getDatabase().getMovieList();
 			Iterator<AbstractMovie> filteredList = list.stream().filter((m) -> m.getImdbID() != null && m.getImdbID().length() > 0 && m.isSeen()).iterator();

@@ -77,13 +77,13 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 	}
 
 	private void importTvData(IProgressMonitor monitor, TmdbApi api) {
-		TvSeries series = api.getTvSeries().getSeries(movie.getTmdbID(), lang, TvMethod.credits);
+		TvSeries series = api.getTvSeries().getSeries(movie.getTmdbID(), lang, TvMethod.credits, TvMethod.keywords);
 		IParser parser = new TmdbSeriesParser(series, api, monitor);
 		movie = importData(parser, movie, monitor);
 	}
 
 	private void importMovieData(IProgressMonitor monitor, TmdbApi api) {
-		MovieDb tmdbMovie = api.getMovies().getMovie(movie.getTmdbID(), lang, MovieMethod.credits);
+		MovieDb tmdbMovie = api.getMovies().getMovie(movie.getTmdbID(), lang, MovieMethod.credits, MovieMethod.keywords);
 		IParser parser = new TmdbMovieParser(tmdbMovie, api, monitor);
 		movie = importData(parser, movie, monitor);
 	}

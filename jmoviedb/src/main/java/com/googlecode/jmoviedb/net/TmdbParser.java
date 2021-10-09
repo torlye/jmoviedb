@@ -1,5 +1,7 @@
 package com.googlecode.jmoviedb.net;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.Genre;
@@ -169,5 +172,9 @@ public abstract class TmdbParser {
             return new ArrayList<Language>(list);
         }
         return new ArrayList<Language>();
+    }
+
+    protected URL constructImageUrl(String posterPath) throws MalformedURLException {
+        return new URL(Settings.getSettings().getTmdbImgUrl() + Settings.getSettings().getTmdbImgSize() + posterPath);
     }
 }

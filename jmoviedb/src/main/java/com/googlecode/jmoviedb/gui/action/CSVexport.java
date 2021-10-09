@@ -23,8 +23,6 @@ import com.googlecode.jmoviedb.model.SubtitleTrack;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
 
-import ca.odell.glazedlists.EventList;
-
 import java.util.Base64;
 
 public class CSVexport implements IRunnableWithProgress {
@@ -40,7 +38,6 @@ public class CSVexport implements IRunnableWithProgress {
 	
 	@Override
 	public void run(IProgressMonitor progress) throws InvocationTargetException, InterruptedException {
-		// TODO Auto-generated method stub
 		try {
 			CsvWriter writer = new CsvWriter(filepath, ',', Charset.forName("UTF-8"));
 			

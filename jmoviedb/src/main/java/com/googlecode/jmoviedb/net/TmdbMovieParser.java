@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.googlecode.jmoviedb.CONST;
-import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.Genre;
@@ -46,6 +45,10 @@ public class TmdbMovieParser extends TmdbParser implements IParser {
         if (movieEntry.getGenres() != null) {
             boolean isTvMovie = !movieEntry.getGenres().stream().noneMatch(g -> g.getId() == 10770);
             if (isTvMovie) return MovieType.tvmovie;
+        }
+        if (movieEntry.getKeywords() != null) {
+            boolean isMovieSerial = !movieEntry.getKeywords().stream().noneMatch(k -> k.getId() == 179991);
+            if (isMovieSerial) return MovieType.movieserial;
         }
         return MovieType.film;
     }
@@ -108,7 +111,7 @@ public class TmdbMovieParser extends TmdbParser implements IParser {
     public URL getImageURL() {
         try {
             if (!Utils.isNullOrEmpty(movieEntry.getPosterPath()))
-                return new URL(Settings.getSettings().getTmdbImgUrl() + Settings.getSettings().getTmdbImgSize() + movieEntry.getPosterPath());
+                return constructImageUrl(movieEntry.getPosterPath());
         } catch (MalformedURLException e) {
             return null;
         }
