@@ -2,6 +2,7 @@ package com.googlecode.jmoviedb.net;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -63,8 +64,11 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 				else {
 					if (mList.isEmpty() && tvList.isEmpty())
 						throw new Exception("No matches found");
-					else
+					else {
+						System.out.println("Movie: "+mList.stream().map(m -> (m.getId()+"")).collect(Collectors.joining(", ")));
+						System.out.println("TV: "+tvList.stream().map(m -> (m.getId()+"")).collect(Collectors.joining(", ")));
 						throw new Exception("Ambiguous match. More than one result.");
+					}
 				}
 			}
 		

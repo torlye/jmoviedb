@@ -48,7 +48,6 @@ import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
 import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -110,8 +109,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private AddMovieAction addMiniSeriesAction;
 	private AddMovieAction addVideomovieAction;
 	private AddMovieDropdownMenu addMovieDropdownMenu;
-	
-	private Action exportCSVaction;
 	
 	private HelpHelpAction helpHelpAction;
 	private HelpAboutAction helpAboutAction;
@@ -198,8 +195,6 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		addMiniSeriesAction = new AddMovieAction(CONST.MOVIETYPE_MINISERIES);
 		addMovieDropdownMenu = new AddMovieDropdownMenu();
 		
-		exportCSVaction = new ExportCsvAction();
-		
 		addMenuBar();
 		addCoolBar(coolBarStyle);
 		addStatusLine();
@@ -235,7 +230,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		MenuManager exportMenu = new MenuManager("&Import/Export");
 		exportMenu.add(new FileImportAction(1));
 		exportMenu.add(new FileImportAction(2));
-		exportMenu.add(exportCSVaction);
+		//exportMenu.add(new ExportCsvReleasesAction());
 		exportMenu.add(new ExportCsvLetterboxdAction());
 		menuManager.add(exportMenu);
 		
@@ -260,6 +255,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		
 		MenuManager actionMenu = new MenuManager("&Action");
 		actionMenu.add(new MassUpdateAction());
+		actionMenu.add(new TmdbUrlAction());
 		actionMenu.add(addFilmAction);
 		actionMenu.add(addVideomovieAction);
 		actionMenu.add(addTvMovieAction);

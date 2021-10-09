@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -170,6 +171,16 @@ public class Moviedb {
 		
 		if(CONST.DEBUG_MODE)
 			System.out.println("Total number of movies is now " + getMovieCount());
+	}
+
+	public synchronized void massUpdateMovies(List<AbstractMovie> updatedMovies) throws SQLException
+	{
+		for (AbstractMovie movie : updatedMovies) {
+			database.saveMovie(movie);
+			movies.set(movies.indexOf(movie), movie);
+		}
+
+		setSaved(false);
 	}
 	
 	public synchronized void deleteMovie(AbstractMovie movie) throws SQLException {
