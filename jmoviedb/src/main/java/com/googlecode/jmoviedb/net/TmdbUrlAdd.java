@@ -30,14 +30,13 @@ public class TmdbUrlAdd extends AbstractDownloader implements IRunnableWithProgr
 		moviesToSave = new ArrayList<AbstractMovie>();
 	}
 	
-	private static final String tmdbBaseUrl = "https://www.themoviedb.org/";
 	private static final String lang = "en";
 	
 	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try {
 			List<AbstractMovie> list = MainWindow.getMainWindow().getDB().getDatabase().getMovieList();
-			monitor.beginTask("Getting TMDb URLs", list.size());
+			monitor.beginTask("Getting TMDB URLs", list.size());
 			
 			
 			for (AbstractMovie movie : list)
@@ -74,8 +73,8 @@ public class TmdbUrlAdd extends AbstractDownloader implements IRunnableWithProgr
 							failedMsg += "Failed: " + movie.getTitle() + ". No matches found\n\n";
 						else {
 							failedMsg += "Failed: " + movie.getTitle() + ". Ambiguous match. More than one result:\n";
-							List<String> urls1 = mList.stream().map(m -> tmdbBaseUrl + CONST.TMDB_TYPE_MOVIE + "/" + m.getId()).collect(Collectors.toList());
-							List<String> urls2 = tvList.stream().map(m -> tmdbBaseUrl + CONST.TMDB_TYPE_TV + "/" + m.getId()).collect(Collectors.toList());
+							List<String> urls1 = mList.stream().map(m -> CONST.TMDB_BASE_URL + CONST.TMDB_TYPE_MOVIE + "/" + m.getId()).collect(Collectors.toList());
+							List<String> urls2 = tvList.stream().map(m -> CONST.TMDB_BASE_URL + CONST.TMDB_TYPE_TV + "/" + m.getId()).collect(Collectors.toList());
 							urls1.addAll(urls2);
 							failedMsg += String.join("\n", urls1);
 							failedMsg += "\n\n";
@@ -89,8 +88,6 @@ public class TmdbUrlAdd extends AbstractDownloader implements IRunnableWithProgr
 				}
 				monitor.worked(1);
 			}
-
-			monitor.done();
 		} catch (InterruptedException e) {
 			throw e;
 		} catch (Exception e) {

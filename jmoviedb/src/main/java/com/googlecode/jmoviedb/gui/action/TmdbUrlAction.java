@@ -33,7 +33,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 
 public class TmdbUrlAction extends Action {
-	private static String message = "Add TMDb URLs";
+	private static String message = "Add TMDB URLs";
 	
 	public TmdbUrlAction() {
 		setText(message);
@@ -53,7 +53,7 @@ public class TmdbUrlAction extends Action {
 
 			MainWindow.getMainWindow().getDB().massUpdateMovies(worker.moviesToSave);
 
-			String msg1 = "TMDb URLs successfully added to " + worker.completed + " records. " + worker.skipped + " were skipped as they already have a URL.";
+			String msg1 = "TMDB URLs successfully added to " + worker.completed + " records. " + worker.skipped + " were skipped as they already have a URL.";
 
 			if (worker.failed == 0)
 			{

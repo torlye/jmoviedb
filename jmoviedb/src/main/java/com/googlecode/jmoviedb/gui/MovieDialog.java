@@ -622,10 +622,10 @@ public class MovieDialog extends Dialog {
 		});
 		
 		Label tmdbLabel = new Label(c1, SWT.CENTER);
-		tmdbLabel.setText("TMDb address:");
+		tmdbLabel.setText("TMDB address:");
 		tmdbText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		tmdbText.setToolTipText("If a valid TMDb URL is present, you won't have to select the correct movie " +
-				"when running TMDb updates.");
+		tmdbText.setToolTipText("If a valid TMDB URL is present, you won't have to select the correct movie " +
+				"when running TMDB updates.");
 		tmdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
 		Button tmdbGotoButton = new Button(c1, SWT.PUSH);
 		tmdbGotoButton.setText("Open");
@@ -981,7 +981,7 @@ public class MovieDialog extends Dialog {
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.DETAILS_ID, "TMDb update", false);
+		createButton(parent, IDialogConstants.DETAILS_ID, "TMDB update", false);
 		createButton(parent, IDialogConstants.OK_ID, "OK", true);
 		createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", false);
 		createButton(parent, IDialogConstants.ABORT_ID, "Remove movie", false);

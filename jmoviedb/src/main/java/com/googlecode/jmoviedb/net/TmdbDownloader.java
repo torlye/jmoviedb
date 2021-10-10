@@ -34,7 +34,7 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 	@Override
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try {
-			monitor.beginTask("Importing information from TMDb", IProgressMonitor.UNKNOWN);
+			monitor.beginTask("Importing information from TMDB", IProgressMonitor.UNKNOWN);
 			TmdbApi api = new TmdbApi(Settings.getSettings().getTmdbApiKey());
 			if (movie.isTmdbUrlValid() && movie.getTmdbType().equals(CONST.TMDB_TYPE_MOVIE))
 			{
@@ -63,17 +63,19 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 				}
 				else {
 					if (mList.isEmpty() && tvList.isEmpty())
-						throw new Exception("No matches found");
+						throw new TmdbImportException("No matches found");
 					else {
-						System.out.println("Movie: "+mList.stream().map(m -> (m.getId()+"")).collect(Collectors.joining(", ")));
-						System.out.println("TV: "+tvList.stream().map(m -> (m.getId()+"")).collect(Collectors.joining(", ")));
-						throw new Exception("Ambiguous match. More than one result.");
+						String errorMsg = "Ambiguous match. More than one result:\n";
+						List<String> urls1 = mList.stream().map(m -> CONST.TMDB_BASE_URL + CONST.TMDB_TYPE_MOVIE + "/" + m.getId()).collect(Collectors.toList());
+						List<String> urls2 = tvList.stream().map(m -> CONST.TMDB_BASE_URL + CONST.TMDB_TYPE_TV + "/" + m.getId()).collect(Collectors.toList());
+						urls1.addAll(urls2);
+						errorMsg += String.join("\n", urls1);
+						throw new TmdbImportException(errorMsg);
 					}
 				}
 			}
 		
 		} catch (Exception e) {
-			System.out.println(e);
 			throw new InvocationTargetException(e);
 		} finally {
 			monitor.done();
@@ -91,5 +93,4 @@ public class TmdbDownloader extends AbstractDownloader implements IRunnableWithP
 		IParser parser = new TmdbMovieParser(tmdbMovie, api, monitor);
 		movie = importData(parser, movie, monitor);
 	}
-
 }

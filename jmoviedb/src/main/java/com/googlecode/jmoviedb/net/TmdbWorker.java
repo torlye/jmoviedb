@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import com.googlecode.jmoviedb.gui.ExceptionDialog;
+import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class TmdbWorker {
@@ -42,7 +44,7 @@ public class TmdbWorker {
 			/*
 			 * We end up here if the movie doesn't have a URL yet, or if it is malformed.
 			 */
-			MessageDialog.openInformation(parentShell, "Missing information", "You must enter a TMDb or IMDb URL before you can download information.");
+			MessageDialog.openInformation(parentShell, "Missing information", "You must enter a TMDB or IMDb URL before you can download information.");
 			return movie;
 		}
 
@@ -52,9 +54,15 @@ public class TmdbWorker {
 		try {
 			new ProgressMonitorDialog(parentShell).run(true, false, downloader);
 		} catch (InvocationTargetException e) {
-			MessageDialog dialog = new ExceptionDialog(parentShell, "Import failed", 
-				"TMDB import failed.", e);
-			dialog.open();
+			if (e.getTargetException() instanceof TmdbImportException) {
+				MessageBox messageBox = new MessageBox(MainWindow.getMainWindow().getShell(), SWT.ICON_ERROR | SWT.OK);
+				messageBox.setText("TMDB import failed");
+				messageBox.setMessage(e.getTargetException().getMessage());
+				messageBox.open();
+			}
+			else {
+				MainWindow.getMainWindow().handleException(e);
+			}
 		} catch (InterruptedException e) {
 			//Not used
 		}

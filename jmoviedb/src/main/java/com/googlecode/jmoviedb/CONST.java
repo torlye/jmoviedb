@@ -59,7 +59,7 @@ public class CONST {
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 3;
+	public static final int RELEASE_VERSION = 4;
 	
 	/**
 	 * The current development stage expressed as a string.
@@ -431,6 +431,7 @@ public class CONST {
 
 	public static final String TMDB_TYPE_MOVIE = "movie";
 	public static final String TMDB_TYPE_TV = "tv";
+	public static final String TMDB_BASE_URL = "https://www.themoviedb.org/";
 	
 	/**
 	 * Converts a boolean to an int.
