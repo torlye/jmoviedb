@@ -63,7 +63,6 @@ import com.googlecode.jmoviedb.model.SubtitleTrack;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
 import com.googlecode.jmoviedb.model.movietype.Film;
-import com.googlecode.jmoviedb.net.ImdbWorker;
 import com.googlecode.jmoviedb.net.TmdbWorker;
 
 /**
@@ -98,7 +97,7 @@ public class MovieDialog extends Dialog {
 	private Button colourCheck;
 	private Text notesText;
 	private Combo versionCombo;
-	private Text versionText;
+	//private Text versionText;
 	private Button legalCheck;
 	private Combo discCombo;
 	private Text locationText;
@@ -151,6 +150,7 @@ public class MovieDialog extends Dialog {
 //	private SelectionListener myEncodeCheckListener;
 	private SelectionListener r0CheckListener;
 	private MouseListener imageClickListener;
+	private Button letterboxdButton;
 	
 	private final static int COVER_WIDTH = Math.round(200 * MainWindow.DPI_SCALE);
 	private final static int COVER_HEIGHT = Math.round(300 * MainWindow.DPI_SCALE);
@@ -496,7 +496,7 @@ public class MovieDialog extends Dialog {
 		
 		Composite c1 = new Composite(tabFolder, SWT.NULL);
 		
-		GridLayout gridLayout = new GridLayout(5, false);
+		GridLayout gridLayout = new GridLayout(6, false);
 		gridLayout.marginHeight = MARGIN_HEIGHT;
 		gridLayout.marginWidth = MARGIN_WIDTH;
 		gridLayout.verticalSpacing = VERTICAL_SPACING;
@@ -513,7 +513,7 @@ public class MovieDialog extends Dialog {
 		Label typeLabel = new Label(c1, SWT.CENTER);
 		typeLabel.setText("Type:");
 		typeCombo = new Combo(c1, SWT.DROP_DOWN|SWT.READ_ONLY);
-		typeCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+		typeCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 4, 1));
 		typeCombo.setItems(MovieType.getStringArray());
 		typeCombo.select(0);
 		typeCombo.setVisibleItemCount(MovieType.getStringArray().length);
@@ -526,27 +526,27 @@ public class MovieDialog extends Dialog {
 		completenessCombo.select(0);
 		completenessCombo.setVisibleItemCount(Completeness.getStringArray().length); //make all items visible
 		completenessText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		completenessText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		completenessText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		
 		Label titleLabel = new Label(c1, SWT.CENTER);
 		titleLabel.setText("Title:");
 		titleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		titleText.setToolTipText("The title of the movie. If this field is changed, it will be overwritten " +
 				"on the next IMDb update. If you want to use a custom title, pleas use the \"display title\" field.");
-		titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+		titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
 		
 		Label altTitleLabel = new Label(c1, SWT.CENTER);
 		altTitleLabel.setText("Display title:");
 		altTitleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		altTitleText.setToolTipText("This is the title that will be shown in the movie list. If empty, " +
 				"the main title will be show instead. The display title will not be overwritten on IMDb updates.");
-		altTitleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		altTitleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
 		
 		Label versionLabel = new Label(c1, SWT.CENTER);
 		versionLabel.setText("Version:");
 		versionCombo = new Combo(c1, SWT.DROP_DOWN);
 		versionCombo.setToolTipText("");
-		versionCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		versionCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
 		versionCombo.setItems(new String[]{"Director's Cut", "Unrated", "Extended version", "Theatrical version"});
 		
 		Label yearLabel = new Label(c1, SWT.CENTER);
@@ -557,33 +557,33 @@ public class MovieDialog extends Dialog {
 		
 		year2Text = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		year2Text.setTextLimit(4);
-		year2Text.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,2, 1));
+		year2Text.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
 		
 		Label genreLabel = new Label(c1, SWT.CENTER);
 		genreLabel.setText("Genre:");
 		genreText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		genreText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		genreText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
 		
 		Label countryLabel = new Label(c1, SWT.CENTER);
 		countryLabel.setText("Country:");
 		countryText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		countryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		countryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
 		
 		Label languageLabel = new Label(c1, SWT.CENTER);
 		languageLabel.setText("Language:");
 		languageText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		languageText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+		languageText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
 		
 		Label runtimeLabel = new Label(c1, SWT.CENTER);
 		runtimeLabel.setText("Runtime:");
 		runtimeText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		runtimeText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
+		runtimeText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 4, 1));
 		runtimeText.setToolTipText("This field will be overwritten by IMDb updates!");
 		
 		Label rateLabel = new Label(c1, SWT.CENTER);
 		rateLabel.setText("IMDb rating:");
 		rateScale = new Scale(c1, SWT.HORIZONTAL);
-		rateScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		rateScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		rateScale.setIncrement(1);
 		rateScale.setMinimum(0);
 		rateScale.setMaximum(100);
@@ -602,7 +602,7 @@ public class MovieDialog extends Dialog {
 		Label seenLabel = new Label(c1, SWT.CENTER);
 		seenLabel.setText("");
 		seenCheck = new Button(c1, SWT.CHECK);
-		seenCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
+		seenCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,4, 1));
 		seenCheck.setText("Have seen it");
 		
 		Label imdbLabel = new Label(c1, SWT.CENTER);
@@ -610,7 +610,7 @@ public class MovieDialog extends Dialog {
 		imdbText = new Text(c1, SWT.SINGLE|SWT.BORDER);
 		imdbText.setToolTipText("If a valid IMDb URL is present, you won't have to select the correct movie " +
 				"when running IMDb updates.");
-		imdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		imdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
 		Button imdbGotoButton = new Button(c1, SWT.PUSH);
 		imdbGotoButton.setText("Open");
 		imdbGotoButton.addSelectionListener(new SelectionListener(){
@@ -634,6 +634,16 @@ public class MovieDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				if (!tmdbText.getText().isEmpty())
 					MainWindow.getMainWindow().launchBrowser(tmdbText.getText());
+			}
+		});
+		letterboxdButton = new Button(c1, SWT.PUSH);
+		letterboxdButton.setText("Letterboxd");
+		//letterboxdButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		letterboxdButton.addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e) {}
+			public void widgetSelected(SelectionEvent e) {
+				if (!tmdbText.getText().isEmpty())
+					MainWindow.getMainWindow().launchBrowser("https://letterboxd.com/tmdb/"+movie.getTmdbID());
 			}
 		});
 		
@@ -897,6 +907,7 @@ public class MovieDialog extends Dialog {
 		typeCombo.select(MovieType.abstractMovieToInt(m));
 		imdbText.setText(m.getImdbUrl());
 		tmdbText.setText(m.getTmdbUrl());
+		letterboxdButton.setEnabled(m.isTmdbUrlValid() && m.getTmdbType().equals("movie"));
 		titleText.setText(m.getTitle());
 		altTitleText.setText(m.getCustomTitle());
 		if(m.getYear() != 0)
