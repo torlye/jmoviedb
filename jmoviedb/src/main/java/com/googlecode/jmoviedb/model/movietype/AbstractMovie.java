@@ -26,8 +26,12 @@ import java.net.URL;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,6 +102,7 @@ public abstract class AbstractMovie implements Cloneable {
 	private URL url2;
 	
 	private byte[] imageBytes;
+	private JSONObject jsonNotes;
 	
 	/**
 	 * Database constructor, to be used when loading movies from the database.
@@ -452,9 +457,9 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	/**
-	 * Sets the TMDb ID and type from a string containing  
-	 * the TMDb URL.
-	 * @param url a string containing the TMDb URL
+	 * Sets the TMDB ID and type from a string containing  
+	 * the TMDB URL.
+	 * @param url a string containing the TMDB URL
 	 */
 	public void setTmdbID(String url) {
 		if(url == null || url.isEmpty())
@@ -467,17 +472,17 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 	
 	/**
-	 * Returns the TMDb URL (as a String) of the current movie. 
-	 * @return TMDb URL
+	 * Returns the TMDB URL (as a String) of the current movie. 
+	 * @return TMDB URL
 	 */
 	public String getTmdbUrl() {
 		if(Utils.isNullOrEmpty(getTmdbType()) || getTmdbID() == null)
 			return "";
-		return "https://www.themoviedb.org/"+getTmdbType()+"/"+getTmdbID();
+		return CONST.TMDB_BASE_URL+getTmdbType()+"/"+getTmdbID();
 	}
 	
 	/**
-	 * Checks whether or not the TMDb URL will be valid if it is requested now
+	 * Checks whether or not the TMDB URL will be valid if it is requested now
 	 * @return
 	 */
 	public boolean isTmdbUrlValid() {
@@ -527,6 +532,14 @@ public abstract class AbstractMovie implements Cloneable {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+		if (notes.length() > 0 && notes.startsWith("{")) {
+			try {
+				jsonNotes = new JSONObject(notes);
+			}
+			catch (JSONException e) {
+				System.out.println(getTitle() + ": Failed to parse JSON: "+notes);
+			}
+		}
 	}
 
 	public String getPlotOutline() {
@@ -980,4 +993,123 @@ public abstract class AbstractMovie implements Cloneable {
 		return false;
 	}
 
+	private String getJsonArrayProperty(String name) {
+		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.optJSONArray(name).toString() : "";
+	}
+
+	private String getJsonStringProperty(String name) {
+		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.getString(name) : "";
+	}
+
+	public String getReleaseTitle() {
+		return getJsonStringProperty("releaseTitle");
+	}
+
+	public String getTerritories() {
+		return getJsonArrayProperty("territories");
+	}
+
+	public String getClassifications() {
+		return getJsonArrayProperty("classification");
+	}
+
+	public String getIdentifiers() {
+		JSONArray outArray = new JSONArray();
+		if (jsonNotes != null)
+		{
+			String[] names = new String[]{ "barcode", "isbn", "catalogNumber" };
+			for (String name : names) {
+				JSONArray array = jsonNotes.optJSONArray(name);
+				if (array != null)
+				{
+					for (Object strObj : array.toList()) {
+						JSONObject obj = new JSONObject();
+						obj.put(name, (String)strObj);
+						outArray.put(obj);
+					}
+				}
+				else {
+					String str = jsonNotes.optString(name);
+					if (str != null && !str.isEmpty()) {
+						JSONObject obj = new JSONObject();
+						obj.put(name, str);
+						outArray.put(obj);
+					}
+				}
+			}
+		}
+		return outArray.toString();
+	}
+
+	public String getReleaseYear() {
+		return getJsonStringProperty("2006");
+	}
+
+	public List<FormatType> getFormats() {
+		List<FormatType> formats = new ArrayList<FormatType>();
+		formats.add(getFormat());
+
+		if (notes != null && jsonNotes == null) {
+			Matcher matcherDvd = Pattern.compile("+\\s?DVD").matcher(notes);
+			if(matcherDvd.find())
+				formats.add(FormatType.dvd);
+			Matcher matcherBluray = Pattern.compile("+\\s?Blu-ray").matcher(notes);
+			Matcher matcherBd = Pattern.compile("+\\s?BD").matcher(notes);
+			if(matcherBluray.find() || matcherBd.find())
+				formats.add(FormatType.bluray);
+		}
+
+		return formats;
+	}
+
+	public String getMedia() {
+		String name = "media";
+		String valueFromProp = jsonNotes != null && jsonNotes.has(name) ? jsonNotes.optJSONArray(name).toString() : "";
+		if (!valueFromProp.isEmpty())
+			return valueFromProp;
+		else
+			return "[{\"" + getDisc().getName() + "\": NaN}]";
+	}
+
+	public String getReleaseType() {
+		String name = "releaseType";
+		JSONArray outArray = new JSONArray();
+		if (jsonNotes != null)
+		{
+			JSONArray array = jsonNotes.optJSONArray(name);
+			if (array != null)
+			{
+				for (Object strObj : array.toList()) {
+					outArray.put((String)strObj);
+				}
+			}
+			else {
+				String str = jsonNotes.optString(name);
+				if (str != null && !str.isEmpty()) {
+					outArray.put(str);
+				}
+			}
+		}
+		return outArray.toString();
+	}
+
+	public String getReleaseUrls() {
+		if (!getUrl2String().isBlank())
+		{
+			JSONArray outArray = new JSONArray();
+			outArray.put(getUrl2String());
+			return outArray.toString();
+		}
+		return "";
+	}
+
+	public String getNotesJson() {
+		if (jsonNotes != null)
+		{
+			return jsonNotes.optString("notes");
+		}
+		else {
+			return notes + "\n" + sceneReleaseName;
+		}
+	}
 }

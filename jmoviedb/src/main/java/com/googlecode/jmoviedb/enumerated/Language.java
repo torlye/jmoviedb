@@ -363,6 +363,10 @@ public enum Language {
 	public String getName() {
 		return name;
 	}
+
+	public String getIso639() {
+		return iso639;
+	}
 	
 	/**
 	 * Converts a string to a Language enum, for example &quot;English&quot; to Language.English 
