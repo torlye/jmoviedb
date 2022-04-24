@@ -6,7 +6,7 @@
 
   <groupId>com.googlecode</groupId>
   <artifactId>jmoviedb</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.7</version>
 
   <name>jmoviedb</name>
   <url>https://github.com/torlye/jmoviedb</url>
@@ -87,7 +87,7 @@
 	<dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.13.1</version>
+      <version>1.14.3</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

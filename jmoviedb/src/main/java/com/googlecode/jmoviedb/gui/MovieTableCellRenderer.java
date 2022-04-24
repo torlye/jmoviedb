@@ -36,6 +36,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer {
 	private final static Color HDDVD_COLOR = new Color(Display.getCurrent(), 160, 37, 45); //approximate colour of the HD-DVD cover - too dark?
 	private final static Color UHD_COLOR = new Color(Display.getCurrent(), 0, 0, 0);
 	private final static Color LIGHT_TEXT_COLOR = new Color(Display.getCurrent(), 255, 255, 255);
+	private final static Color DARK_TEXT_COLOR = new Color(Display.getCurrent(), 0, 0, 0);
 	// private final static int IMAGE_WIDTH = 50;
 	// private final static int IMAGE_HEIGHT = 70;
 	
@@ -169,11 +170,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer {
 				rect.x+10+(imgWidth-image.getBounds().width)/2, 
 				rect.y+10+(imgHeight-image.getBounds().height)/2);
 		
-		if(focus || !movie.isSeen()) {
-		} else if (movie.getFormat() == FormatType.bluray || movie.getFormat() == FormatType.bluray3d 
-				|| movie.getFormat() == FormatType.hddvd || movie.getFormat() == FormatType.uhdbluray) {
-			gc.setForeground(LIGHT_TEXT_COLOR);
-		}
+		gc.setForeground(isDarkBackgroud(movie, focus) ? LIGHT_TEXT_COLOR : DARK_TEXT_COLOR);
 		
 		gc.drawString(title, leftColumn, firstRow);
 		gc.drawString(genre, leftColumn, secondRow);
@@ -184,6 +181,11 @@ public class MovieTableCellRenderer extends DefaultCellRenderer {
 		
 		//release resources
 		image.dispose();
+	}
+
+	private static boolean isDarkBackgroud(AbstractMovie movie, boolean focus) {
+		return !focus && movie.isSeen() && (movie.getFormat() == FormatType.bluray || movie.getFormat() == FormatType.bluray3d 
+			|| movie.getFormat() == FormatType.hddvd || movie.getFormat() == FormatType.uhdbluray);
 	}
 
 	public int getOptimalWidth(GC gc, int col, int row, Object content,
