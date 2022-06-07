@@ -988,7 +988,7 @@ public class MovieDialog extends Dialog {
 	}
 
 	private void setImageAreaFromModel() {
-		imageArea.setImage(Utils.resizePreserveAspect(movie.getImageData(), COVER_WIDTH, COVER_HEIGHT));
+		imageArea.setBackgroundImage(Utils.resizePreserveAspect(movie.getImageData(), COVER_WIDTH, COVER_HEIGHT));
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {
