@@ -22,7 +22,6 @@ package com.googlecode.jmoviedb;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -52,14 +51,14 @@ public class CONST {
 	 * The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int MINOR_VERSION = 0;
+	public static final int MINOR_VERSION = 1;
 	
 	/**
 	 * The "release" part of the current version number. Changes to this
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 7;
+	public static final int RELEASE_VERSION = 0;
 	
 	/**
 	 * The current development stage expressed as a string.
