@@ -157,7 +157,7 @@ public class MovieDialog extends Dialog {
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
-//		this.setShellStyle(SWT.CLOSE|SWT.RESIZE);
+		this.setShellStyle(SWT.CLOSE|SWT.RESIZE);
 		
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
 		mainTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).createImage(), iconSize, iconSize);
@@ -172,23 +172,24 @@ public class MovieDialog extends Dialog {
 //		saveButton.setFocus();
 	}
 	
-//	protected boolean isResizable() {
-//		return true;
-//	}
+	@Override
+	protected boolean isResizable() {
+		return true;
+	}
 //	
 //	protected Point getInitialSize() {
 //		return new Point(1000, 900);
 //	}
 	
+    @Override
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		//shell.setSize(630, 490);
 	}
 	
+	@Override
 	protected Control createDialogArea(Composite parent) {
-		Composite c = new Composite(parent, SWT.NONE);
-//		Composite c = new Composite(parent, SWT.FILL);
-//		c.setBackground(this.getShell().getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
+		Composite c = (Composite) super.createDialogArea(parent);
 		
 		GridLayout gridLayout = new GridLayout(3, false);
 		gridLayout.marginWidth = 8;
@@ -202,6 +203,7 @@ public class MovieDialog extends Dialog {
 		tabFolderGD.horizontalAlignment = SWT.FILL/*|SWT.RESIZE*/;
 		tabFolderGD.verticalAlignment = SWT.FILL/*|SWT.RESIZE*/;
 		tabFolderGD.grabExcessVerticalSpace = true;
+		tabFolderGD.grabExcessHorizontalSpace = true;
 				
 		final CTabFolder tabFolder = new CTabFolder(c, SWT.BORDER/*|SWT.RESIZE*/);
 		tabFolder.setSimple(false);
@@ -759,7 +761,7 @@ public class MovieDialog extends Dialog {
 		c.setLayout(compositeLayout);
 		
 		int comboHorizontalAlignment = SWT.BEGINNING;
-		boolean comboGrabExcessHorizontalSpace = false;
+		boolean comboGrabExcessHorizontalSpace = true;
 		int comboHorizontalSpan = 9;
 		
 		Label formatLabel = new Label(c, SWT.CENTER);
