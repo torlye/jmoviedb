@@ -71,7 +71,7 @@ public class CONST {
 	/**
 	 * SWT version number
 	 */
-	public static final String VERSION_SWT = SWT.getVersion()+"";
+	public static final String VERSION_SWT = "4.23";
 	
 	/**
 	 * Apache Derby version number
@@ -91,7 +91,7 @@ public class CONST {
 	/**
 	 * Glazed Lists version number
 	 */
-	public static final String VERSION_GLAZED = "1.8.0";
+	public static final String VERSION_GLAZED = "1.11.0";
 	
 	/**
 	 * KTable version number
@@ -106,12 +106,12 @@ public class CONST {
 	/**
 	 * SWT website
 	 */
-	public static final String WEBSITE_SWT = "http://www.eclipse.org/swt";
+	public static final String WEBSITE_SWT = "https://projects.eclipse.org/projects/eclipse.platform";
 	
 	/**
 	 * Glazed Lists website
 	 */
-	public static final String WEBSITE_GLAZED = "http://publicobject.com/glazedlists";
+	public static final String WEBSITE_GLAZED = "http://www.glazedlists.com";
 	
 	
 	/**

@@ -37,9 +37,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>net.java.dev.glazedlists</groupId>
-      <artifactId>glazedlists_java15</artifactId>
-      <version>1.8.0</version>
+      <groupId>com.glazedlists</groupId>
+      <artifactId>glazedlists</artifactId>
+      <version>1.11.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
