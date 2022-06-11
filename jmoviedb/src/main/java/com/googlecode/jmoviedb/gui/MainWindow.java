@@ -344,6 +344,12 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 					} catch (Exception ex) {
 						handleException(ex);
 					}
+				else if (e.keyCode == SWT.HOME) {
+					table.setSelection(0, 0, true);
+				}
+				else if (e.keyCode == SWT.END) {
+					table.setSelection(0, filteredList.size()-1, true);
+				}
 			}
 			public void keyReleased(KeyEvent e) {
 				//Do nothing
