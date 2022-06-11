@@ -22,7 +22,6 @@ package com.googlecode.jmoviedb;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -52,14 +51,14 @@ public class CONST {
 	 * The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int MINOR_VERSION = 0;
+	public static final int MINOR_VERSION = 1;
 	
 	/**
 	 * The "release" part of the current version number. Changes to this
 	 * number indicate a bugfix release. The full version number will be displayed as:
 	 * MAJOR_VERSION.MINOR_VERSION.RELEASE_VERSION DEVELOPMENT_STAGE
 	 */
-	public static final int RELEASE_VERSION = 7;
+	public static final int RELEASE_VERSION = 0;
 	
 	/**
 	 * The current development stage expressed as a string.
@@ -71,7 +70,7 @@ public class CONST {
 	/**
 	 * SWT version number
 	 */
-	public static final String VERSION_SWT = SWT.getVersion()+"";
+	public static final String VERSION_SWT = "4.23";
 	
 	/**
 	 * Apache Derby version number
@@ -91,7 +90,7 @@ public class CONST {
 	/**
 	 * Glazed Lists version number
 	 */
-	public static final String VERSION_GLAZED = "1.8.0";
+	public static final String VERSION_GLAZED = "1.11.0";
 	
 	/**
 	 * KTable version number
@@ -106,12 +105,12 @@ public class CONST {
 	/**
 	 * SWT website
 	 */
-	public static final String WEBSITE_SWT = "http://www.eclipse.org/swt";
+	public static final String WEBSITE_SWT = "https://projects.eclipse.org/projects/eclipse.platform";
 	
 	/**
 	 * Glazed Lists website
 	 */
-	public static final String WEBSITE_GLAZED = "http://publicobject.com/glazedlists";
+	public static final String WEBSITE_GLAZED = "http://www.glazedlists.com";
 	
 	
 	/**
