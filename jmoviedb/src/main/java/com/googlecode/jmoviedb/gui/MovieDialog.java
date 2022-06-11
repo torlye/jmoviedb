@@ -26,6 +26,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -46,10 +48,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.json.JSONObject;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
+import com.googlecode.jmoviedb.enumerated.ColorFormat;
 import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
 import com.googlecode.jmoviedb.enumerated.DiscType;
@@ -74,7 +78,7 @@ import com.googlecode.jmoviedb.net.TmdbWorker;
  * @author Tor Arne Lye
  *
  */
-public class MovieDialog extends Dialog {
+public class MovieDialog extends Dialog implements ModifyListener {
 	private AbstractMovie movie;
 	private Label imageArea;
 	private Combo typeCombo;
@@ -95,7 +99,8 @@ public class MovieDialog extends Dialog {
 	private Scale rateScale;
 	private Text rateText;
 	private Button seenCheck;
-	private Button colourCheck;
+	private Combo colour;
+	private Button jsonCheck;
 	private Text notesText;
 	private Combo versionCombo;
 	//private Text versionText;
@@ -274,6 +279,7 @@ public class MovieDialog extends Dialog {
 				r8.setVisible(false);
 				
 				FormatType selectedValue = FormatType.values()[formatCombo.getSelectionIndex()];
+				colour.setItems(ColorFormat.getSDRFormatsStringArray());
 				
 				if(selectedValue == FormatType.dvd) {
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
@@ -316,6 +322,7 @@ public class MovieDialog extends Dialog {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					discCombo.select(DiscType.uhdbd.ordinal());
+					colour.setItems(ColorFormat.getAllFormatsStringArray());
 					
 				} else if(selectedValue == FormatType.hddvd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
@@ -696,6 +703,10 @@ public class MovieDialog extends Dialog {
 		notesLabel.setLayoutData(gd);
 		notesText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
 		notesText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		jsonCheck = new Button(c2, SWT.CHECK);
+		jsonCheck.setText("Valid JSON");
+		jsonCheck.setEnabled(false);
+		notesText.addModifyListener(this);
 		
 		tab2.setControl(c2);
 	}
@@ -805,18 +816,19 @@ public class MovieDialog extends Dialog {
 		aspectCombo.select(0);
 		aspectCombo.setVisibleItemCount(AspectRatio.getStringArray().length); //make all items visible
 		
-		
 		Label tvSystemLabel = new Label(c, SWT.CENTER);
 		tvSystemLabel.setText("TV system:");
 		tvSystemCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
-		tvSystemCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, false, false, comboHorizontalSpan-1, 1));
+		tvSystemCombo.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, false, false, comboHorizontalSpan-4, 1));
 		tvSystemCombo.setItems(TVsystem.getStringArray());
 		tvSystemCombo.select(0);
 		tvSystemCombo.setVisibleItemCount(TVsystem.getStringArray().length); //make all items visible
 		
-		colourCheck = new Button(c, SWT.CHECK);
-		colourCheck.setText("Colour");
-		colourCheck.setSelection(true);
+		Label colorLabel = new Label(c, SWT.CENTER);
+		colorLabel.setText("Colour");
+		colour = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
+		colour.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, false, false, 3, 1));
+		colour.setItems(ColorFormat.getAllFormatsStringArray());
 		
 		regionLabel = new Label(c, SWT.CENTER);
 		regionLabel.setText("Region:");
@@ -956,7 +968,6 @@ public class MovieDialog extends Dialog {
 		r6.setSelection(m.getDvdRegion()[6]);
 		r7.setSelection(m.getDvdRegion()[7]);
 		r8.setSelection(m.getDvdRegion()[8]);
-		colourCheck.setSelection(m.isColor());
 		legalCheck.setSelection(m.isLegal());
 		discCombo.select(m.getDisc().ordinal());
 		aspectCombo.select(m.getAspectRatio().ordinal());
@@ -988,6 +999,8 @@ public class MovieDialog extends Dialog {
 		legalCheckListener.widgetSelected(null);
 //		myEncodeCheckListener.widgetSelected(null);
 		r0CheckListener.widgetSelected(null);
+
+		colour.select(m.getColor().ordinal());
 	}
 
 	private void setImageAreaFromModel() {
@@ -1089,7 +1102,7 @@ public class MovieDialog extends Dialog {
 					r7.getSelection(),
 					r8.getSelection(),
 				});
-		movie.setColor(colourCheck.getSelection());
+		movie.setColor(ColorFormat.values()[colour.getSelectionIndex()]);
 		movie.setLegal(legalCheck.getSelection());
 		movie.setDisc(DiscType.values()[discCombo.getSelectionIndex()]);
 		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
@@ -1123,6 +1136,17 @@ public class MovieDialog extends Dialog {
 			setModel(new Film());
 		
 		return super.open();
+	}
+
+	@Override
+	public void modifyText(ModifyEvent event) {
+		try {
+			new JSONObject(((Text)event.widget).getText());
+			jsonCheck.setSelection(true);
+		}
+		catch (Exception e) {
+			jsonCheck.setSelection(false);
+		}
 	}
 }
 

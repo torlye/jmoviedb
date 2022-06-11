@@ -100,6 +100,8 @@ public class MovieTableCellRenderer extends DefaultCellRenderer {
 		}
 		if(movie.getResolution().isHD())
 			title += " "+movie.getResolution().getName();
+		if (movie.getColor().isHDR())
+			title += " " + movie.getColor().getName();
 		
 		String genre = "";
 		for(Genre g : movie.getGenres()) {

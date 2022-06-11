@@ -192,7 +192,7 @@ public class CSVexportReleases implements IRunnableWithProgress {
 			movieReleaseRecord[6] = movie.getResolution().getName();
 			movieReleaseRecord[7] = movie.getAspectRatio().getShortName();
 			movieReleaseRecord[8] = movie.getTvSystem().getShortName();
-			movieReleaseRecord[9] = Boolean.toString(movie.isColor());
+			movieReleaseRecord[9] = movie.getColor().getName();
 
 			Optional<AbstractMovie> existingMovie = moviesToWrite.stream()
 				.filter(m -> m.isImdbUrlValid() && m.getImdbID().equals(movie.getImdbID())).findFirst();

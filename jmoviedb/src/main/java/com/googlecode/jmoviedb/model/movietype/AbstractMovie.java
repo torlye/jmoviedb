@@ -39,6 +39,7 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Settings;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
+import com.googlecode.jmoviedb.enumerated.ColorFormat;
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
 import com.googlecode.jmoviedb.enumerated.Country;
 import com.googlecode.jmoviedb.enumerated.DiscType;
@@ -67,7 +68,7 @@ public abstract class AbstractMovie implements Cloneable {
 	private double rating;
 	private String plotOutline;
 	private String tagline;
-	private boolean color;
+	private ColorFormat color;
 	private int runTime;
 	private ArrayList<Genre> genres;
 	private ArrayList<Country> countries;
@@ -168,7 +169,7 @@ public abstract class AbstractMovie implements Cloneable {
 		setRatingAsInt(rating);
 		setPlotOutline(plotOutline);
 		setTagline(tagline);
-		setColor(CONST.intToBoolean(color));
+		setColorInt(color);
 		setRunTime(runTime);
 		setNotes(notes);
 		setVersion(FilmVersion.intToEnum(version));
@@ -199,7 +200,7 @@ public abstract class AbstractMovie implements Cloneable {
 		this.rating = 0.0;
 		this.plotOutline = "";
 		this.tagline = "";
-		this.color = true;
+		this.color = ColorFormat.none;
 		this.runTime = 0;
 		this.genres = new ArrayList<Genre>();
 		this.countries = new ArrayList<Country>();
@@ -264,25 +265,20 @@ public abstract class AbstractMovie implements Cloneable {
 		this.audioTracks = audioTracks;
 	}
 
-	public boolean isColor() {
+	public ColorFormat getColor() {
 		return color;
 	}
 	
 	public int getColorInt() {
-		if(color)
-			return 1;
-		return 0;
+		return color.getId();
 	}
 
-	public void setColor(boolean color) {
+	public void setColor(ColorFormat color) {
 		this.color = color;
 	}
 	
 	public void setColorInt(int color) {
-		if(color == 0)
-			this.color = false;
-		else if(color == 1)
-			this.color = true;
+		this.color = ColorFormat.intToEnum(color);
 	}
 
 	public ArrayList<Country> getCountries() {
