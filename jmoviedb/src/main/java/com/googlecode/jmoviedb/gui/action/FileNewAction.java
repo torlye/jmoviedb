@@ -32,7 +32,7 @@ public class FileNewAction extends Action {
 		setText("New");
 		setToolTipText("New");
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_NEW), iconSize, iconSize));
+		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_NEW), iconSize, iconSize));
 	}
 	
 	public void run() {

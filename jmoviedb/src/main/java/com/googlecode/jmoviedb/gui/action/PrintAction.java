@@ -32,6 +32,6 @@ public class PrintAction extends Action {
 		setText("Print...");
 		setToolTipText("Print");
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_PRINT), iconSize, iconSize));
+		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_PRINT), iconSize, iconSize));
 	}
 }

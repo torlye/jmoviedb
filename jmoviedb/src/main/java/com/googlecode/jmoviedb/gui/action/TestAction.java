@@ -37,9 +37,9 @@ public class TestAction extends Action {
 		this.exception = exception;
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
 		if(exception)
-			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_EXCLAMATION), iconSize, iconSize));
+			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_EXCLAMATION), iconSize, iconSize));
 		else
-			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_PREFERENCES), iconSize, iconSize));
+			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_PREFERENCES), iconSize, iconSize));
 	}
 	
 	/**

@@ -16,8 +16,10 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 public class Utils {
-	public static ImageDescriptor resizePreserveAspect(ImageDescriptor imageDesc, int maxWidth, int maxHeight) {
-		ImageData imageData = imageDesc.getImageData();
+	public static ImageDescriptor resizeActionIcon(ImageDescriptor imageDesc, int maxWidth, int maxHeight) {
+		if (isLinux()) return imageDesc; // For Linux, SWT has built-in scaling that works
+
+		ImageData imageData = imageDesc.getImageData(100);
 		
 		if (imageData.width==maxWidth || imageData.height==maxHeight)
 			return imageDesc;
@@ -217,5 +219,9 @@ public class Utils {
 
 	public static boolean isNullOrEmpty(String param) { 
 		return param == null || param.isEmpty();
+	}
+
+	public static boolean isLinux() {
+		return System.getProperty("os.name").toLowerCase().startsWith("linux");
 	}
 }
