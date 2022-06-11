@@ -31,7 +31,7 @@ public class HelpHelpAction extends Action {
 		setText("Help");
 		setToolTipText("Help");
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_HELP), iconSize, iconSize));
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_HELP), iconSize, iconSize));
 	}
 	
 	public void run() {

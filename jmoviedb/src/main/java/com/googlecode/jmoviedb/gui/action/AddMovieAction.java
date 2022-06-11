@@ -45,32 +45,32 @@ public class AddMovieAction extends Action {
 		case CONST.MOVIETYPE_FILM:
 			setText(GuiLanguage.ADDFILM + "...");
 			setToolTipText(GuiLanguage.ADDFILM);
-			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ADDFILM), iconSize, iconSize));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDFILM), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_VIDEOMOVIE:
 			setText(GuiLanguage.ADDVIDEOMOVIE + "...");
 			setToolTipText(GuiLanguage.ADDVIDEOMOVIE);
-			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ADDVIDEOMOVIE), iconSize, iconSize));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDVIDEOMOVIE), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_TVMOVIE:
 			setText(GuiLanguage.ADDTVMOVIE + "...");
 			setToolTipText(GuiLanguage.ADDTVMOVIE);
-			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ADDTVMOVIE), iconSize, iconSize));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDTVMOVIE), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_TVSERIES:
 			setText(GuiLanguage.ADDTVSERIES + "...");
 			setToolTipText(GuiLanguage.ADDTVSERIES);
-			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ADDTVSERIES), iconSize, iconSize));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDTVSERIES), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_MINISERIES:
 			setText(GuiLanguage.ADDMINISERIES + "...");
 			setToolTipText(GuiLanguage.ADDMINISERIES);
-			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ADDMINISERIES), iconSize, iconSize));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDMINISERIES), iconSize, iconSize));
 			break;
 		case CONST.MOVIETYPE_MOVIESERIAL:
 			setText(GuiLanguage.ADDMOVIESERIAL + "...");
 			setToolTipText(GuiLanguage.ADDMOVIESERIAL);
-			setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ADDMOVIESERIAL), iconSize, iconSize));
+			setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADDMOVIESERIAL), iconSize, iconSize));
 			break;
 		}
 	}

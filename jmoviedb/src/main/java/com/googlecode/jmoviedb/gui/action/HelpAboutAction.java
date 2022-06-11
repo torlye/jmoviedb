@@ -36,7 +36,7 @@ public class HelpAboutAction extends Action {
 		setText("About JMoviedb");
 		setToolTipText("About JMoviedb");
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_ABOUT), iconSize, iconSize));
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ABOUT), iconSize, iconSize));
 	}
 	
 	public void run() {

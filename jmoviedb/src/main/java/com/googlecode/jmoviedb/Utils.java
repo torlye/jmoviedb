@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 public class Utils {
-	public static ImageDescriptor resizeActionIcon(ImageDescriptor imageDesc, int maxWidth, int maxHeight) {
+	public static ImageDescriptor resizePreserveAspect(ImageDescriptor imageDesc, int maxWidth, int maxHeight) {
 		if (isLinux()) return imageDesc; // For Linux, SWT has built-in scaling that works
 
 		ImageData imageData = imageDesc.getImageData(100);

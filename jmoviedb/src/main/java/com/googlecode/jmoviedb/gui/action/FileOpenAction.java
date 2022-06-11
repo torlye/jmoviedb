@@ -34,7 +34,7 @@ public class FileOpenAction extends Action {
 		setText("Open...");
 		setToolTipText("Open");
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_OPEN), iconSize, iconSize));
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_OPEN), iconSize, iconSize));
 	}
 	
 	private String openFileDialog() {

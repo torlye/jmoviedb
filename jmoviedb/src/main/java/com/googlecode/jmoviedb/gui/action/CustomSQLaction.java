@@ -27,7 +27,7 @@ public class CustomSQLaction extends Action {
 		setText("Custom SQL Query...");
 		setToolTipText("Run a custom SQL Query");
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_DATABASE_EDIT), iconSize, iconSize));
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DATABASE_EDIT), iconSize, iconSize));
 	}
 
 	public void run() {

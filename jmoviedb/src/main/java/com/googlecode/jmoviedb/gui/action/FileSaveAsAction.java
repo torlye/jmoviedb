@@ -42,7 +42,7 @@ public class FileSaveAsAction extends Action {
 		setText(GuiLanguage.SAVEAS + "...");
 		setToolTipText(GuiLanguage.SAVEAS);
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		setImageDescriptor(Utils.resizeActionIcon(ImageDescriptor.createFromURL(CONST.ICON_SAVEAS), iconSize, iconSize));
+		setImageDescriptor(Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_SAVEAS), iconSize, iconSize));
 	}
 	
 	private String saveFileDialog() {
