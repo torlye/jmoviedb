@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 
-import com.googlecode.jmoviedb.Utils;
+import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.FormatType;
 import com.googlecode.jmoviedb.enumerated.Genre;
@@ -140,7 +140,7 @@ public class MovieTableCellRenderer extends DefaultCellRenderer {
 		int leftColumn = rect.x+20+imgWidth;
 		int rightColumn = rect.width-10;
 		
-		Image image = Utils.resizePreserveAspect(movie.getImageData(), imgWidth, imgHeight);
+		Image image = new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), true, imgWidth, imgHeight));
 		
 		//Configure table cell background colour
 		gc.setForeground(COLOR_TEXT);
