@@ -62,6 +62,9 @@ import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.enumerated.Resolution;
 import com.googlecode.jmoviedb.enumerated.TVsystem;
 import com.googlecode.jmoviedb.enumerated.VideoCodec;
+import com.googlecode.jmoviedb.gui.audiosubtitletable.AudioSubtitleTable;
+import com.googlecode.jmoviedb.gui.audiosubtitletable.AudioTable;
+import com.googlecode.jmoviedb.gui.audiosubtitletable.SubtitleTable;
 import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.AudioTrack;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
@@ -907,8 +910,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		layout.marginWidth = 4;
 		c.setLayout(layout);
 		
-		audioTable = new AudioSubtitleTable<AudioTrack>(c, true, formatCombo);
-		subtitleTable = new AudioSubtitleTable<SubtitleTrack>(c, false, formatCombo);
+		audioTable = new AudioTable(c, formatCombo);
+		subtitleTable = new SubtitleTable(c, formatCombo);
 		
 		tab5.setControl(c);
 	}
