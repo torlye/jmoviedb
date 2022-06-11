@@ -33,6 +33,7 @@ public class Utils {
 	}
 	
 	public static Image resizePreserveAspect(Image image, int maxWidth, int maxHeight) {
+		if (isLinux()) return image; // For Linux, SWT has built-in scaling that works
 		ImageData imageData = image.getImageData();
 		
 		if (imageData.width==maxWidth || imageData.height==maxHeight)
