@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
@@ -988,7 +989,7 @@ public class MovieDialog extends Dialog {
 	}
 
 	private void setImageAreaFromModel() {
-		imageArea.setBackgroundImage(Utils.resizePreserveAspect(movie.getImageData(), COVER_WIDTH, COVER_HEIGHT));
+		imageArea.setImage(new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), true, COVER_WIDTH, COVER_HEIGHT)));
 	}
 	
 	protected void createButtonsForButtonBar(Composite parent) {

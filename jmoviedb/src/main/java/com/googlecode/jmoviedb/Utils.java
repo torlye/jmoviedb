@@ -48,7 +48,7 @@ public class Utils {
 	    return resize(image, newWidth, newHeight);
 	}
 	
-	public static Image resize(Image image, int newWidth, int newHeight) {
+	private static Image resize(Image image, int newWidth, int newHeight) {
 		Image scaled = new Image(Display.getCurrent(), newWidth, newHeight);
 		GC gc = new GC(scaled);
 		try
