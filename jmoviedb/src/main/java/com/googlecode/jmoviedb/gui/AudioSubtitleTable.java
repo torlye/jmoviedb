@@ -62,11 +62,11 @@ public class AudioSubtitleTable<T extends AudioOrSubtitleTrack> {
 		this.formatCombo = formatCombo;
 		
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		tickImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_TICK12).getImageData(), iconSize, iconSize);
-		addImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADD).getImageData(), iconSize, iconSize);
-		removeImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DELETE).getImageData(), iconSize, iconSize);
-		upImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_UP).getImageData(), iconSize, iconSize);
-		downImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DOWN).getImageData(), iconSize, iconSize);
+		tickImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_TICK12).getImageData(100), iconSize, iconSize);
+		addImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADD).getImageData(100), iconSize, iconSize);
+		removeImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DELETE).getImageData(100), iconSize, iconSize);
+		upImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_UP).getImageData(100), iconSize, iconSize);
+		downImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DOWN).getImageData(100), iconSize, iconSize);
 		
 		if(audio)
 			columnNames = new String[] {"#", "Language","Commentary track","Audio descriptive","Format","Channels"};

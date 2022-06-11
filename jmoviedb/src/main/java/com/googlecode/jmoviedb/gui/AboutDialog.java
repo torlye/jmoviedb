@@ -70,7 +70,7 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 		l1.setText("JMoviedb uses the following software:");
 		
 		Link swtLink = new Link(c, SWT.NONE);
-		swtLink.setText("<A>SWT/JFace " + CONST.VERSION_SWT + "</A>");
+		swtLink.setText("<A>Eclipse SDK " + CONST.VERSION_SWT + "</A>");
 		swtLink.addSelectionListener(this);
 		
 		Link derbyLink = new Link(c, SWT.NONE);
@@ -152,7 +152,7 @@ public class AboutDialog extends MessageDialog implements SelectionListener {
 	public void widgetSelected(SelectionEvent e) {
 		if(e.getSource().toString().contains("moviedb"))
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE);
-		else if(e.getSource().toString().contains("SWT"))
+		else if(e.getSource().toString().contains("Eclipse"))
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_SWT);
 		else if(e.getSource().toString().contains("Apache"))
 			MainWindow.getMainWindow().launchBrowser(CONST.WEBSITE_DERBY);

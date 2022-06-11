@@ -17,7 +17,9 @@ import org.eclipse.swt.widgets.Display;
 
 public class Utils {
 	public static ImageDescriptor resizePreserveAspect(ImageDescriptor imageDesc, int maxWidth, int maxHeight) {
-		ImageData imageData = imageDesc.getImageData();
+		if (isLinux()) return imageDesc; // For Linux, SWT has built-in scaling that works
+
+		ImageData imageData = imageDesc.getImageData(100);
 		
 		if (imageData.width==maxWidth || imageData.height==maxHeight)
 			return imageDesc;
@@ -31,6 +33,7 @@ public class Utils {
 	}
 	
 	public static Image resizePreserveAspect(Image image, int maxWidth, int maxHeight) {
+		if (isLinux()) return image; // For Linux, SWT has built-in scaling that works
 		ImageData imageData = image.getImageData();
 		
 		if (imageData.width==maxWidth || imageData.height==maxHeight)
@@ -46,7 +49,7 @@ public class Utils {
 	    return resize(image, newWidth, newHeight);
 	}
 	
-	public static Image resize(Image image, int newWidth, int newHeight) {
+	private static Image resize(Image image, int newWidth, int newHeight) {
 		Image scaled = new Image(Display.getCurrent(), newWidth, newHeight);
 		GC gc = new GC(scaled);
 		try
@@ -217,5 +220,9 @@ public class Utils {
 
 	public static boolean isNullOrEmpty(String param) { 
 		return param == null || param.isEmpty();
+	}
+
+	public static boolean isLinux() {
+		return System.getProperty("os.name").toLowerCase().startsWith("linux");
 	}
 }

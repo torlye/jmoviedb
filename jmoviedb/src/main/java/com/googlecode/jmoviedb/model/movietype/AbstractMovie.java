@@ -928,11 +928,11 @@ public abstract class AbstractMovie implements Cloneable {
 	 */
 	public ImageData getImageData() {
 		if(imageBytes==null)
-			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData();
+			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData(100);
 		try {
 			return new ImageData(new ByteArrayInputStream(imageBytes));
 		} catch(SWTException e) {//Invalid or unsupported image data
-			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData();
+			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData(100);
 		}
 	}
 	
