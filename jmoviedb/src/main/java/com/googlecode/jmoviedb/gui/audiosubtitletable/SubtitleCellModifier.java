@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.enumerated.SubtitleFormat;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
 
@@ -35,31 +34,20 @@ class SubtitleCellModifier implements ICellModifier {
     public Object getValue(Object element, String property) {
         // Find the index of the column
         int columnIndex = Arrays.asList(columnNames).indexOf(property);
-
-        Object result = null;
         SubtitleTrack track = (SubtitleTrack)element;
 
         switch(columnIndex) {
         case 1: 
-//					result = Arrays.asList(Language.values()).indexOf(track);
-            result = track.getLanguage().ordinal();
-            break;
+            return track.getLanguageString();
         case 2:
-            result = track.isCommentary();
-            break;
+            return track.getTrackType();
         case 3:
-            result = track.isHearingImpaired();
-            break;
+            return track.getFormat().getID();
         case 4:
-            result = track.isForced();
-            break;
-        case 5: 
-            result = track.getFormat().getID();
-            break;
-        default :
-            result = "";
+            return track.getNote() == null ? "" : track.getNote();
+        default:
+            return "";
         }
-        return result;	
     }
 
     /**
@@ -73,19 +61,16 @@ class SubtitleCellModifier implements ICellModifier {
 
         switch (columnIndex) {
         case 1:
-            track.setLanguage(Language.values()[(Integer)value]);
+            track.setLanguageString((String)value);;
             break;
         case 2:
-            track.setCommentary((Boolean)value);
+            track.setTrackType((String)value);
             break;
         case 3:
-            track.setHearingImpaired((Boolean)value);
+            track.setFormat(SubtitleFormat.values()[(Integer)value]);
             break;
         case 4:
-            track.setForced((Boolean)value);
-            break;
-        case 5:
-            track.setFormat(SubtitleFormat.values()[(Integer)value]);
+            track.setNote((String)value);
             break;
         default:
         }

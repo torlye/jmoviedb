@@ -32,7 +32,6 @@ public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 		editors[3] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
 		editors[4] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
 		editors[5] = new TextCellEditor(table);
-		editors[1] = new ComboBoxTextCellEditor(table, Language.getStringArray(), SWT.DROP_DOWN);
 		return editors;
 	}
 

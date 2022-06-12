@@ -7,6 +7,7 @@ public abstract class AudioOrSubtitleTrack {
     protected boolean commentary;
 	protected String languageString;
 	protected String note;
+	protected String trackType;
 
 	public boolean isCommentary() {
 		return commentary;
@@ -39,5 +40,13 @@ public abstract class AudioOrSubtitleTrack {
 
 	public void setNote(String value) {
 		note = value;
+	}
+	
+	public String getTrackType() {
+		return trackType;
+	}
+
+	public void setTrackType(String value) {
+		trackType = value;
 	}
 }

@@ -1,10 +1,10 @@
 package com.googlecode.jmoviedb.gui.audiosubtitletable;
 
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -16,7 +16,7 @@ public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 
     public SubtitleTable(Composite parent,  Combo formatCombo) {
         super(parent, formatCombo, 
-			new String[] {"#", "Language","Commentary track","Hearing impaired","Forced","Format"});
+			new String[] {"#", "Language","Track type","Format","Note"});
 		tableViewer.setLabelProvider(new SubtitleLabelProvider(this));
     }
 
@@ -28,10 +28,9 @@ public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 	@Override
 	protected CellEditor[] createCellEditors() {
 		CellEditor[] editors = super.createCellEditors();
-		editors[2] = new CheckboxCellEditor(table);
-		editors[3] = new CheckboxCellEditor(table);
-		editors[4] = new CheckboxCellEditor(table);
-		editors[5] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
+		editors[2] = new ComboBoxTextCellEditor(table, SubtitleTrackType.getStringArray(), SWT.DROP_DOWN);
+		editors[3] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);
+		editors[4] = new TextCellEditor(table);
 		return editors;
 	}
 
@@ -67,6 +66,6 @@ public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 			subformat = SubtitleFormat.medianative;
 		}
 		
-        return new SubtitleTrack(lang, subformat, false, false, false);
+        return new SubtitleTrack(lang, subformat, false, false, false, "", lang.getName(), "");
     }
 }

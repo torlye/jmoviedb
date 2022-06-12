@@ -195,6 +195,9 @@ public class Database {
 		tryAddColumn("MOVIEAUDIO", "TRACKTYPE", "VARCHAR(250)");
 		tryAddColumn("MOVIEAUDIO", "LANGUAGE", "VARCHAR(250)");
 		tryAddColumn("MOVIEAUDIO", "NOTE", "VARCHAR(250)");
+		tryAddColumn("MOVIESUBTITLE", "TRACKTYPE", "VARCHAR(250)");
+		tryAddColumn("MOVIESUBTITLE", "LANGUAGE", "VARCHAR(250)");
+		tryAddColumn("MOVIESUBTITLE", "NOTE", "VARCHAR(250)");
 
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
@@ -241,7 +244,7 @@ public class Database {
 		addLanguage = connection.prepareStatement("INSERT INTO MOVIELANGUAGE VALUES(?, ?)");
 		addCountry = connection.prepareStatement("INSERT INTO MOVIECOUNTRY VALUES(?, ?)");
 		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		addSubtitleTrack = connection.prepareStatement("INSERT INTO MOVIESUBTITLE VALUES(?, ?, ?, ?, ?, ?, ?)");
+		addSubtitleTrack = connection.prepareStatement("INSERT INTO MOVIESUBTITLE VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		getActors = connection.prepareStatement("SELECT * FROM MOVIEACTOR JOIN PERSON ON MOVIEACTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
 		getDirectors = connection.prepareStatement("SELECT * FROM MOVIEDIRECTOR JOIN PERSON ON MOVIEDIRECTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
 		getWriters = connection.prepareStatement("SELECT * FROM MOVIEWRITER JOIN PERSON ON MOVIEWRITER.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
@@ -386,6 +389,9 @@ public class Database {
 				"COMMENTARY SMALLINT, " +
 				"HEARINGIMPAIRED SMALLINT, " +
 				"FORCED SMALLINT, " +
+				"TRACKTYPE VARCHAR(250), " +
+				"LANGUAGE VARCHAR(250), " +
+				"NOTE VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID, TRACKNR), " + 
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
@@ -649,7 +655,7 @@ public class Database {
 			addAudioTrack.setInt(1, m.getID());
 			addAudioTrack.setInt(2, i);
 			addAudioTrack.setInt(3, track.getAudio().getID());
-			addAudioTrack.setInt(4, track.getLanguage().getID());
+			addAudioTrack.setInt(4, track.getLanguage() == null ? 0 : track.getLanguage().getID());
 			addAudioTrack.setInt(5, CONST.booleanToInt(track.isCommentary()));
 			addAudioTrack.setInt(6, track.getChannels().getID());
 			addAudioTrack.setInt(7, CONST.booleanToInt(track.isAudioDescriptive()));
@@ -665,13 +671,17 @@ public class Database {
 		clearSubtitleTracks.clearParameters();
 		
 		for (int i = 0; i < m.getSubtitles().size(); i++) {
+			SubtitleTrack track = m.getSubtitles().get(i);
 			addSubtitleTrack.setInt(1, m.getID());
 			addSubtitleTrack.setInt(2, i);
-			addSubtitleTrack.setInt(3, m.getSubtitles().get(i).getFormat().getID());
-			addSubtitleTrack.setInt(4, m.getSubtitles().get(i).getLanguage().getID());
-			addSubtitleTrack.setInt(5, CONST.booleanToInt(m.getSubtitles().get(i).isCommentary()));
-			addSubtitleTrack.setInt(6, CONST.booleanToInt(m.getSubtitles().get(i).isHearingImpaired()));
-			addSubtitleTrack.setInt(7, CONST.booleanToInt(m.getSubtitles().get(i).isForced()));
+			addSubtitleTrack.setInt(3, track.getFormat().getID());
+			addSubtitleTrack.setInt(4, track.getLanguage() == null ? 0 : track.getLanguage().getID());
+			addSubtitleTrack.setInt(5, CONST.booleanToInt(track.isCommentary()));
+			addSubtitleTrack.setInt(6, CONST.booleanToInt(track.isHearingImpaired()));
+			addSubtitleTrack.setInt(7, CONST.booleanToInt(track.isForced()));
+			addSubtitleTrack.setString(8, track.getTrackType());
+			addSubtitleTrack.setString(9, track.getLanguageString());
+			addSubtitleTrack.setString(10, track.getNote());
 			addSubtitleTrack.execute();
 			addSubtitleTrack.clearParameters();
 		}
@@ -876,10 +886,11 @@ public class Database {
 					SubtitleFormat.intToEnum(rsSub.getInt("FORMAT")),
 					CONST.intToBoolean(rsSub.getInt("COMMENTARY")),
 					CONST.intToBoolean(rsSub.getInt("HEARINGIMPAIRED")),
-					CONST.intToBoolean(rsSub.getInt("FORCED"))
+					CONST.intToBoolean(rsSub.getInt("FORCED")),
+					rsSub.getString("TRACKTYPE"),
+					rsSub.getString("LANGUAGE"),
+					rsSub.getString("NOTE")
 			));
-			if (rsSub.getInt("COMMENTARY") + rsSub.getInt("HEARINGIMPAIRED") + rsSub.getInt("FORCED") > 1)
-				System.err.println("More than one subtitle type on "+m.getTitle());
 		}
 		for (int i = 0; i < subHash.size(); i++) {
 			if(subHash.containsKey(i))
