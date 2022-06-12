@@ -28,7 +28,7 @@ import com.googlecode.jmoviedb.gui.action.search.YearTextFilterator;
 public class SearchField extends ControlContribution implements SelectionListener, FocusListener {
 
 	private Text searchfield;
-	private TextWidgetMatcherEditor matcherEditor;
+	private TextWidgetMatcherEditor<AbstractMovie> matcherEditor;
 	private String defaultText;
 	private Color normalColor;
 	private Color disabledColor;
@@ -44,7 +44,7 @@ public class SearchField extends ControlContribution implements SelectionListene
 		searchfield.addSelectionListener(this);
 		searchfield.addFocusListener(this);
 		defaultText = "Search";
-		matcherEditor = new TextWidgetMatcherEditor(searchfield, new TitleTextFilterator(), true);
+		matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new TitleTextFilterator(), true);
 		normalColor = searchfield.getForeground();
 		disabledColor = new Color(Display.getCurrent(), 170, 170, 170);
 
@@ -77,7 +77,6 @@ public class SearchField extends ControlContribution implements SelectionListene
 	 * Returns the TextWidgetMatcherEditor
 	 * @return a TextWidgetMatcherEditor
 	 */
-	@SuppressWarnings("unchecked")
 	public MatcherEditor<AbstractMovie> getMatcherEditor() {
 		return matcherEditor;
 	}
@@ -131,20 +130,20 @@ public class SearchField extends ControlContribution implements SelectionListene
 
 		//Todo replace with class-loading or likewise
 		if (searchParameter.equals("Year")) {
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new YearTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new YearTextFilterator(), true);
 		} else if (searchParameter.equals("Genre")) {
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new GenreTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new GenreTextFilterator(), true);
 		} else if (searchParameter.equals("Director")) {
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new DirectorTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new DirectorTextFilterator(), true);
 		} else if (searchParameter.equals("Writer")) {
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new WriterTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new WriterTextFilterator(), true);
 		} else if (searchParameter.equals("Actor")) {
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new ActorTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new ActorTextFilterator(), true);
 		} else if (searchParameter.equals("Language")) {
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new LanguagesTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new LanguagesTextFilterator(), true);
 		} else {
 			//Default to title
-			matcherEditor = new TextWidgetMatcherEditor(searchfield, new TitleTextFilterator(), true);
+			matcherEditor = new TextWidgetMatcherEditor<AbstractMovie>(searchfield, new TitleTextFilterator(), true);
 		}
 		
 		if (searchfield.getForeground().equals(disabledColor)) {
