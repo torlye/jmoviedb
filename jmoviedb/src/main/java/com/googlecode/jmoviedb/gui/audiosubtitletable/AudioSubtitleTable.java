@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
-import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.model.AudioOrSubtitleTrack;
 
@@ -141,7 +140,7 @@ public abstract class AudioSubtitleTable<T extends AudioOrSubtitleTrack> {
 	protected CellEditor[] createCellEditors() {
 		CellEditor[] editors = new CellEditor[columnNames.length];
 		editors[0] = new TextCellEditor(table);
-		editors[1] = new ComboBoxTextCellEditor(table, Language.getStringArray(), SWT.DROP_DOWN);
+		editors[1] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllLanguages(), SWT.DROP_DOWN);
 		return editors;
 	}
 
