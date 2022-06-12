@@ -40,7 +40,7 @@ public class Settings {
 	private static String fileName;
 	private DialogSettings dSettings;
 	
-	private ListenerList listeners;
+	private ListenerList<IPropertyChangeListener> listeners;
 	
 	private final static String VERSION = "Version";
 	private final static String LANGUAGE = "Language";
@@ -81,7 +81,7 @@ public class Settings {
 	}
 	
 	public Settings() {
-		listeners = new ListenerList();
+		listeners = new ListenerList<IPropertyChangeListener>();
 		
 		if(System.getProperty("user.home").endsWith(System.getProperty("file.separator")))
 			fileName = System.getProperty("user.home") + ".jmdb-settings.xml";
