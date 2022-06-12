@@ -190,7 +190,14 @@ public class Database {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
-		
+
+		try {
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE MOVIEAUDIO ADD COLUMN TRACKTYPE VARCHAR(250)");
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
 		
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
@@ -236,7 +243,7 @@ public class Database {
 		addGenre = connection.prepareStatement("INSERT INTO MOVIEGENRE VALUES(?, ?)");
 		addLanguage = connection.prepareStatement("INSERT INTO MOVIELANGUAGE VALUES(?, ?)");
 		addCountry = connection.prepareStatement("INSERT INTO MOVIECOUNTRY VALUES(?, ?)");
-		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?, ?)");
+		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
 		addSubtitleTrack = connection.prepareStatement("INSERT INTO MOVIESUBTITLE VALUES(?, ?, ?, ?, ?, ?, ?)");
 		getActors = connection.prepareStatement("SELECT * FROM MOVIEACTOR JOIN PERSON ON MOVIEACTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
 		getDirectors = connection.prepareStatement("SELECT * FROM MOVIEDIRECTOR JOIN PERSON ON MOVIEDIRECTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
@@ -629,6 +636,7 @@ public class Database {
 			addAudioTrack.setInt(5, CONST.booleanToInt(m.getAudioTracks().get(i).isCommentary()));
 			addAudioTrack.setInt(6, m.getAudioTracks().get(i).getChannels().getID());
 			addAudioTrack.setInt(7, CONST.booleanToInt(m.getAudioTracks().get(i).isAudioDescriptive()));
+			addAudioTrack.setString(8, m.getAudioTracks().get(i).getTrackType());
 			addAudioTrack.execute();
 			addAudioTrack.clearParameters();
 		}
@@ -827,7 +835,8 @@ public class Database {
 					AudioCodec.intToEnum(rsAud.getInt("CODEC")),
 					AudioChannels.intToEnum(rsAud.getInt("CHANNELID")),
 					CONST.intToBoolean(rsAud.getInt("COMMENTARY")),
-					CONST.intToBoolean(rsAud.getInt("DESCRIPTIVE"))
+					CONST.intToBoolean(rsAud.getInt("DESCRIPTIVE")),
+					rsAud.getString("TRACKTYPE")
 			));
 		for (int i = 0; i < audioHash.size(); i++) {
 			if(audioHash.containsKey(i))

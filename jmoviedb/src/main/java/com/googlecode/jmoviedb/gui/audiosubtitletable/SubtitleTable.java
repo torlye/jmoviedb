@@ -28,6 +28,7 @@ public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 	@Override
 	protected CellEditor[] createCellEditors() {
 		CellEditor[] editors = super.createCellEditors();
+		editors[2] = new CheckboxCellEditor(table);
 		editors[3] = new CheckboxCellEditor(table);
 		editors[4] = new CheckboxCellEditor(table);
 		editors[5] = new ComboBoxCellEditor(table, SubtitleFormat.getStringArray(), SWT.READ_ONLY);

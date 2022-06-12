@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -144,7 +143,6 @@ public abstract class AudioSubtitleTable<T extends AudioOrSubtitleTrack> {
 		CellEditor[] editors = new CellEditor[columnNames.length];
 		editors[0] = new TextCellEditor(table);
 		editors[1] = new ComboBoxCellEditor(table, Language.getStringArray(), SWT.READ_ONLY);
-		editors[2] = new CheckboxCellEditor(table);
 		return editors;
 	}
 

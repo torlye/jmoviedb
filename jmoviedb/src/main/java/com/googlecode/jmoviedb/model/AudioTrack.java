@@ -19,19 +19,33 @@
 
 package com.googlecode.jmoviedb.model;
 
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.*;
 
 public class AudioTrack extends AudioOrSubtitleTrack {
 	private AudioCodec audio;
 	private AudioChannels channels;
 	private boolean audioDescriptive;
+	private String trackType;
 	
-	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive) {
+	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive, String trackType) {
 		this.language = language;
 		this.audio = audio;
-		this.commentary = commentary;
 		this.channels = channels;
-		this.setAudioDescriptive(audioDescriptive);
+		if (Utils.isNullOrEmpty(trackType)) {
+			this.commentary = commentary;
+			this.setAudioDescriptive(audioDescriptive);
+			if (commentary && audioDescriptive)
+				System.err.println("Commentary & descriptive");
+			if (commentary)
+				this.trackType = AudioTrackType.getStringArray()[3];
+			else if (audioDescriptive)
+				this.trackType = AudioTrackType.getStringArray()[4];
+			else
+				this.trackType = "";
+		} else {
+			this.trackType = trackType;
+		}
 	}
 
 	public AudioCodec getAudio() {
@@ -48,6 +62,14 @@ public class AudioTrack extends AudioOrSubtitleTrack {
 
 	public void setChannels(AudioChannels channels) {
 		this.channels = channels;
+	}
+
+	public String getTrackType() {
+		return trackType;
+	}
+
+	public void setTrackType(String value) {
+		trackType = value;
 	}
 
 	public boolean isAudioDescriptive() {

@@ -37,31 +37,20 @@ class AudioCellModifier implements ICellModifier {
         // Find the index of the column
         int columnIndex = Arrays.asList(columnNames).indexOf(property);
 
-        Object result = null;
-        
         AudioTrack track = (AudioTrack)element;
 
         switch(columnIndex) {
         case 1: 
-            result = track.getLanguage().ordinal();
-            break;
+            return track.getLanguage().ordinal();
         case 2:
-            result = track.isCommentary();
-            break;
+            return track.getTrackType();
         case 3:
-            result = track.isAudioDescriptive();
-            break;
+            return track.getAudio().ordinal();
         case 4:
-            result = track.getAudio().ordinal();
-            break;
-        case 5: 
-            result = track.getChannels().ordinal();
-            break;
+            return track.getChannels().ordinal();
         default :
-            result = "";
+            return "";
         }
-         
-        return result;	
     }
 
     /**
@@ -78,15 +67,12 @@ class AudioCellModifier implements ICellModifier {
             track.setLanguage(Language.values()[(Integer)value]);
             break;
         case 2:
-            track.setCommentary((Boolean)value);
+            track.setTrackType((String)value);
             break;
         case 3:
-            track.setAudioDescriptive((Boolean)value);
-            break;
-        case 4:
             track.setAudio(AudioCodec.values()[(Integer)value]);
             break;
-        case 5:
+        case 4:
             track.setChannels(AudioChannels.values()[(Integer)value]);
             break;
         default:
