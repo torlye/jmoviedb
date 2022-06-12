@@ -16,7 +16,7 @@ public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 
     public AudioTable(Composite parent, Combo formatCombo) {
         super(parent, formatCombo, 
-        	new String[] {"#", "Language","Track type","Format","Channels"});
+        	new String[] {"#", "Language","Track type","Format","Channels","Note"});
 		tableViewer.setLabelProvider(new AudioLabelProvider(this));
     }
 
@@ -31,6 +31,8 @@ public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 		editors[2] = new ComboBoxTextCellEditor(table, AudioTrackType.getStringArray(), SWT.DROP_DOWN);
 		editors[3] = new ComboBoxCellEditor(table, AudioCodec.getStringArray(), SWT.READ_ONLY);
 		editors[4] = new ComboBoxCellEditor(table, AudioChannels.getStringArray(), SWT.READ_ONLY);
+		editors[5] = new TextCellEditor(table);
+		editors[1] = new ComboBoxTextCellEditor(table, Language.getStringArray(), SWT.DROP_DOWN);
 		return editors;
 	}
 
@@ -72,6 +74,6 @@ public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 			audioformat = AudioCodec.atrac3plus;
 			channels = AudioChannels.stereo;
 		}
-        return new AudioTrack(lang, audioformat, channels, false, false, "");
+        return new AudioTrack(lang, audioformat, channels, false, false, "", lang.getName(), "");
     }
 }

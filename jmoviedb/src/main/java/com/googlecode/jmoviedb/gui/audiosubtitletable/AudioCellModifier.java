@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.TableItem;
 
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
-import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.model.AudioTrack;
 
 class AudioCellModifier implements ICellModifier {
@@ -41,13 +40,15 @@ class AudioCellModifier implements ICellModifier {
 
         switch(columnIndex) {
         case 1: 
-            return track.getLanguage().ordinal();
+            return track.getLanguageString();
         case 2:
             return track.getTrackType();
         case 3:
             return track.getAudio().ordinal();
         case 4:
             return track.getChannels().ordinal();
+        case 5:
+            return track.getNote() == null ? "" : track.getNote();
         default :
             return "";
         }
@@ -64,7 +65,7 @@ class AudioCellModifier implements ICellModifier {
 
         switch (columnIndex) {
         case 1:
-            track.setLanguage(Language.values()[(Integer)value]);
+            track.setLanguageString((String)value);
             break;
         case 2:
             track.setTrackType((String)value);
@@ -75,9 +76,13 @@ class AudioCellModifier implements ICellModifier {
         case 4:
             track.setChannels(AudioChannels.values()[(Integer)value]);
             break;
+        case 5:
+            track.setNote((String)value);
+            break;
         default:
         }
         
         tableViewer.refresh();
+        tableViewer.getTable().getColumn(columnIndex).pack();
     }
 }

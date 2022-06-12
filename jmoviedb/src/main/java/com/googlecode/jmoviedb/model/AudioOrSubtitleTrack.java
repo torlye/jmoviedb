@@ -5,6 +5,8 @@ import com.googlecode.jmoviedb.enumerated.Language;
 public abstract class AudioOrSubtitleTrack {
     protected Language language;
     protected boolean commentary;
+	protected String languageString;
+	protected String note;
 
 	public boolean isCommentary() {
 		return commentary;
@@ -20,5 +22,22 @@ public abstract class AudioOrSubtitleTrack {
 
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	public String getLanguageString() {
+		return languageString;
+	}
+
+	public void setLanguageString(String value) {
+		languageString = value;
+		language = Language.StringToEnum(value);
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String value) {
+		note = value;
 	}
 }

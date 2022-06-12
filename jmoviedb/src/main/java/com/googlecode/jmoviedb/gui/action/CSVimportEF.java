@@ -198,7 +198,7 @@ public class CSVimportEF extends CSVimport {
 					break;
 			}
 			if (lang != null) {
-				list.add(new AudioTrack(lang, AudioCodec.other, AudioChannels.none, false, false, ""));
+				list.add(new AudioTrack(lang, AudioCodec.other, AudioChannels.none, false, false, "", "", ""));
 			}
 		}
 		

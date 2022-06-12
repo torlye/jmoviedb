@@ -91,5 +91,6 @@ class SubtitleCellModifier implements ICellModifier {
         }
 
         tableViewer.refresh();
+        tableViewer.getTable().getColumn(columnIndex).pack();
     }
 }

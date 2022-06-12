@@ -17,27 +17,23 @@ public class AudioLabelProvider extends LabelProvider implements ITableLabelProv
      */
     @Override
     public String getColumnText(Object element, int columnIndex) {
-        String result = "";
+        AudioTrack track = (AudioTrack)element;
         switch (columnIndex) {
         case 0:
-            result = (table.getModel().indexOf(element)+1)+"";
-            break;
-        case 1:  // COMPLETED_COLUMN
-            result += ((AudioTrack)element).getLanguage().getName();
-            break;
+            return (table.getModel().indexOf(element)+1)+"";
+        case 1:
+            return track.getLanguageString();
         case 2:
-            result += ((AudioTrack)element).getTrackType();
-            break;
+            return track.getTrackType();
         case 3:
-            result += ((AudioTrack)element).getAudio().getShortName();
-            break;
-        case 4 :
-            result += ((AudioTrack)element).getChannels().getDescription();
-            break;
-        default :
-            break; 	
+            return track.getAudio().getShortName();
+        case 4:
+            return track.getChannels().getDescription();
+        case 5:
+            return track.getNote();
+        default:
+            return "";
         }
-        return result;
     }
 
     /**

@@ -28,15 +28,13 @@ public class AudioTrack extends AudioOrSubtitleTrack {
 	private boolean audioDescriptive;
 	private String trackType;
 	
-	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive, String trackType) {
+	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive, String trackType, String languageString, String note) {
 		this.language = language;
 		this.audio = audio;
 		this.channels = channels;
 		if (Utils.isNullOrEmpty(trackType)) {
 			this.commentary = commentary;
 			this.setAudioDescriptive(audioDescriptive);
-			if (commentary && audioDescriptive)
-				System.err.println("Commentary & descriptive");
 			if (commentary)
 				this.trackType = AudioTrackType.getStringArray()[3];
 			else if (audioDescriptive)
@@ -46,6 +44,12 @@ public class AudioTrack extends AudioOrSubtitleTrack {
 		} else {
 			this.trackType = trackType;
 		}
+		
+		if (Utils.isNullOrEmpty(languageString))
+			this.languageString = language.getName();
+		else
+			this.languageString = languageString;
+		this.note = note;
 	}
 
 	public AudioCodec getAudio() {
@@ -78,5 +82,5 @@ public class AudioTrack extends AudioOrSubtitleTrack {
 
 	public void setAudioDescriptive(boolean audioDescriptive) {
 		this.audioDescriptive = audioDescriptive;
-	}	
+	}
 }

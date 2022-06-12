@@ -32,6 +32,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
@@ -191,14 +192,10 @@ public class Database {
 				throw e;
 		}
 
-		try {
-			Statement s = connection.createStatement();
-			s.execute("ALTER TABLE MOVIEAUDIO ADD COLUMN TRACKTYPE VARCHAR(250)");
-		} catch (SQLException e) {
-			if(!e.getSQLState().equals("X0Y32"))
-				throw e;
-		}
-		
+		tryAddColumn("MOVIEAUDIO", "TRACKTYPE", "VARCHAR(250)");
+		tryAddColumn("MOVIEAUDIO", "LANGUAGE", "VARCHAR(250)");
+		tryAddColumn("MOVIEAUDIO", "NOTE", "VARCHAR(250)");
+
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
 				"TYPE, IMDBID_LONG, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
@@ -243,7 +240,7 @@ public class Database {
 		addGenre = connection.prepareStatement("INSERT INTO MOVIEGENRE VALUES(?, ?)");
 		addLanguage = connection.prepareStatement("INSERT INTO MOVIELANGUAGE VALUES(?, ?)");
 		addCountry = connection.prepareStatement("INSERT INTO MOVIECOUNTRY VALUES(?, ?)");
-		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+		addAudioTrack = connection.prepareStatement("INSERT INTO MOVIEAUDIO VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		addSubtitleTrack = connection.prepareStatement("INSERT INTO MOVIESUBTITLE VALUES(?, ?, ?, ?, ?, ?, ?)");
 		getActors = connection.prepareStatement("SELECT * FROM MOVIEACTOR JOIN PERSON ON MOVIEACTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
 		getDirectors = connection.prepareStatement("SELECT * FROM MOVIEDIRECTOR JOIN PERSON ON MOVIEDIRECTOR.PERSONID = PERSON.PERSONID AND MOVIEID = ?");
@@ -253,6 +250,22 @@ public class Database {
 		getCountries = connection.prepareStatement("SELECT * FROM MOVIECOUNTRY WHERE MOVIEID = ?");
 		getAudioTracks = connection.prepareStatement("SELECT * FROM MOVIEAUDIO WHERE MOVIEID = ?");
 		getSubtitleTracks = connection.prepareStatement("SELECT * FROM MOVIESUBTITLE WHERE MOVIEID = ?");
+	}
+	
+	private Pattern namePattern = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
+	private Pattern typePattern = Pattern.compile("^[A-Z0-9\\(\\)]+$", Pattern.CASE_INSENSITIVE);
+
+	private void tryAddColumn(String table, String column, String type) throws SQLException, IllegalArgumentException {
+		try {
+			if (!namePattern.matcher(table).matches() || !namePattern.matcher(column).matches() || !typePattern.matcher(type).matches())
+				throw new IllegalArgumentException("Invalid argument");
+
+			Statement s = connection.createStatement();
+			s.execute("ALTER TABLE " + table + " ADD COLUMN " + column + " " + type);
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
 	}
 
 	/**
@@ -358,6 +371,9 @@ public class Database {
 				"COMMENTARY SMALLINT, " +
 				"CHANNELID SMALLINT, " +
 				"DESCRIPTIVE SMALLINT, " +
+				"TRACKTYPE VARCHAR(250), " +
+				"LANGUAGE VARCHAR(250), " +
+				"NOTE VARCHAR(250), " +
 				"PRIMARY KEY (MOVIEID, TRACKNR), " + 
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
@@ -629,14 +645,17 @@ public class Database {
 		clearAudioTracks.clearParameters();
 		
 		for (int i = 0; i < m.getAudioTracks().size(); i++) {
+			AudioTrack track = m.getAudioTracks().get(i);
 			addAudioTrack.setInt(1, m.getID());
 			addAudioTrack.setInt(2, i);
-			addAudioTrack.setInt(3, m.getAudioTracks().get(i).getAudio().getID());
-			addAudioTrack.setInt(4, m.getAudioTracks().get(i).getLanguage().getID());
-			addAudioTrack.setInt(5, CONST.booleanToInt(m.getAudioTracks().get(i).isCommentary()));
-			addAudioTrack.setInt(6, m.getAudioTracks().get(i).getChannels().getID());
-			addAudioTrack.setInt(7, CONST.booleanToInt(m.getAudioTracks().get(i).isAudioDescriptive()));
-			addAudioTrack.setString(8, m.getAudioTracks().get(i).getTrackType());
+			addAudioTrack.setInt(3, track.getAudio().getID());
+			addAudioTrack.setInt(4, track.getLanguage().getID());
+			addAudioTrack.setInt(5, CONST.booleanToInt(track.isCommentary()));
+			addAudioTrack.setInt(6, track.getChannels().getID());
+			addAudioTrack.setInt(7, CONST.booleanToInt(track.isAudioDescriptive()));
+			addAudioTrack.setString(8, track.getTrackType());
+			addAudioTrack.setString(9, track.getLanguageString());
+			addAudioTrack.setString(10, track.getNote());
 			addAudioTrack.execute();
 			addAudioTrack.clearParameters();
 		}
@@ -836,7 +855,9 @@ public class Database {
 					AudioChannels.intToEnum(rsAud.getInt("CHANNELID")),
 					CONST.intToBoolean(rsAud.getInt("COMMENTARY")),
 					CONST.intToBoolean(rsAud.getInt("DESCRIPTIVE")),
-					rsAud.getString("TRACKTYPE")
+					rsAud.getString("TRACKTYPE"),
+					rsAud.getString("LANGUAGE"),
+					rsAud.getString("NOTE")
 			));
 		for (int i = 0; i < audioHash.size(); i++) {
 			if(audioHash.containsKey(i))
@@ -849,7 +870,7 @@ public class Database {
 		ResultSet rsSub = getSubtitleTracks.executeQuery();
 		HashMap<Integer, SubtitleTrack> subHash = new HashMap<Integer, SubtitleTrack>();
 		ArrayList<SubtitleTrack> subTracks = new ArrayList<SubtitleTrack>();
-		while(rsSub.next())
+		while(rsSub.next()) {
 			subHash.put(rsSub.getInt("TRACKNR"), new SubtitleTrack(
 					Language.intToEnum(rsSub.getInt("LANGUAGEID")),
 					SubtitleFormat.intToEnum(rsSub.getInt("FORMAT")),
@@ -857,6 +878,9 @@ public class Database {
 					CONST.intToBoolean(rsSub.getInt("HEARINGIMPAIRED")),
 					CONST.intToBoolean(rsSub.getInt("FORCED"))
 			));
+			if (rsSub.getInt("COMMENTARY") + rsSub.getInt("HEARINGIMPAIRED") + rsSub.getInt("FORCED") > 1)
+				System.err.println("More than one subtitle type on "+m.getTitle());
+		}
 		for (int i = 0; i < subHash.size(); i++) {
 			if(subHash.containsKey(i))
 				subTracks.add(subHash.get(i));
