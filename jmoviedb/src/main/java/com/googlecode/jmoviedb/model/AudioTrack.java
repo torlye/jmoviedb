@@ -19,6 +19,7 @@
 
 package com.googlecode.jmoviedb.model;
 
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.*;
 
 public class AudioTrack extends AudioOrSubtitleTrack {
@@ -26,12 +27,28 @@ public class AudioTrack extends AudioOrSubtitleTrack {
 	private AudioChannels channels;
 	private boolean audioDescriptive;
 	
-	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive) {
+	public AudioTrack(Language language, AudioCodec audio, AudioChannels channels, boolean commentary, boolean audioDescriptive, String trackType, String languageString, String note) {
 		this.language = language;
 		this.audio = audio;
-		this.commentary = commentary;
 		this.channels = channels;
+		this.commentary = commentary;
 		this.setAudioDescriptive(audioDescriptive);
+		if (Utils.isNullOrEmpty(trackType)) {
+			if (commentary)
+				this.trackType = AudioTrackType.COMMENTARY_TRACK;
+			else if (audioDescriptive)
+				this.trackType = AudioTrackType.AUDIODESCRIPTIVE_TRACK;
+			else
+				this.trackType = "";
+		} else {
+			this.trackType = trackType;
+		}
+		
+		if (Utils.isNullOrEmpty(languageString))
+			this.languageString = language.getName();
+		else
+			this.languageString = languageString;
+		this.note = note;
 	}
 
 	public AudioCodec getAudio() {
@@ -56,5 +73,5 @@ public class AudioTrack extends AudioOrSubtitleTrack {
 
 	public void setAudioDescriptive(boolean audioDescriptive) {
 		this.audioDescriptive = audioDescriptive;
-	}	
+	}
 }

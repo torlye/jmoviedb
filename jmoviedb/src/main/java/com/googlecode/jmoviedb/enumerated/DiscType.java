@@ -54,6 +54,7 @@ public enum DiscType {
 	ced(29, "CED", "", ""),
 	cdi(30, "CD-i", "", ""),
 	vhd(31, "VHD", "", ""),
+	ted(32, "TeD", "", "")
 	;
 	
 	private int id;

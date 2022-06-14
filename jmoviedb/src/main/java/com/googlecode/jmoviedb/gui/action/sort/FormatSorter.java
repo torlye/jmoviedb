@@ -2,8 +2,6 @@ package com.googlecode.jmoviedb.gui.action.sort;
 
 import java.util.Comparator;
 
-import javax.sound.sampled.spi.FormatConversionProvider;
-
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class FormatSorter implements Comparator<AbstractMovie> {

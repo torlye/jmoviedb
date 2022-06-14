@@ -49,6 +49,8 @@ public enum AudioCodec {
 	flac(19, "FLAC", "", null, null),
 	dtsx(20, "DTS:X", "", null, null),
 	atmos(21, "Dolby Atmos", "", null, null),
+	magnetic(22, "Magnetic track", "", null, null),
+	optical(23, "Optical track", "", null, null)
 	;
 	
 	private int id;

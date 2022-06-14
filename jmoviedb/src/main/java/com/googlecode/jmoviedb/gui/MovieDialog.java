@@ -282,7 +282,15 @@ public class MovieDialog extends Dialog implements ModifyListener {
 				r8.setVisible(false);
 				
 				FormatType selectedValue = FormatType.values()[formatCombo.getSelectionIndex()];
-				colour.setItems(ColorFormat.getSDRFormatsStringArray());
+				
+				int selectedColor = colour.getSelectionIndex();
+				colour.setItems(
+					selectedValue == FormatType.other || selectedValue == FormatType.file || selectedValue == FormatType.uhdbluray 
+					? ColorFormat.getAllFormatsStringArray() : ColorFormat.getSDRFormatsStringArray());
+				if (selectedColor < colour.getItemCount())
+					colour.select(selectedColor);
+				else
+					colour.select(0);
 				
 				if(selectedValue == FormatType.dvd) {
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
@@ -325,7 +333,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					discCombo.select(DiscType.uhdbd.ordinal());
-					colour.setItems(ColorFormat.getAllFormatsStringArray());
 					
 				} else if(selectedValue == FormatType.hddvd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());

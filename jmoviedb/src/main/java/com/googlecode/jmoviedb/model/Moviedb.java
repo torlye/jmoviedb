@@ -25,11 +25,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.storage.Database;
 import com.googlecode.jmoviedb.storage.ZipWorker;
 
@@ -319,5 +321,23 @@ public class Moviedb {
 			}
 			path.delete();
 		}
+	}
+
+	public String[] getAllLanguages() {
+		Stream<String> inUse = movies.stream()
+			.<String>mapMulti((m, consumer) -> {
+				for (AudioTrack a : m.getAudioTracks())
+					consumer.accept(a.getLanguageString());
+				for (SubtitleTrack s : m.getSubtitles())
+					consumer.accept(s.getLanguageString());
+			})
+			.sorted();
+		
+		Stream<String> preDefined = Stream.of(Language.values())
+			.map(l -> l.getName()).sorted();
+		
+		return Stream.concat(inUse, preDefined)
+			.distinct()
+			.toArray(String[]::new);
 	}
 }

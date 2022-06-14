@@ -60,6 +60,7 @@ public enum FormatType {
 	regular8(27, "Regular 8 mm", "", "", null),
 	divx(28, "DIVX", "", "", null),
 	moviecd(29, "MovieCD", "", "", null),
+	ted(30, "TeD", "", "", null),
 	;
 	
 	private int id;

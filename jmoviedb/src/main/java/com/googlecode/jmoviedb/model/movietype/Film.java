@@ -164,9 +164,9 @@ public class Film extends AbstractMovie {
 			Language aLanguage = Language.StringToEnum(subtitleLanguages[i]);
 			if(aLanguage != null) {
 				if(getFormat().equals(FormatType.dvd))
-					addSubtitle(new SubtitleTrack(aLanguage, SubtitleFormat.medianative, false, false, false));
+					addSubtitle(new SubtitleTrack(aLanguage, SubtitleFormat.medianative, false, false, false, "", aLanguage.getName(), ""));
 				else
-					addSubtitle(new SubtitleTrack(aLanguage, SubtitleFormat.other, false, false, false));
+					addSubtitle(new SubtitleTrack(aLanguage, SubtitleFormat.other, false, false, false, "", aLanguage.getName(), ""));
 			} else {
 				if(subtitleLanguages[i].length() > 0)
 					System.out.println("Did not recognise language \"" + subtitleLanguages[i] + "\"");

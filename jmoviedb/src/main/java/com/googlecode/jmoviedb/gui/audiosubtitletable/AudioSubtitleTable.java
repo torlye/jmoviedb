@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,7 +23,6 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
-import com.googlecode.jmoviedb.enumerated.Language;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.model.AudioOrSubtitleTrack;
 
@@ -143,8 +140,7 @@ public abstract class AudioSubtitleTable<T extends AudioOrSubtitleTrack> {
 	protected CellEditor[] createCellEditors() {
 		CellEditor[] editors = new CellEditor[columnNames.length];
 		editors[0] = new TextCellEditor(table);
-		editors[1] = new ComboBoxCellEditor(table, Language.getStringArray(), SWT.READ_ONLY);
-		editors[2] = new CheckboxCellEditor(table);
+		editors[1] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllLanguages(), SWT.DROP_DOWN);
 		return editors;
 	}
 
