@@ -28,8 +28,6 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -40,9 +38,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -54,7 +50,6 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
 import com.googlecode.jmoviedb.enumerated.ColorFormat;
-import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.ContainerFormat;
 import com.googlecode.jmoviedb.enumerated.DiscType;
 import com.googlecode.jmoviedb.enumerated.FormatType;
@@ -65,11 +60,11 @@ import com.googlecode.jmoviedb.enumerated.VideoCodec;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.AudioSubtitleTable;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.AudioTable;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.SubtitleTable;
+import com.googlecode.jmoviedb.gui.moviedialog.MainTab;
 import com.googlecode.jmoviedb.model.ActorInfo;
 import com.googlecode.jmoviedb.model.AudioTrack;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
-import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
 import com.googlecode.jmoviedb.model.movietype.Film;
 import com.googlecode.jmoviedb.net.TmdbWorker;
 
@@ -83,29 +78,14 @@ import com.googlecode.jmoviedb.net.TmdbWorker;
  */
 public class MovieDialog extends Dialog implements ModifyListener {
 	private AbstractMovie movie;
-	private Label imageArea;
-	private Combo typeCombo;
-	private Text imdbText;
-	private Text tmdbText;
-	private Text titleText;
-	private Text altTitleText;
-	private Text yearText;
-	private Text year2Text;
+	
 	private Text directorText;
 	private Text writerText;
-	private Text genreText;
-	private Text countryText;
-	private Text languageText;
 	private Text taglineText;
 	private Text plotText;
-	private Text runtimeText;
-	private Scale rateScale;
-	private Text rateText;
-	private Button seenCheck;
 	private Combo colour;
 	private Button jsonCheck;
 	private Text notesText;
-	private Combo versionCombo;
 	//private Text versionText;
 	private Button legalCheck;
 	private Combo discCombo;
@@ -139,37 +119,28 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	private AudioSubtitleTable<AudioTrack> audioTable;
 	private AudioSubtitleTable<SubtitleTrack> subtitleTable;
 	
-	private static final int MARGIN_WIDTH = 7;
-	private static final int MARGIN_HEIGHT = 7;
-	private static final int VERTICAL_SPACING = 5;
-	private static final int HORIZONTAL_SPACING = 6;
+	public static final int MARGIN_WIDTH = 7;
+	public static final int MARGIN_HEIGHT = 7;
+	public static final int VERTICAL_SPACING = 5;
+	public static final int HORIZONTAL_SPACING = 6;
 	
-	private Image mainTabIcon;
 	private Image taglineTabIcon;
 	private Image actorTabIcon;
 	private Image formatTabIcon;
 	private Image audioTabIcon;
-	private Combo completenessCombo;
-	private Text completenessText;
-	private Label completenessLabel;
 	private Label regionLabel;
-	private SelectionListener typeComboListener;
 	private SelectionListener formatComboListener;
 	private SelectionListener legalCheckListener;
 //	private SelectionListener myEncodeCheckListener;
 	private SelectionListener r0CheckListener;
-	private MouseListener imageClickListener;
-	private Button letterboxdButton;
-	
-	private final static int COVER_WIDTH = Math.round(200 * MainWindow.DPI_SCALE);
-	private final static int COVER_HEIGHT = Math.round(300 * MainWindow.DPI_SCALE);
+	private MainTab mainTab;
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
 		this.setShellStyle(SWT.CLOSE|SWT.RESIZE);
 		
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
-		mainTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_MAINTAB).createImage(), iconSize, iconSize);
+		mainTab = new MainTab(this, iconSize);
 		taglineTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).createImage(), iconSize, iconSize);
 		actorTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).createImage(), iconSize, iconSize);
 		formatTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).createImage(), iconSize, iconSize);
@@ -232,7 +203,7 @@ public class MovieDialog extends Dialog implements ModifyListener {
 				},  new int[] {100}, true);
 		
 		
-		MainTab(tabFolder);
+		mainTab.createTabArea(tabFolder);
 		TaglinePlotTab(tabFolder);
 		ActorsTab(tabFolder);
 		formatVideoTab(tabFolder);
@@ -246,22 +217,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	}
 	
 	private void configureListeners() {
-		typeComboListener = new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent event) {}
-			public void widgetSelected(SelectionEvent event) {
-				if(typeCombo.getSelectionIndex() < 3) {
-					completenessText.setVisible(false);
-					completenessCombo.setVisible(false);
-					completenessLabel.setVisible(false);
-				} else {
-					completenessText.setVisible(true);
-					completenessCombo.setVisible(true);
-					completenessLabel.setVisible(true);
-				}
-			}
-		};
-		typeCombo.addSelectionListener(typeComboListener);
-		
+		mainTab.configureListeners();
+
 		formatComboListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
@@ -491,191 +448,7 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		};
 		r0.addSelectionListener(r0CheckListener);
 	
-		imageClickListener = new MouseListener() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				if (e.button == 3) {
-					movie.setImageBytes(null);
-					setImageAreaFromModel();
-				}
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {}
-
-			@Override
-			public void mouseUp(MouseEvent e) {}
-		};
-		imageArea.addMouseListener(imageClickListener);
 	}
-	
-	private void MainTab(CTabFolder tabFolder) {
-		CTabItem tab1 = new CTabItem(tabFolder, SWT.NULL);
-		tab1.setText("Main   ");
-		tab1.setImage(mainTabIcon);
-		
-		Composite c1 = new Composite(tabFolder, SWT.NULL);
-		
-		GridLayout gridLayout = new GridLayout(6, false);
-		gridLayout.marginHeight = MARGIN_HEIGHT;
-		gridLayout.marginWidth = MARGIN_WIDTH;
-		gridLayout.verticalSpacing = VERTICAL_SPACING;
-		gridLayout.horizontalSpacing = HORIZONTAL_SPACING;
-		c1.setLayout(gridLayout);
-		
-		imageArea = new Label(c1, SWT.NONE);
-		GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 14);
-		gridData.widthHint = COVER_WIDTH;
-		gridData.heightHint = COVER_HEIGHT;
-		imageArea.setLayoutData(gridData);
-		imageArea.setAlignment(SWT.CENTER);
-		
-		Label typeLabel = new Label(c1, SWT.CENTER);
-		typeLabel.setText("Type:");
-		typeCombo = new Combo(c1, SWT.DROP_DOWN|SWT.READ_ONLY);
-		typeCombo.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 4, 1));
-		typeCombo.setItems(MovieType.getStringArray());
-		typeCombo.select(0);
-		typeCombo.setVisibleItemCount(MovieType.getStringArray().length);
-		
-		completenessLabel = new Label(c1, SWT.CENTER);
-		completenessLabel.setText("Complete:");
-		completenessCombo = new Combo(c1, SWT.DROP_DOWN|SWT.READ_ONLY);
-		completenessCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		completenessCombo.setItems(Completeness.getStringArray());
-		completenessCombo.select(0);
-		completenessCombo.setVisibleItemCount(Completeness.getStringArray().length); //make all items visible
-		completenessText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		completenessText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
-		
-		Label titleLabel = new Label(c1, SWT.CENTER);
-		titleLabel.setText("Title:");
-		titleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		titleText.setToolTipText("The title of the movie. If this field is changed, it will be overwritten " +
-				"on the next IMDb update. If you want to use a custom title, pleas use the \"display title\" field.");
-		titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
-		
-		Label altTitleLabel = new Label(c1, SWT.CENTER);
-		altTitleLabel.setText("Display title:");
-		altTitleText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		altTitleText.setToolTipText("This is the title that will be shown in the movie list. If empty, " +
-				"the main title will be show instead. The display title will not be overwritten on IMDb updates.");
-		altTitleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
-		
-		Label versionLabel = new Label(c1, SWT.CENTER);
-		versionLabel.setText("Version:");
-		versionCombo = new Combo(c1, SWT.DROP_DOWN);
-		versionCombo.setToolTipText("");
-		versionCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
-		versionCombo.setItems(new String[]{"Director's Cut", "Unrated", "Extended version", "Theatrical version"});
-		
-		Label yearLabel = new Label(c1, SWT.CENTER);
-		yearLabel.setText("Year:");
-		yearText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		yearText.setTextLimit(4);
-		yearText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,1, 1));
-		
-		year2Text = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		year2Text.setTextLimit(4);
-		year2Text.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,3, 1));
-		
-		Label genreLabel = new Label(c1, SWT.CENTER);
-		genreLabel.setText("Genre:");
-		genreText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		genreText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
-		
-		Label countryLabel = new Label(c1, SWT.CENTER);
-		countryLabel.setText("Country:");
-		countryText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		countryText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
-		
-		Label languageLabel = new Label(c1, SWT.CENTER);
-		languageLabel.setText("Language:");
-		languageText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		languageText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
-		
-		Label runtimeLabel = new Label(c1, SWT.CENTER);
-		runtimeLabel.setText("Runtime:");
-		runtimeText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		runtimeText.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 4, 1));
-		runtimeText.setToolTipText("This field will be overwritten by IMDb updates!");
-		
-		Label rateLabel = new Label(c1, SWT.CENTER);
-		rateLabel.setText("IMDb rating:");
-		rateScale = new Scale(c1, SWT.HORIZONTAL);
-		rateScale.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
-		rateScale.setIncrement(1);
-		rateScale.setMinimum(0);
-		rateScale.setMaximum(100);
-		rateScale.setToolTipText("The rating will be overwritten by IMDb updates!");
-		rateScale.addSelectionListener(new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				//Updates the text in rateText when the slider is moved
-				rateText.setText((0.0 + rateScale.getSelection()) / 10 + "");
-			}
-		});
-		rateText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		rateText.setLayoutData(new GridData());
-		rateText.setEditable(false);
-		
-		Label seenLabel = new Label(c1, SWT.CENTER);
-		seenLabel.setText("");
-		seenCheck = new Button(c1, SWT.CHECK);
-		seenCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false,4, 1));
-		seenCheck.setText("Have seen it");
-		
-		Label imdbLabel = new Label(c1, SWT.CENTER);
-		imdbLabel.setText("IMDb address:");
-		imdbText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		imdbText.setToolTipText("If a valid IMDb URL is present, you won't have to select the correct movie " +
-				"when running IMDb updates.");
-		imdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
-		Button imdbGotoButton = new Button(c1, SWT.PUSH);
-		imdbGotoButton.setText("Open");
-		imdbGotoButton.addSelectionListener(new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				if (!imdbText.getText().isEmpty())
-					MainWindow.getMainWindow().launchBrowser(imdbText.getText());
-			}
-		});
-		
-		Label tmdbLabel = new Label(c1, SWT.CENTER);
-		tmdbLabel.setText("TMDB address:");
-		tmdbText = new Text(c1, SWT.SINGLE|SWT.BORDER);
-		tmdbText.setToolTipText("If a valid TMDB URL is present, you won't have to select the correct movie " +
-				"when running TMDB updates.");
-		tmdbText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
-		Button tmdbGotoButton = new Button(c1, SWT.PUSH);
-		tmdbGotoButton.setText("Open");
-		tmdbGotoButton.addSelectionListener(new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				if (!tmdbText.getText().isEmpty())
-					MainWindow.getMainWindow().launchBrowser(tmdbText.getText());
-			}
-		});
-		letterboxdButton = new Button(c1, SWT.PUSH);
-		letterboxdButton.setText("Letterboxd");
-		//letterboxdButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-		letterboxdButton.addSelectionListener(new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				if (!tmdbText.getText().isEmpty())
-					MainWindow.getMainWindow().launchBrowser("https://letterboxd.com/tmdb/"+movie.getTmdbID());
-			}
-		});
-		
-//		Disable widgets until their respective functions are implemented.
-		genreText.setEditable(false);
-		countryText.setEditable(false);
-		languageText.setEditable(false);
-		
-		tab1.setControl(c1);
-		//c1.setSize(700, 300);
-	}
-	
 	
 	private void TaglinePlotTab(CTabFolder tabFolder) {
 		CTabItem tab2 = new CTabItem(tabFolder, SWT.NULL);
@@ -929,27 +702,10 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	 */
 	private void setModel(AbstractMovie m) {
 		this.getShell().setText("Movie info - " + m.getDisplayTitle() + " (" + m.getYear() + ")");
-		typeCombo.select(MovieType.abstractMovieToInt(m));
-		imdbText.setText(m.getImdbUrl());
-		tmdbText.setText(m.getTmdbUrl());
-		letterboxdButton.setEnabled(m.isTmdbUrlValid() && m.getTmdbType().equals("movie"));
-		titleText.setText(m.getTitle());
-		altTitleText.setText(m.getCustomTitle());
-		if(m.getYear() != 0)
-			yearText.setText(m.getYear() + "");
-		if (m.hasYear2())
-			year2Text.setText(m.getYear2()+"");
-		versionCombo.setText(m.getCustomVersion());
+		mainTab.setModel(m);
+
 		directorText.setText(m.getDirectorsAsString());
 		writerText.setText(m.getWritersAsString());
-		genreText.setText(m.getGenresAsString());
-		countryText.setText(m.getCountriesAsString());
-		languageText.setText(m.getLanguagesAsString());
-		if(m.getRunTime() != 0)
-			runtimeText.setText(m.getRunTime() + "");
-		rateScale.setSelection(m.getRatingAsInt());
-		rateText.setText(m.getRating() + "");
-		seenCheck.setSelection(m.isSeen());
 	
 		taglineText.setText(m.getTagline());
 		plotText.setText(m.getPlotOutline());
@@ -995,16 +751,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		audioTable.setModel(movie.getAudioTracks());
 		subtitleTable.setModel(movie.getSubtitles());
 		
-		setImageAreaFromModel();
-		
-		if (movie instanceof AbstractSeries) {
-			AbstractSeries series = (AbstractSeries)movie;
-			completenessCombo.select(series.getCompleteness().ordinal());
-			completenessText.setText(series.getCompletenessDetail());
-		}
-		
-		//Trigger listeners
-		typeComboListener.widgetSelected(null);
 		formatComboListener.widgetSelected(null);
 		legalCheckListener.widgetSelected(null);
 //		myEncodeCheckListener.widgetSelected(null);
@@ -1013,10 +759,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		colour.select(m.getColor().ordinal());
 	}
 
-	private void setImageAreaFromModel() {
-		imageArea.setImage(new Image(Display.getCurrent(), CONST.scaleImage(movie.getImageData(), true, COVER_WIDTH, COVER_HEIGHT)));
-	}
-	
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.DETAILS_ID, "TMDB update", false);
 		createButton(parent, IDialogConstants.OK_ID, "OK", true);
@@ -1024,13 +766,13 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		createButton(parent, IDialogConstants.ABORT_ID, "Remove movie", false);
 	}
 	
-	protected  void	buttonPressed(int buttonId) {
+	protected void buttonPressed(int buttonId) {
 		setReturnCode(buttonId);
 		if(buttonId == IDialogConstants.CANCEL_ID)
 			close();
 		
 		else if(buttonId == IDialogConstants.OK_ID) {
-			if(titleText.getText().length() == 0)
+			if(mainTab.getTitleString().length() == 0)
 				MessageDialog.openInformation(this.getShell(), "No title", "You can't save a movie without a title!");
 			else {
 				save();
@@ -1060,9 +802,7 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	 * @see org.eclipse.jface.dialogs.Dialog#close()
 	 */
 	public boolean close() {
-		if(imageArea.getImage() != null)
-			imageArea.getImage().dispose();
-		mainTabIcon.dispose();
+		mainTab.dispose();
 		taglineTabIcon.dispose();
 		actorTabIcon.dispose();
 		formatTabIcon.dispose();
@@ -1074,23 +814,13 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	
 	private void save() {
 		System.out.println("Movie type: " + MovieType.objectToEnum(movie));
-		System.out.println("Selection: " + MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())));
-		if(!MovieType.objectToEnum(movie).equals(MovieType.stringToEnum(typeCombo.getItem(typeCombo.getSelectionIndex())))) {
-			AbstractMovie newMovie = MovieType.intToAbstractMovie(typeCombo.getSelectionIndex());
+		System.out.println("Selection: " + MovieType.stringToEnum(mainTab.getTypeComboItem()));
+		if(!MovieType.objectToEnum(movie).equals(MovieType.stringToEnum(mainTab.getTypeComboItem()))) {
+			AbstractMovie newMovie = MovieType.intToAbstractMovie(mainTab.getTypeSelectionIndex());
 			newMovie = movie.copyTo(newMovie);
 			movie = newMovie;
 		}
-		
-		movie.setImdbID(imdbText.getText());
-		movie.setTmdbID(tmdbText.getText());
-		movie.setTitle(titleText.getText());
-		movie.setCustomTitle(altTitleText.getText());
-		movie.setYear(yearText.getText());
-		movie.setYear2(year2Text.getText());
-		movie.setRunTime(runtimeText.getText());
-		movie.setRatingAsInt(rateScale.getSelection());
-		movie.setSeen(seenCheck.getSelection());
-		movie.setCustomVersion(versionCombo.getText());
+		mainTab.save(movie);
 
 		movie.setTagline(taglineText.getText());
 		movie.setPlotOutline(plotText.getText());
@@ -1121,12 +851,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 //		movie.setUrl1(url1Text.getText());
 		movie.setUrl2(url2Text.getText());
 //		movie.setMyEncode(myEncodeCheck.getSelection());
-		
-		if (movie instanceof AbstractSeries) {
-			AbstractSeries series = (AbstractSeries)movie;
-			series.setCompleteness(Completeness.values()[completenessCombo.getSelectionIndex()]);
-			series.setCompletenessDetail(completenessText.getText());
-		}
 		
 		movie.setAudioTracks(audioTable.getModel());
 		movie.setSubtitles(subtitleTable.getModel());
