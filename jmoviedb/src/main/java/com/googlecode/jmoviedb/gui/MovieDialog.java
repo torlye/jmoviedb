@@ -26,8 +26,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -40,11 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.json.JSONObject;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
@@ -60,8 +54,10 @@ import com.googlecode.jmoviedb.enumerated.VideoCodec;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.AudioSubtitleTable;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.AudioTable;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.SubtitleTable;
+import com.googlecode.jmoviedb.gui.moviedialog.ActorsTab;
+import com.googlecode.jmoviedb.gui.moviedialog.IMovieDialogTab;
 import com.googlecode.jmoviedb.gui.moviedialog.MainTab;
-import com.googlecode.jmoviedb.model.ActorInfo;
+import com.googlecode.jmoviedb.gui.moviedialog.TaglinePlotTab;
 import com.googlecode.jmoviedb.model.AudioTrack;
 import com.googlecode.jmoviedb.model.SubtitleTrack;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
@@ -76,16 +72,11 @@ import com.googlecode.jmoviedb.net.TmdbWorker;
  * @author Tor Arne Lye
  *
  */
-public class MovieDialog extends Dialog implements ModifyListener {
+public class MovieDialog extends Dialog {
 	private AbstractMovie movie;
 	
-	private Text directorText;
-	private Text writerText;
-	private Text taglineText;
-	private Text plotText;
+	
 	private Combo colour;
-	private Button jsonCheck;
-	private Text notesText;
 	//private Text versionText;
 	private Button legalCheck;
 	private Combo discCombo;
@@ -95,12 +86,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	private Combo aspectCombo;
 //	private Text url1Text;
 	private Text url2Text;
-	
-	private Table actorTable;
-	private TableColumn actorNameColumn;
-	private TableColumn asColumn;
-	private TableColumn characterNameColumn;
-	private TableColumn idColumn;
 	
 	private Combo formatCombo;
 	private Combo videoCodecCombo;
@@ -124,8 +109,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	public static final int VERTICAL_SPACING = 5;
 	public static final int HORIZONTAL_SPACING = 6;
 	
-	private Image taglineTabIcon;
-	private Image actorTabIcon;
 	private Image formatTabIcon;
 	private Image audioTabIcon;
 	private Label regionLabel;
@@ -134,6 +117,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 //	private SelectionListener myEncodeCheckListener;
 	private SelectionListener r0CheckListener;
 	private MainTab mainTab;
+	private IMovieDialogTab taglineTab;
+	private IMovieDialogTab actorsTab;
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
@@ -141,8 +126,9 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
 		mainTab = new MainTab(this, iconSize);
-		taglineTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_TAGLINEPLOTTAB).createImage(), iconSize, iconSize);
-		actorTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_ACTORSTAB).createImage(), iconSize, iconSize);
+		taglineTab = new TaglinePlotTab(iconSize);
+		actorsTab = new ActorsTab(iconSize);
+		
 		formatTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).createImage(), iconSize, iconSize);
 		audioTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_AUDIOSUBTAB).createImage(), iconSize, iconSize);
 		
@@ -204,8 +190,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		
 		
 		mainTab.createTabArea(tabFolder);
-		TaglinePlotTab(tabFolder);
-		ActorsTab(tabFolder);
+		taglineTab.createTabArea(tabFolder);
+		actorsTab.createTabArea(tabFolder);
 		formatVideoTab(tabFolder);
 		audioSubtitleTab(tabFolder);
 
@@ -218,6 +204,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	
 	private void configureListeners() {
 		mainTab.configureListeners();
+		taglineTab.configureListeners();
+		actorsTab.configureListeners();
 
 		formatComboListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -447,102 +435,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 			}
 		};
 		r0.addSelectionListener(r0CheckListener);
-	
-	}
-	
-	private void TaglinePlotTab(CTabFolder tabFolder) {
-		CTabItem tab2 = new CTabItem(tabFolder, SWT.NULL);
-		tab2.setText("Tagline and plot");
-		tab2.setImage(taglineTabIcon);
-		
-		Composite c2 = new Composite(tabFolder, SWT.NULL);
-		GridLayout gridLayout2 = new GridLayout(2, false);
-		gridLayout2.marginHeight = MARGIN_HEIGHT;
-		gridLayout2.marginWidth = MARGIN_WIDTH;
-		gridLayout2.verticalSpacing = VERTICAL_SPACING;
-		gridLayout2.horizontalSpacing = HORIZONTAL_SPACING;
-		c2.setLayout(gridLayout2);
-		
-		Label taglineLabel = new Label(c2, SWT.LEFT);
-		taglineLabel.setText("Tagline:");
-		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
-		gd.widthHint = 70;
-		taglineLabel.setLayoutData(gd);
-		taglineText = new Text(c2, SWT.SINGLE|SWT.BORDER);
-		taglineText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		Label plotLabel = new Label(c2, SWT.LEFT);
-		plotLabel.setText("Plot outline:");
-		gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
-		gd.widthHint = 70;
-		plotLabel.setLayoutData(gd);
-		plotText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		plotText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
-		Label notesLabel = new Label(c2, SWT.LEFT);
-		notesLabel.setText("Notes:");
-		gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
-		gd.widthHint = 70;
-		notesLabel.setLayoutData(gd);
-		notesText = new Text(c2, SWT.MULTI|SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		notesText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		jsonCheck = new Button(c2, SWT.CHECK);
-		jsonCheck.setText("Valid JSON");
-		jsonCheck.setEnabled(false);
-		notesText.addModifyListener(this);
-		
-		tab2.setControl(c2);
-	}
-	
-	private void ActorsTab(CTabFolder tabFolder) {
-		CTabItem tab3 = new CTabItem(tabFolder, SWT.NULL);
-		tab3.setText("Actors, directors and writers");
-		tab3.setImage(actorTabIcon);
-		
-		Composite c3 = new Composite(tabFolder, SWT.NULL);
-		GridLayout compositeLayout = new GridLayout(2, false);
-		c3.setLayout(compositeLayout);
-		
-		Label directorLabel = new Label(c3, SWT.CENTER);
-		directorLabel.setText("Directed by:");
-		directorText = new Text(c3, SWT.SINGLE|SWT.BORDER);
-		directorText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		Label writerLabel = new Label(c3, SWT.CENTER);
-		writerLabel.setText("Written by:");
-		writerText = new Text(c3, SWT.SINGLE|SWT.BORDER);
-		writerText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		actorTable = new Table (c3, SWT.BORDER | SWT.MULTI | SWT.SINGLE);
-		actorTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 2, 1));
-		actorTable.setHeaderVisible(true);
-		actorTable.setLinesVisible(true);
-/*		actorTable.addSelectionListener(new SelectionListener(){
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				MessageDialog.openInformation(MovieDialog.this.getShell(), "Unimplemented feature!",
-				"The completed version will do something cool when selecting an actor name, like " +
-				"opening the actor's IMDb page or maybe displaying other movies with the same actor.");
-			}
-		});
-*/		actorNameColumn = new TableColumn(actorTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
-		asColumn = new TableColumn(actorTable, SWT.NONE);
-		characterNameColumn = new TableColumn(actorTable, SWT.NONE);
-		idColumn = new TableColumn(actorTable, SWT.NONE);
-		actorNameColumn.setText("Actor");
-		asColumn.setText("");
-		characterNameColumn.setText("Character");
-		idColumn.setText("ID");
-		
-		//TODO find out why auto column width is a little too small
-//		actorNameColumn.setResizable(false);
-//		asColumn.setResizable(false);
-//		characterNameColumn.setResizable(false);
-		
-		
-		directorText.setEditable(false);
-		writerText.setEditable(false);
-		tab3.setControl(c3);
 	}
 	
 	private void formatVideoTab(CTabFolder tabFolder) {
@@ -703,22 +595,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	private void setModel(AbstractMovie m) {
 		this.getShell().setText("Movie info - " + m.getDisplayTitle() + " (" + m.getYear() + ")");
 		mainTab.setModel(m);
-
-		directorText.setText(m.getDirectorsAsString());
-		writerText.setText(m.getWritersAsString());
-	
-		taglineText.setText(m.getTagline());
-		plotText.setText(m.getPlotOutline());
-		notesText.setText(m.getNotes());
-		
-		actorTable.removeAll();
-		for(ActorInfo a : movie.getActors()) {
-			TableItem i = new TableItem(actorTable, SWT.NONE);
-			i.setText(0, a.getPerson().getName());
-			i.setText(1, "as");
-			i.setText(2, a.getCharacter());
-			i.setText(3, ""+a.getPerson().getID());
-		}
+		taglineTab.setModel(m);
+		actorsTab.setModel(m);
 		
 		formatCombo.select(m.getFormat().ordinal());
 		containerCombo.select(m.getContainer().ordinal());
@@ -742,11 +620,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 		sceneNameText.setText(m.getSceneReleaseName());
 //		url1Text.setText(m.getUrl1String());
 		url2Text.setText(m.getUrl2String());
-		
-		actorNameColumn.pack();
-		asColumn.pack();
-		characterNameColumn.pack();
-		idColumn.pack();
 		
 		audioTable.setModel(movie.getAudioTracks());
 		subtitleTable.setModel(movie.getSubtitles());
@@ -803,8 +676,9 @@ public class MovieDialog extends Dialog implements ModifyListener {
 	 */
 	public boolean close() {
 		mainTab.dispose();
-		taglineTabIcon.dispose();
-		actorTabIcon.dispose();
+		taglineTab.dispose();
+		actorsTab.dispose();
+
 		formatTabIcon.dispose();
 		audioTabIcon.dispose();
 		audioTable.dispose();
@@ -821,10 +695,8 @@ public class MovieDialog extends Dialog implements ModifyListener {
 			movie = newMovie;
 		}
 		mainTab.save(movie);
-
-		movie.setTagline(taglineText.getText());
-		movie.setPlotOutline(plotText.getText());
-		movie.setNotes(notesText.getText());
+	    taglineTab.save(movie);
+		actorsTab.save(movie);
 		
 		movie.setFormat(FormatType.values()[formatCombo.getSelectionIndex()]);
 		movie.setContainer(ContainerFormat.values()[containerCombo.getSelectionIndex()]);
@@ -870,17 +742,6 @@ public class MovieDialog extends Dialog implements ModifyListener {
 			setModel(new Film());
 		
 		return super.open();
-	}
-
-	@Override
-	public void modifyText(ModifyEvent event) {
-		try {
-			new JSONObject(((Text)event.widget).getText());
-			jsonCheck.setSelection(true);
-		}
-		catch (Exception e) {
-			jsonCheck.setSelection(false);
-		}
 	}
 }
 
