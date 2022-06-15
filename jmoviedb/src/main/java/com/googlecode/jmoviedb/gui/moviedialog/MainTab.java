@@ -24,7 +24,6 @@ import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.Completeness;
 import com.googlecode.jmoviedb.enumerated.MovieType;
 import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.gui.MovieDialog;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 import com.googlecode.jmoviedb.model.movietype.AbstractSeries;
 

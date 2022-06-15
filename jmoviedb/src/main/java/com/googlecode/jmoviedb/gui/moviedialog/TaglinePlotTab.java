@@ -17,7 +17,6 @@ import org.json.JSONObject;
 
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
-import com.googlecode.jmoviedb.gui.MovieDialog;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class TaglinePlotTab implements IMovieDialogTab, ModifyListener {

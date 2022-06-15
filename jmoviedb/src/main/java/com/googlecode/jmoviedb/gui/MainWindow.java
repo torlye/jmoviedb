@@ -37,6 +37,7 @@ import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.*;
 import com.googlecode.jmoviedb.gui.action.*;
 import com.googlecode.jmoviedb.gui.action.sort.*;
+import com.googlecode.jmoviedb.gui.moviedialog.MovieDialog;
 import com.googlecode.jmoviedb.model.Moviedb;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
