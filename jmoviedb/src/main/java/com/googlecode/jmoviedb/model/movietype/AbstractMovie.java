@@ -104,7 +104,7 @@ public abstract class AbstractMovie implements Cloneable {
 	
 	private byte[] imageBytes;
 	private JSONObject jsonNotes;
-	
+
 	/**
 	 * Database constructor, to be used when loading movies from the database.
 	 * @param id
@@ -993,12 +993,16 @@ public abstract class AbstractMovie implements Cloneable {
 		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.optJSONArray(name).toString() : "";
 	}
 
+	private Integer getJsonIntProperty(String name) {
+		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.getInt(name) : null;
+	}
+
 	private String getJsonStringProperty(String name) {
 		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.getString(name) : "";
 	}
 
 	public String getReleaseTitle() {
-		return getJsonStringProperty("releaseTitle");
+		return releaseTitle != null ? releaseTitle : getJsonStringProperty("releaseTitle");
 	}
 
 	public String getTerritories() {
@@ -1037,8 +1041,8 @@ public abstract class AbstractMovie implements Cloneable {
 		return outArray.toString();
 	}
 
-	public String getReleaseYear() {
-		return getJsonStringProperty("2006");
+	public Integer getReleaseYear() {
+		return releaseYear != null ? releaseYear : getJsonIntProperty("releaseYear");
 	}
 
 	public List<FormatType> getFormats() {

@@ -97,6 +97,9 @@ public class Database {
 	private PreparedStatement getCountries;
 	private PreparedStatement getAudioTracks;
 	private PreparedStatement getSubtitleTracks;
+	private PreparedStatement getReleaseInfo;
+	private PreparedStatement addReleaseInfo;
+	private PreparedStatement updateReleaseInfo;
 	
 	/**
 	 * The default constructor. It opens a new database connection and, if 
@@ -192,12 +195,25 @@ public class Database {
 				throw e;
 		}
 
+		//1.2.0
 		tryAddColumn("MOVIEAUDIO", "TRACKTYPE", "VARCHAR(250)");
 		tryAddColumn("MOVIEAUDIO", "LANGUAGE", "VARCHAR(250)");
 		tryAddColumn("MOVIEAUDIO", "NOTE", "VARCHAR(250)");
 		tryAddColumn("MOVIESUBTITLE", "TRACKTYPE", "VARCHAR(250)");
 		tryAddColumn("MOVIESUBTITLE", "LANGUAGE", "VARCHAR(250)");
 		tryAddColumn("MOVIESUBTITLE", "NOTE", "VARCHAR(250)");
+
+		//1.3.0
+		try {
+			Statement s = connection.createStatement();
+			s.execute("CREATE TABLE RELEASE(URL VARCHAR(512), TITLE VARCHAR(256), " +
+				"TERRITORIES VARCHAR(2048), IDENTIFIERS VARCHAR(2048), RELEASEYEAR SMALLINT, " +
+				"TYPE VARCHAR(256), MEDIA VARCHAR(512), PRIMARY KEY(URL))"
+			);
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
 
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
@@ -253,6 +269,9 @@ public class Database {
 		getCountries = connection.prepareStatement("SELECT * FROM MOVIECOUNTRY WHERE MOVIEID = ?");
 		getAudioTracks = connection.prepareStatement("SELECT * FROM MOVIEAUDIO WHERE MOVIEID = ?");
 		getSubtitleTracks = connection.prepareStatement("SELECT * FROM MOVIESUBTITLE WHERE MOVIEID = ?");
+		getReleaseInfo = connection.prepareStatement("SELECT * FROM RELEASE WHERE URL = ?");
+		addReleaseInfo = connection.prepareStatement("INSERT INTO RELEASE VALUES(?, ?, ?, ?, ?, ?, ?)");
+		updateReleaseInfo = connection.prepareStatement("UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ? WHERE URL = ?");
 	}
 	
 	private Pattern namePattern = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
@@ -687,6 +706,38 @@ public class Database {
 		}
 	}
 	
+	public void addUpdateRelease(AbstractMovie m) throws SQLException {
+		if (m.getUrl2StringOrNull() != null) {
+			getReleaseInfo.setString(1, m.getUrl2StringOrNull());
+			ResultSet result = getReleaseInfo.executeQuery();
+			boolean hasResult = result.next();
+			getReleaseInfo.clearParameters();
+
+			if (hasResult) {
+				// "UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ? WHERE URL = ?"
+				updateReleaseInfo.setString(1, m.getReleaseTitle());
+				updateReleaseInfo.setString(2, m.getTerritories());
+				updateReleaseInfo.setString(3, m.getIdentifiers());
+				updateReleaseInfo.setInt(4, m.getReleaseYear());
+				updateReleaseInfo.setString(5, m.getReleaseType());
+				updateReleaseInfo.setString(6, m.getMedia());
+				updateReleaseInfo.setString(7, m.getUrl2String());
+				updateReleaseInfo.execute();
+				updateReleaseInfo.clearParameters();
+			} else {
+				addReleaseInfo.setString(1, m.getUrl2String());
+				addReleaseInfo.setString(2, m.getReleaseTitle());
+				addReleaseInfo.setString(3, m.getTerritories());
+				addReleaseInfo.setString(4, m.getIdentifiers());
+				addReleaseInfo.setInt(5, m.getReleaseYear());
+				addReleaseInfo.setString(6, m.getReleaseType());
+				addReleaseInfo.setString(7, m.getMedia());
+				addReleaseInfo.execute();
+				addReleaseInfo.clearParameters();
+			}
+		}
+	}
+	
 	/**
 	 * Loads a movie from the database.
 	 * @param id
@@ -898,8 +949,25 @@ public class Database {
 		}
 		m.setSubtitles(subTracks);
 		rsSub.close();
-		
+
 		return m;
+	}
+
+	public Release getRelease(AbstractMovie m) throws SQLException {
+		if (m.getUrl2StringOrNull() != null) {
+			getReleaseInfo.setString(1, m.getUrl2String());
+			ResultSet result = getReleaseInfo.executeQuery();
+			getReleaseInfo.clearParameters();
+			if (result.next()) {
+				/* "CREATE TABLE RELEASE(URL VARCHAR(512), TITLE VARCHAR(256), " +
+				"TERRITORIES VARCHAR(2048), IDENTIFIERS VARCHAR(2048), RELEASEYEAR SMALLINT, " +
+				"TYPE VARCHAR(256), MEDIA VARCHAR(512), PRIMARY KEY(URL)) */
+				Release r = new Release();
+				r.setReleaseTitle(result.getString("TITLE"));
+				r.setReleaseYear(result.getInt("RELEASEYEAR"));
+			}
+		}
+		return null;
 	}
 	
 	public void deleteMovie(AbstractMovie m) throws SQLException {

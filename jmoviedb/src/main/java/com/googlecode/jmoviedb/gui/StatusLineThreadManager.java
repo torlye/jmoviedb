@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class StatusLineThreadManager {
 	private StatusLineManager statusLine;
-	private int interval;
+	private static final int interval = 5000;
 	TThread thread;
 	
 	/**
@@ -45,23 +45,20 @@ public class StatusLineThreadManager {
 	 */
 	public StatusLineThreadManager(StatusLineManager slm) {
 		statusLine = slm;
-		interval = 5000;
 	}
 	
 	/**
 	 * Sets a new message on the status line
 	 * @param message the message to be set
 	 */
-	@SuppressWarnings("deprecation")
 	public void setMessage(String message) {
 		if(CONST.DEBUG_MODE)
 			System.out.println("Status line: " + message);
 		statusLine.setMessage(message);
 		
 		if(message.length() > 0) {
-			if(thread!=null) {
-				//Ignore deprecation of Thread.stop, as it should be safe in this case.
-				thread.stop();
+			if(thread != null) {
+				thread.abort = true;
 				thread = null;
 			}
 			thread = new TThread();
@@ -75,17 +72,20 @@ public class StatusLineThreadManager {
 	 *
 	 */
 	private class TThread extends Thread {
+		public boolean abort = false;
 		public void run() {
 			try {
 				Thread.sleep(interval);
 			} catch(InterruptedException e) {
 				System.out.println("interrupted");
 			}
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					setMessage("");
-				}
-			});
+			if (!abort) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						setMessage("");
+					}
+				});
+			}
 		}
 	}
 }
