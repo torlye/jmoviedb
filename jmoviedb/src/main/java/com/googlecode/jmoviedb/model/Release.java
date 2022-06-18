@@ -81,9 +81,13 @@ public class Release {
 	}
 
 	public void setTerritoriesJson(String territoriesJson, String classificationsJson) {
-		territories = new ArrayList<Tuple<String, String>>();
+		territories = parseTerritories(territoriesJson, classificationsJson);
+	}
+
+	public static ArrayList<Tuple<String, String>> parseTerritories(String territoriesJson, String classificationsJson) {
+		ArrayList<Tuple<String, String>> territories = new ArrayList<Tuple<String, String>>();
 		if (Utils.isNullOrEmpty(territoriesJson) && Utils.isNullOrEmpty(classificationsJson))
-			return;
+			return territories;
 		if (Utils.isNullOrEmpty(territoriesJson) != Utils.isNullOrEmpty(classificationsJson))
 			throw new IllegalArgumentException("Territories and classifications must both be specified or both omitted");
 
@@ -97,5 +101,6 @@ public class Release {
 			String classificatoin = (String)classificationsArray.get(i);
 			territories.add(new Tuple<String, String>(territory, classificatoin));
 		}
+		return territories;
 	}
 }

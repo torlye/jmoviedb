@@ -5,13 +5,11 @@ import java.sql.SQLException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.internal.C;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.json.JSONObject;
 
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.releasetable.TerritoriesTable;
@@ -73,11 +71,12 @@ public class ReleaseTab implements IMovieDialogTab {
                 if (release != null) {
                     titleText.setText(release.getReleaseTitle());
                     yearText.setText(release.getReleaseYear() + "");
-                    territoriesTable.setModel();
+                    territoriesTable.setModel(release.getTerritories());
                 }
                 else {
                     titleText.setText(m.getReleaseTitle());
                     yearText.setText(m.getReleaseYear() + "");
+                    territoriesTable.setModel(Release.parseTerritories(m.getTerritories(), m.getClassifications()));
                 }
             }
             catch (SQLException e) {}
@@ -90,6 +89,7 @@ public class ReleaseTab implements IMovieDialogTab {
             release = new Release();
         release.setReleaseTitle(titleText.getText());
         release.setReleaseYear(yearText.getText());
+        release.setTerritories(territoriesTable.getModel());
         try {
             MainWindow.getMainWindow().getDB().getDatabase().addUpdateRelease(movie, release);
         }

@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,7 +23,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
-import com.googlecode.jmoviedb.gui.audiosubtitletable.ComboBoxTextCellEditor;
 
 public abstract class MovieDialogTable<T> {
 
@@ -136,12 +134,7 @@ public abstract class MovieDialogTable<T> {
 
     protected abstract IBaseLabelProvider createLabelProvider();
 
-	protected CellEditor[] createCellEditors() {
-		CellEditor[] editors = new CellEditor[columnNames.length];
-		editors[0] = new TextCellEditor(table);
-		editors[1] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllLanguages(), SWT.DROP_DOWN);
-		return editors;
-	}
+	protected abstract CellEditor[] createCellEditors();
 
 	/**
 	 * Private internal contentprovider
