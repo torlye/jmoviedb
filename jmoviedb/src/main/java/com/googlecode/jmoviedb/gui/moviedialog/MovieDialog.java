@@ -228,9 +228,9 @@ public class MovieDialog extends Dialog {
 		mainTab.save(movie);
 	    taglineTab.save(movie);
 		actorsTab.save(movie);
-		releaseTab.save(movie);
 		formatTab.save(movie);
 		audioSubTab.save(movie);
+		releaseTab.save(movie);
 	}
 	
 	public AbstractMovie getModel() {

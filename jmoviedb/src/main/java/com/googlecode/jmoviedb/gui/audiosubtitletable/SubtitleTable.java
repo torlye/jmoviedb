@@ -2,6 +2,7 @@ package com.googlecode.jmoviedb.gui.audiosubtitletable;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -15,9 +16,8 @@ import com.googlecode.jmoviedb.model.SubtitleTrack;
 public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 
     public SubtitleTable(Composite parent,  Combo formatCombo) {
-        super(parent, formatCombo, 
+        super(parent, formatCombo,
 			new String[] {"#", "Language","Track type","Format","Note"});
-		tableViewer.setLabelProvider(new SubtitleLabelProvider(this));
     }
 
 	@Override
@@ -38,20 +38,20 @@ public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 	protected String getAddButtonTooltip() {
 		return "Add subtitle";
 	}
-    
+
 	@Override
 	protected String getDeleteButtonTooltip() {
 		return "Remove subtitle";
 	}
 
     @Override
-    protected SubtitleTrack getNewTrack()
+    protected SubtitleTrack getNewObject()
     {
         FormatType format = FormatType.values()[formatCombo.getSelectionIndex()];
-		
+
 		Language lang = Language.english;
 		SubtitleFormat subformat = SubtitleFormat.other;
-		
+
 		if(format == FormatType.dvd) {
 			subformat = SubtitleFormat.vobsub;
 		} else if(format == FormatType.bluray||format == FormatType.hddvd||format == FormatType.avchd||format == FormatType.bluray3d||format == FormatType.uhdbluray) {
@@ -65,7 +65,12 @@ public class SubtitleTable extends AudioSubtitleTable<SubtitleTrack> {
 		} else if(format == FormatType.umd) {
 			subformat = SubtitleFormat.medianative;
 		}
-		
+
         return new SubtitleTrack(lang, subformat, false, false, false, "", lang.getName(), "");
     }
+
+	@Override
+	protected IBaseLabelProvider createLabelProvider() {
+		return new SubtitleLabelProvider(this);
+	}
 }

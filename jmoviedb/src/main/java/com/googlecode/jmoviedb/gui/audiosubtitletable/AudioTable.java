@@ -2,6 +2,7 @@ package com.googlecode.jmoviedb.gui.audiosubtitletable;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -15,9 +16,8 @@ import com.googlecode.jmoviedb.model.AudioTrack;
 public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 
     public AudioTable(Composite parent, Combo formatCombo) {
-        super(parent, formatCombo, 
+        super(parent, formatCombo,
         	new String[] {"#", "Language","Track type","Format","Channels","Note"});
-		tableViewer.setLabelProvider(new AudioLabelProvider(this));
     }
 
 	@Override
@@ -44,16 +44,16 @@ public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 	protected String getDeleteButtonTooltip() {
 		return "Remove audio track";
 	}
-    
+
     @Override
-    protected AudioTrack getNewTrack()
+    protected AudioTrack getNewObject()
     {
         FormatType format = FormatType.values()[formatCombo.getSelectionIndex()];
-		
+
 		Language lang = Language.english;
 		AudioCodec audioformat = AudioCodec.other;
 		AudioChannels channels = AudioChannels.stereo;
-		
+
 		if(format == FormatType.dvd) {
 			audioformat = AudioCodec.ac3;
 			channels = AudioChannels.none;
@@ -75,4 +75,9 @@ public class AudioTable extends AudioSubtitleTable<AudioTrack> {
 		}
         return new AudioTrack(lang, audioformat, channels, false, false, "", lang.getName(), "");
     }
+
+	@Override
+	protected IBaseLabelProvider createLabelProvider() {
+		return new AudioLabelProvider(this);
+	}
 }

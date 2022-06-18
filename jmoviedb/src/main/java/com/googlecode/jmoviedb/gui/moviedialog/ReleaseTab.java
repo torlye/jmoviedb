@@ -1,5 +1,7 @@
 package com.googlecode.jmoviedb.gui.moviedialog;
 
+import java.sql.SQLException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -11,19 +13,24 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.json.JSONObject;
 
+import com.googlecode.jmoviedb.gui.MainWindow;
+import com.googlecode.jmoviedb.gui.releasetable.TerritoriesTable;
+import com.googlecode.jmoviedb.model.Release;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
 
 public class ReleaseTab implements IMovieDialogTab {
     private Text urlText;
     private Text titleText;
     private Text yearText;
+    private Release release;
+    TerritoriesTable territoriesTable;
 
     @Override
     public void createTabArea(CTabFolder tabFolder) {
         CTabItem tab = new CTabItem(tabFolder, SWT.NULL);
 		tab.setText("Release");
 		Composite c = new Composite(tabFolder, SWT.NULL);
-        
+
         GridLayout layout = new GridLayout(3, false);
         layout.marginHeight = MovieDialog.MARGIN_HEIGHT;
 		layout.marginWidth = MovieDialog.MARGIN_WIDTH;
@@ -44,32 +51,52 @@ public class ReleaseTab implements IMovieDialogTab {
         titleText = new Text(c, SWT.SINGLE|SWT.BORDER);
         titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, defaultHorizontalSpan - 1, 1));
         yearText = new Text(c, SWT.SINGLE|SWT.BORDER);
-		
-        tab.setEnabled(false);
+
+        territoriesTable = new TerritoriesTable(c);
+
         tab.setControl(c);
     }
 
     @Override
     public void configureListeners() {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void setModel(AbstractMovie m) {
         urlText.setText(m.getUrl2String());
-        titleText.setText(m.getReleaseTitle());
-        yearText.setText(m.getReleaseYear() + "");
+        if (m.getUrl2() != null) {
+            try {
+                release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(m);
+
+                if (release != null) {
+                    titleText.setText(release.getReleaseTitle());
+                    yearText.setText(release.getReleaseYear() + "");
+                    territoriesTable.setModel();
+                }
+                else {
+                    titleText.setText(m.getReleaseTitle());
+                    yearText.setText(m.getReleaseYear() + "");
+                }
+            }
+            catch (SQLException e) {}
+        }
     }
 
     @Override
     public void save(AbstractMovie movie) {
-        movie.setReleaseTitle(titleText.getText());
-        movie.setReleaseYear(yearText.getText());
+        if (release == null)
+            release = new Release();
+        release.setReleaseTitle(titleText.getText());
+        release.setReleaseYear(yearText.getText());
+        try {
+            MainWindow.getMainWindow().getDB().getDatabase().addUpdateRelease(movie, release);
+        }
+        catch (SQLException e) {}
     }
 
     @Override
     public void dispose() {
     }
-    
 }

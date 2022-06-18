@@ -1002,7 +1002,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	public String getReleaseTitle() {
-		return releaseTitle != null ? releaseTitle : getJsonStringProperty("releaseTitle");
+		return getJsonStringProperty("releaseTitle");
 	}
 
 	public String getTerritories() {
@@ -1042,7 +1042,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	public Integer getReleaseYear() {
-		return releaseYear != null ? releaseYear : getJsonIntProperty("releaseYear");
+		return getJsonIntProperty("releaseYear");
 	}
 
 	public List<FormatType> getFormats() {
