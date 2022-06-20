@@ -3,17 +3,22 @@ package com.googlecode.jmoviedb.gui.moviedialog;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.releasetable.IdentifiersTable;
 import com.googlecode.jmoviedb.gui.releasetable.MediaTable;
@@ -30,6 +35,8 @@ public class ReleaseTab implements IMovieDialogTab {
     IdentifiersTable identifiersTable;
     MediaTable mediaTable;
     List releaseTypeList;
+    Button saveButton;
+    Button loadButton;
 
     @Override
     public void createTabArea(CTabFolder tabFolder) {
@@ -72,6 +79,32 @@ public class ReleaseTab implements IMovieDialogTab {
 
     @Override
     public void configureListeners() {
+        urlText.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent event) {
+                String text = ((Text)event.widget).getText();
+                boolean isvalid = Utils.isNullOrEmpty(text);
+                setEnabled(isvalid);
+                if (isvalid) {
+                    Release release;
+                    try {
+                        release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(text);
+                        if (release == null) {
+                            setReleaseModel(release);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void setEnabled(boolean enabled) {
+        titleText.setEnabled(enabled);
+        yearText.setEnabled(enabled);
+        releaseTypeList.setEnabled(enabled);
     }
 
     @Override
@@ -79,35 +112,41 @@ public class ReleaseTab implements IMovieDialogTab {
         urlText.setText(m.getUrl2String());
         if (m.getUrl2() != null) {
             try {
-                release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(m);
-
-                if (release != null) {
-                    titleText.setText(release.getReleaseTitle());
-                    yearText.setText(release.getReleaseYear() + "");
-                    territoriesTable.setModel(release.getTerritories());
-                    identifiersTable.setModel(release.getIdentifiers());
-                    mediaTable.setModel(release.getMedia());
-                    setListModel(release.getReleaseTypes());
+                Release release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(m.getUrl2StringOrNull());
+                if (release == null) {
+                    release = new Release();
+                    release.setReleaseTitle(m.getReleaseTitle());
+                    release.setReleaseYear(m.getReleaseYear());
+                    release.setTerritoriesJson(m.getTerritories(), m.getClassifications());
+                    release.setIdentifiersJson(m.getIdentifiers());
+                    release.setMediaJson(m.getMedia());
+                    release.setReleaseTypesJson(m.getReleaseType());
                 }
-                else {
-                    titleText.setText(m.getReleaseTitle());
-                    yearText.setText(m.getReleaseYear() + "");
-                    territoriesTable.setModel(Release.parseTerritories(m.getTerritories(), m.getClassifications()));
-                    identifiersTable.setModel(Release.parseIdentifiers(m.getIdentifiers()));
-                    mediaTable.setModel(Release.parseMedia(m.getMedia()));
-                    setListModel(Release.parseReleaseTypes(m.getReleaseType()));
-                }
+                setReleaseModel(release);
             }
             catch (SQLException e) {}
         }
     }
 
+    private void setReleaseModel(Release release) {
+        this.release = release;
+        titleText.setText(release.getReleaseTitle());
+        yearText.setText(release.getReleaseYear() + "");
+        territoriesTable.setModel(release.getTerritories());
+        identifiersTable.setModel(release.getIdentifiers());
+        mediaTable.setModel(release.getMedia());
+        setListModel(release.getReleaseTypes());
+    }
+
     private void setListModel(ArrayList<String> selectedItems) {
         releaseTypeList.removeAll();
-        releaseTypeList.setItems(MainWindow.getMainWindow().getDB().getAllReleaseTypes());
-        for (String item : selectedItems) {
-            releaseTypeList.add(item);
-        }
+
+        String[] releaseTypeOptions = Stream.concat(
+            Arrays.stream(MainWindow.getMainWindow().getDB().getAllReleaseTypes()),
+            selectedItems.stream()
+        ).distinct().toArray(String[]::new);
+
+        releaseTypeList.setItems(releaseTypeOptions);
         releaseTypeList.setSelection(selectedItems.toArray(new String[0]));
     }
 
@@ -116,6 +155,10 @@ public class ReleaseTab implements IMovieDialogTab {
         if (release == null)
             release = new Release();
         movie.setUrl2(urlText.getText());
+        saveRelease(movie);
+    }
+
+    private void saveRelease(AbstractMovie movie) {
         release.setReleaseTitle(titleText.getText());
         release.setReleaseYear(yearText.getText());
         release.setTerritories(territoriesTable.getModel());

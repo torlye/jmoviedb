@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
@@ -953,15 +954,12 @@ public class Database {
 		return m;
 	}
 
-	public Release getRelease(AbstractMovie m) throws SQLException {
-		if (m.getUrl2StringOrNull() != null) {
-			getReleaseInfo.setString(1, m.getUrl2String());
+	public Release getRelease(String id) throws SQLException {
+		if (!Utils.isNullOrEmpty(id)) {
+			getReleaseInfo.setString(1, id);
 			ResultSet result = getReleaseInfo.executeQuery();
 			getReleaseInfo.clearParameters();
 			if (result.next()) {
-				/* "CREATE TABLE RELEASE(URL VARCHAR(512), TITLE VARCHAR(256), " +
-				"TERRITORIES VARCHAR(2048), IDENTIFIERS VARCHAR(2048), RELEASEYEAR SMALLINT, " +
-				"TYPE VARCHAR(256), MEDIA VARCHAR(512), PRIMARY KEY(URL)) */
 				Release r = new Release();
 				r.setReleaseTitle(result.getString("TITLE"));
 				r.setReleaseYear(result.getInt("RELEASEYEAR"));
