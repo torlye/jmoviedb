@@ -1068,7 +1068,7 @@ public abstract class AbstractMovie implements Cloneable {
 		if (!valueFromProp.isEmpty())
 			return valueFromProp;
 		else
-			return "[{\"" + getDisc().getName() + "\": NaN}]";
+			return "[{\"" + getDisc().getName() + "\": -1}]";
 	}
 
 	public String getReleaseType() {

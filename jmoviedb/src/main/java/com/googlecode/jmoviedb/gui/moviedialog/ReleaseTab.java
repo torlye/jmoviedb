@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.googlecode.jmoviedb.gui.MainWindow;
+import com.googlecode.jmoviedb.gui.releasetable.IdentifiersTable;
+import com.googlecode.jmoviedb.gui.releasetable.MediaTable;
 import com.googlecode.jmoviedb.gui.releasetable.TerritoriesTable;
 import com.googlecode.jmoviedb.model.Release;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
@@ -22,6 +24,8 @@ public class ReleaseTab implements IMovieDialogTab {
     private Text yearText;
     private Release release;
     TerritoriesTable territoriesTable;
+    IdentifiersTable identifiersTable;
+    MediaTable mediaTable;
 
     @Override
     public void createTabArea(CTabFolder tabFolder) {
@@ -55,7 +59,8 @@ public class ReleaseTab implements IMovieDialogTab {
 		t.setLayout(layoutT);
         t.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, layoutColumns, 1));
         territoriesTable = new TerritoriesTable(t);
-
+        identifiersTable = new IdentifiersTable(t);
+        mediaTable = new MediaTable(t);
 
         tab.setControl(c);
     }
@@ -77,11 +82,15 @@ public class ReleaseTab implements IMovieDialogTab {
                     titleText.setText(release.getReleaseTitle());
                     yearText.setText(release.getReleaseYear() + "");
                     territoriesTable.setModel(release.getTerritories());
+                    identifiersTable.setModel(release.getIdentifiers());
+                    mediaTable.setModel(release.getMedia());
                 }
                 else {
                     titleText.setText(m.getReleaseTitle());
                     yearText.setText(m.getReleaseYear() + "");
                     territoriesTable.setModel(Release.parseTerritories(m.getTerritories(), m.getClassifications()));
+                    identifiersTable.setModel(Release.parseIdentifiers(m.getIdentifiers()));
+                    mediaTable.setModel(Release.parseMedia(m.getMedia()));
                 }
             }
             catch (SQLException e) {}
@@ -96,6 +105,8 @@ public class ReleaseTab implements IMovieDialogTab {
         release.setReleaseTitle(titleText.getText());
         release.setReleaseYear(yearText.getText());
         release.setTerritories(territoriesTable.getModel());
+        release.setIdentifiers(identifiersTable.getModel());
+        release.setMedia(mediaTable.getModel());
         try {
             MainWindow.getMainWindow().getDB().getDatabase().addUpdateRelease(movie, release);
         }

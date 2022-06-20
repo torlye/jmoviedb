@@ -122,9 +122,13 @@ public class Release {
 	}
 
 	public void setMediaJson(String json) {
-		media = new ArrayList<Tuple<String, Integer>>();
+		media = parseMedia(json);
+	}
+
+	public static ArrayList<Tuple<String, Integer>> parseMedia(String json) {
+		ArrayList<Tuple<String, Integer>> media = new ArrayList<Tuple<String, Integer>>();
 		if (Utils.isNullOrEmpty(json))
-			return;
+			return media;
 
 		JSONArray array = new JSONArray(json);
 
@@ -134,6 +138,7 @@ public class Release {
 			Integer value = obj.getInt(name);
 			media.add(new Tuple<String, Integer>(name, value));
 		}
+		return media;
 	}
 
 	public String getMediaJson() {
@@ -165,9 +170,13 @@ public class Release {
 	}
 
 	public void setIdentifiersJson(String json) {
-		identifiers = new ArrayList<Tuple<String, String>>();
+		identifiers = parseIdentifiers(json);
+	}
+
+	public static ArrayList<Tuple<String, String>> parseIdentifiers(String json) {
+		ArrayList<Tuple<String, String>> identifiers = new ArrayList<Tuple<String, String>>();
 		if (Utils.isNullOrEmpty(json))
-			return;
+			return identifiers;
 
 		JSONArray array = new JSONArray(json);
 
@@ -177,6 +186,8 @@ public class Release {
 			String value = obj.getString(name);
 			identifiers.add(new Tuple<String, String>(name, value));
 		}
+
+		return identifiers;
 	}
 
 	public ArrayList<String> getReleaseTypes() {
