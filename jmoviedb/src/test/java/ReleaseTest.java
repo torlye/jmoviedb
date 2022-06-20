@@ -81,6 +81,22 @@ public class ReleaseTest {
         release.setIdentifiersJson("[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]");
         Assert.isTrue(release.getIdentifiersJson().equals("[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]"));
     }
+
+    @Test
+    public void setReleaseTypesJson() {
+        Release release = new Release();
+        release.setReleaseTypesJson("[\"retail\"]");
+        Assert.isTrue(release.getReleaseTypes().size() == 1);
+        Assert.isTrue(release.getReleaseTypes().get(0).equals("retail"));
+    }
+
+    @Test
+    public void getReleaseTypesJson() {
+        Release release = new Release();
+        Assert.isTrue(release.getReleaseTypesJson().equals("[]"));
+        release.getReleaseTypes().add("rental");
+        Assert.isTrue(release.getReleaseTypesJson().equals("[\"rental\"]"));
+    }
 }
 
 /* https://www.blu-ray.com/dvd/Dead-Poets-Society-DVD/35375/	Døde Poeters Klub		[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]	2002	["retail"]	[{"DVD":1}]

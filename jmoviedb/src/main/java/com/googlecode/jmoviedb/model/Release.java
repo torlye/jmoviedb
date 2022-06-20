@@ -14,11 +14,13 @@ public class Release {
 	private ArrayList<Tuple<String, String>> territories;
 	private ArrayList<Tuple<String, Integer>> media;
 	private ArrayList<Tuple<String, String>> identifiers;
+	private ArrayList<String> releaseTypes;
 
     public Release() {
 		territories = new ArrayList<Tuple<String, String>>();
 		media = new ArrayList<Tuple<String, Integer>>();
 		identifiers = new ArrayList<Tuple<String, String>>();
+		releaseTypes = new ArrayList<String>();
 	}
 
     public Release(AbstractMovie m) {
@@ -26,6 +28,8 @@ public class Release {
         this.releaseYear = m.getReleaseYear();
 		setTerritoriesJson(m.getTerritories(), m.getClassifications());
 		setMediaJson(m.getMedia());
+		setIdentifiersJson(m.getIdentifiers());
+		setReleaseTypesJson(m.getReleaseType());
     }
 
     public String getReleaseTitle() {
@@ -146,7 +150,17 @@ public class Release {
 		return identifiers;
 	}
 
-	public void getIdentifiers(ArrayList<Tuple<String, String>> value) {
+	public String getIdentifiersJson() {
+		JSONArray json = new JSONArray();
+		for (Tuple<String, String> med : identifiers) {
+			JSONObject obj = new JSONObject();
+			obj.put(med.getValue1(), med.getValue2());
+			json.put(obj);
+		}
+		return json.toString();
+	}
+
+	public void setIdentifiers(ArrayList<Tuple<String, String>> value) {
 		this.identifiers = value;
 	}
 
@@ -165,13 +179,32 @@ public class Release {
 		}
 	}
 
-	public String getIdentifiersJson() {
+	public ArrayList<String> getReleaseTypes() {
+		return releaseTypes;
+	}
+
+	public String getReleaseTypesJson() {
 		JSONArray json = new JSONArray();
-		for (Tuple<String, String> med : identifiers) {
-			JSONObject obj = new JSONObject();
-			obj.put(med.getValue1(), med.getValue2());
-			json.put(obj);
+		for (String r : releaseTypes) {
+			json.put(r);
 		}
 		return json.toString();
+	}
+
+	public void setReleaseTypes(ArrayList<String> value) {
+		releaseTypes = value;
+	}
+
+	public void setReleaseTypesJson(String json) {
+		releaseTypes = new ArrayList<String>();
+		if (Utils.isNullOrEmpty(json))
+			return;
+
+		JSONArray array = new JSONArray(json);
+
+		for (int i = 0; i < array.length(); i++) {
+			String s = (String)array.get(i);
+			releaseTypes.add(s);
+		}
 	}
 }
