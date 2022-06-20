@@ -1,7 +1,5 @@
 package com.googlecode.jmoviedb.model;
 
-import org.json.JSONObject;
-
 public class Tuple<A, B> {
     private A value1;
     private B value2;
@@ -9,11 +7,6 @@ public class Tuple<A, B> {
     public Tuple(A value1, B value2) {
         this.value1 = value1;
         this.value2 = value2;
-    }
-
-    public Tuple(String json) {
-        JSONObject obj = new JSONObject(json);
-
     }
 
     public A getValue1() {

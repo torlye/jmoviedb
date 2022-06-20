@@ -34,12 +34,7 @@ public class AudioSubTab implements IMovieDialogTab {
 
 		Composite c = new Composite(tabFolder, SWT.NULL);
 
-//		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_BOTH);
-//		parent.setLayoutData(gridData);
-
-		// Set numColumns to 3 for the buttons
-		GridLayout layout = new GridLayout(4, false);
-		layout.marginWidth = 4;
+		GridLayout layout = new GridLayout(1, false);
 		c.setLayout(layout);
 
 		audioTable = new AudioTable(c, formatTab.getFormatCombo());

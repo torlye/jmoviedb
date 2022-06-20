@@ -29,20 +29,20 @@ public class ReleaseTab implements IMovieDialogTab {
 		tab.setText("Release");
 		Composite c = new Composite(tabFolder, SWT.NULL);
 
-        GridLayout layout = new GridLayout(3, false);
+        int layoutColumns = 4;
+        GridLayout layout = new GridLayout(layoutColumns, false);
         layout.marginHeight = MovieDialog.MARGIN_HEIGHT;
 		layout.marginWidth = MovieDialog.MARGIN_WIDTH;
 		layout.verticalSpacing = MovieDialog.VERTICAL_SPACING;
 		layout.horizontalSpacing = MovieDialog.HORIZONTAL_SPACING;
 		c.setLayout(layout);
 
-        int defaultHorizontalSpan = 2;
+        int defaultHorizontalSpan = layoutColumns - 1;
 
         Label urlLabel = new Label(c, SWT.CENTER);
         urlLabel.setText("URL/ID");
         urlText = new Text(c, SWT.READ_ONLY|SWT.SINGLE|SWT.BORDER);
         urlText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, defaultHorizontalSpan, 1));
-        urlText.setEnabled(false);
 
         Label releaseLabel = new Label(c, SWT.CENTER);
         releaseLabel.setText("Title/Year");
@@ -50,7 +50,12 @@ public class ReleaseTab implements IMovieDialogTab {
         titleText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, defaultHorizontalSpan - 1, 1));
         yearText = new Text(c, SWT.SINGLE|SWT.BORDER);
 
-        territoriesTable = new TerritoriesTable(c);
+        Composite t = new Composite(c, SWT.NULL);
+		GridLayout layoutT = new GridLayout(1, false);
+		t.setLayout(layoutT);
+        t.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, layoutColumns, 1));
+        territoriesTable = new TerritoriesTable(t);
+
 
         tab.setControl(c);
     }
@@ -87,6 +92,7 @@ public class ReleaseTab implements IMovieDialogTab {
     public void save(AbstractMovie movie) {
         if (release == null)
             release = new Release();
+        movie.setUrl2(urlText.getText());
         release.setReleaseTitle(titleText.getText());
         release.setReleaseYear(yearText.getText());
         release.setTerritories(territoriesTable.getModel());

@@ -15,6 +15,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
@@ -47,17 +48,28 @@ public abstract class MovieDialogTable<T> {
 		upImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_UP).getImageData(100), iconSize, iconSize);
 		downImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_DOWN).getImageData(100), iconSize, iconSize);
 
+		Composite c = new Composite(parent, SWT.NULL);
+
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridData.horizontalSpan = 1;
+		gridData.minimumHeight = 100;
+		c.setLayoutData(gridData);
+
+		GridLayout layout = new GridLayout(5, false);
+		layout.marginWidth = 4;
+		c.setLayout(layout);
+
 		this.columnNames = columnNames;
 
 		// Create the table
-		createTable(parent);
+		createTable(c);
 
 		// Create and setup the TableViewer
 		createTableViewer();
 		tableViewer.setContentProvider(new AudioSubContentProvider());
 
 		// Add the buttons
-		createButtons(parent);
+		createButtons(c);
 	}
 
 	public void setModel(ArrayList<T> arrayList) {
