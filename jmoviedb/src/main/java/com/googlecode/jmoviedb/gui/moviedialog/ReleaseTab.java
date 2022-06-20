@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Text;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.releasetable.IdentifiersTable;
 import com.googlecode.jmoviedb.gui.releasetable.MediaTable;
+import com.googlecode.jmoviedb.gui.releasetable.ReleaseTypeTable;
 import com.googlecode.jmoviedb.gui.releasetable.TerritoriesTable;
 import com.googlecode.jmoviedb.model.Release;
 import com.googlecode.jmoviedb.model.movietype.AbstractMovie;
@@ -26,6 +27,7 @@ public class ReleaseTab implements IMovieDialogTab {
     TerritoriesTable territoriesTable;
     IdentifiersTable identifiersTable;
     MediaTable mediaTable;
+    ReleaseTypeTable releaseTypeTable;
 
     @Override
     public void createTabArea(CTabFolder tabFolder) {
@@ -55,12 +57,13 @@ public class ReleaseTab implements IMovieDialogTab {
         yearText = new Text(c, SWT.SINGLE|SWT.BORDER);
 
         Composite t = new Composite(c, SWT.NULL);
-		GridLayout layoutT = new GridLayout(1, false);
+		GridLayout layoutT = new GridLayout(2, false);
 		t.setLayout(layoutT);
-        t.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, layoutColumns, 1));
+        t.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, layoutColumns, 1));
         territoriesTable = new TerritoriesTable(t);
         identifiersTable = new IdentifiersTable(t);
         mediaTable = new MediaTable(t);
+        releaseTypeTable = new ReleaseTypeTable(t);
 
         tab.setControl(c);
     }
@@ -84,6 +87,7 @@ public class ReleaseTab implements IMovieDialogTab {
                     territoriesTable.setModel(release.getTerritories());
                     identifiersTable.setModel(release.getIdentifiers());
                     mediaTable.setModel(release.getMedia());
+                    releaseTypeTable.setModel(release.getReleaseTypes());
                 }
                 else {
                     titleText.setText(m.getReleaseTitle());
@@ -91,6 +95,7 @@ public class ReleaseTab implements IMovieDialogTab {
                     territoriesTable.setModel(Release.parseTerritories(m.getTerritories(), m.getClassifications()));
                     identifiersTable.setModel(Release.parseIdentifiers(m.getIdentifiers()));
                     mediaTable.setModel(Release.parseMedia(m.getMedia()));
+                    releaseTypeTable.setModel(Release.parseReleaseTypes(m.getReleaseType()));
                 }
             }
             catch (SQLException e) {}

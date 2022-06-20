@@ -6,13 +6,11 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
-import com.googlecode.jmoviedb.model.Tuple;
-
-public class MediaModifier implements ICellModifier {
+public class ReleaseTypeModifier implements ICellModifier {
     private TableViewer tableViewer;
     private String[] columnNames;
 
-    public MediaModifier(TableViewer tableViewer, String[] columnNames) {
+    public ReleaseTypeModifier(TableViewer tableViewer, String[] columnNames) {
         this.tableViewer = tableViewer;
         this.columnNames = columnNames;
     }
@@ -25,23 +23,16 @@ public class MediaModifier implements ICellModifier {
     @Override
     public Object getValue(Object element, String property) {
         int columnIndex = Arrays.asList(columnNames).indexOf(property);
-        return MediaLabelProvider.getColumnTextForIndex(element, columnIndex);
+        return ReleaseTypeLabelProvider.getColumnTextForIndex(element, columnIndex);
     }
 
     @Override
     public void modify(Object element, String property, Object value) {
         int columnIndex = Arrays.asList(columnNames).indexOf(property);
-        Tuple<String, Integer> obj = (Tuple<String, Integer>)(((TableItem)element).getData());
+        String obj = (String)(((TableItem)element).getData());
         switch (columnIndex) {
             case 0:
-                obj.setValue1((String)value);
-                break;
-            case 1:
-                try {
-                    obj.setValue2(Integer.parseInt((String)value));
-                } catch (NumberFormatException e) {
-                    // ignore;
-                }
+                obj = (String)value; // TODO
                 break;
         }
         tableViewer.refresh();

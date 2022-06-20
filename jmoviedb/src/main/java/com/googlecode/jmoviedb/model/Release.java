@@ -207,9 +207,13 @@ public class Release {
 	}
 
 	public void setReleaseTypesJson(String json) {
-		releaseTypes = new ArrayList<String>();
+		releaseTypes = parseReleaseTypes(json);
+	}
+
+    public static ArrayList<String> parseReleaseTypes(String json) {
+        ArrayList<String> releaseTypes = new ArrayList<String>();
 		if (Utils.isNullOrEmpty(json))
-			return;
+			return releaseTypes;
 
 		JSONArray array = new JSONArray(json);
 
@@ -217,5 +221,6 @@ public class Release {
 			String s = (String)array.get(i);
 			releaseTypes.add(s);
 		}
-	}
+		return releaseTypes;
+    }
 }
