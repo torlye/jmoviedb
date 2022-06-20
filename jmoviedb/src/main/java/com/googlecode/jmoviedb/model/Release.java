@@ -13,10 +13,12 @@ public class Release {
 	private Integer releaseYear;
 	private ArrayList<Tuple<String, String>> territories;
 	private ArrayList<Tuple<String, Integer>> media;
+	private ArrayList<Tuple<String, String>> identifiers;
 
     public Release() {
 		territories = new ArrayList<Tuple<String, String>>();
 		media = new ArrayList<Tuple<String, Integer>>();
+		identifiers = new ArrayList<Tuple<String, String>>();
 	}
 
     public Release(AbstractMovie m) {
@@ -133,6 +135,39 @@ public class Release {
 	public String getMediaJson() {
 		JSONArray json = new JSONArray();
 		for (Tuple<String, Integer> med : media) {
+			JSONObject obj = new JSONObject();
+			obj.put(med.getValue1(), med.getValue2());
+			json.put(obj);
+		}
+		return json.toString();
+	}
+
+	public ArrayList<Tuple<String, String>> getIdentifiers() {
+		return identifiers;
+	}
+
+	public void getIdentifiers(ArrayList<Tuple<String, String>> value) {
+		this.identifiers = value;
+	}
+
+	public void setIdentifiersJson(String json) {
+		identifiers = new ArrayList<Tuple<String, String>>();
+		if (Utils.isNullOrEmpty(json))
+			return;
+
+		JSONArray array = new JSONArray(json);
+
+		for (int i = 0; i < array.length(); i++) {
+			JSONObject obj = (JSONObject)array.get(i);
+			String name = obj.keySet().toArray(new String[0])[0];
+			String value = obj.getString(name);
+			identifiers.add(new Tuple<String, String>(name, value));
+		}
+	}
+
+	public String getIdentifiersJson() {
+		JSONArray json = new JSONArray();
+		for (Tuple<String, String> med : identifiers) {
 			JSONObject obj = new JSONObject();
 			obj.put(med.getValue1(), med.getValue2());
 			json.put(obj);

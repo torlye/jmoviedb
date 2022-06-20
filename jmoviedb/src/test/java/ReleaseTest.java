@@ -60,11 +60,29 @@ public class ReleaseTest {
         Release release = new Release();
         Assert.isTrue(release.getMediaJson().equals("[]"));
         release.setMediaJson("[{\"DVD\":1}, {\"BD\": 2}]");
-        System.out.println(release.getMediaJson());
         Assert.isTrue(release.getMediaJson().equals("[{\"DVD\":1},{\"BD\":2}]"));
+    }
+
+    @Test
+    public void setIdentifiersJson() {
+        Release release = new Release();
+        release.setIdentifiersJson("[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]");
+        Assert.isTrue(release.getIdentifiers().size() == 2);
+        Assert.isTrue(release.getIdentifiers().get(0).getValue1().equals("barcode"));
+        Assert.isTrue(release.getIdentifiers().get(0).getValue2().equals("7393834220601"));
+        Assert.isTrue(release.getIdentifiers().get(1).getValue1().equals("catalogNumber"));
+        Assert.isTrue(release.getIdentifiers().get(1).getValue2().equals("Z6D/30911014"));
+    }
+
+    @Test
+    public void getIdentifiersJson() {
+        Release release = new Release();
+        Assert.isTrue(release.getIdentifiersJson().equals("[]"));
+        release.setIdentifiersJson("[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]");
+        Assert.isTrue(release.getIdentifiersJson().equals("[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]"));
     }
 }
 
-/* https://www.blu-ray.com/dvd/Dead-Poets-Society-DVD/35375/	Døde Poeters Klub		[{"barcode":"7393834220601"},{"catalogNumber":"Z6D/30911014"}]	2002	["retail"]	[{"DVD":1}]
+/* https://www.blu-ray.com/dvd/Dead-Poets-Society-DVD/35375/	Døde Poeters Klub		[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]	2002	["retail"]	[{"DVD":1}]
 https://www.blu-ray.com/dvd/1944-The-Final-Defence-DVD/242170/	1944 The Final Defence	["United Kingdom","Ireland"]	[{"barcode":"5055002558740"},{"catalogNumber":"MTD5874"}]	2014	["retail"]	[{"DVD":1}]
 */

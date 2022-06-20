@@ -717,7 +717,7 @@ public class Database {
 				// "UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ? WHERE URL = ?"
 				updateReleaseInfo.setString(1, r.getReleaseTitle());
 				updateReleaseInfo.setString(2, r.getTerritoriesJson());
-				updateReleaseInfo.setString(3, m.getIdentifiers());
+				updateReleaseInfo.setString(3, r.getIdentifiersJson());
 				updateReleaseInfo.setInt(4, r.getReleaseYear());
 				updateReleaseInfo.setString(5, m.getReleaseType());
 				updateReleaseInfo.setString(6, r.getMediaJson());
@@ -728,7 +728,7 @@ public class Database {
 				addReleaseInfo.setString(1, m.getUrl2String());
 				addReleaseInfo.setString(2, r.getReleaseTitle());
 				addReleaseInfo.setString(3, r.getTerritoriesJson());
-				addReleaseInfo.setString(4, m.getIdentifiers());
+				addReleaseInfo.setString(4, r.getIdentifiersJson());
 				addReleaseInfo.setInt(5, r.getReleaseYear());
 				addReleaseInfo.setString(6, m.getReleaseType());
 				addReleaseInfo.setString(7, r.getMediaJson());
@@ -967,6 +967,7 @@ public class Database {
 				r.setReleaseYear(result.getInt("RELEASEYEAR"));
 				r.setTerritoriesJson(result.getString("TERRITORIES"));
 				r.setMediaJson(result.getString("MEDIA"));
+				r.setIdentifiersJson(result.getString("IDENTIFIERS"));
 			}
 		}
 		return null;
