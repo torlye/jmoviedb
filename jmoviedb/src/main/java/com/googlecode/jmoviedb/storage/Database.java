@@ -720,7 +720,7 @@ public class Database {
 				updateReleaseInfo.setString(3, m.getIdentifiers());
 				updateReleaseInfo.setInt(4, r.getReleaseYear());
 				updateReleaseInfo.setString(5, m.getReleaseType());
-				updateReleaseInfo.setString(6, m.getMedia());
+				updateReleaseInfo.setString(6, r.getMediaJson());
 				updateReleaseInfo.setString(7, m.getUrl2String());
 				updateReleaseInfo.execute();
 				updateReleaseInfo.clearParameters();
@@ -731,7 +731,7 @@ public class Database {
 				addReleaseInfo.setString(4, m.getIdentifiers());
 				addReleaseInfo.setInt(5, r.getReleaseYear());
 				addReleaseInfo.setString(6, m.getReleaseType());
-				addReleaseInfo.setString(7, m.getMedia());
+				addReleaseInfo.setString(7, r.getMediaJson());
 				addReleaseInfo.execute();
 				addReleaseInfo.clearParameters();
 			}
@@ -966,6 +966,7 @@ public class Database {
 				r.setReleaseTitle(result.getString("TITLE"));
 				r.setReleaseYear(result.getInt("RELEASEYEAR"));
 				r.setTerritoriesJson(result.getString("TERRITORIES"));
+				r.setMediaJson(result.getString("MEDIA"));
 			}
 		}
 		return null;

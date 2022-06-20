@@ -12,15 +12,18 @@ public class Release {
     private String releaseTitle;
 	private Integer releaseYear;
 	private ArrayList<Tuple<String, String>> territories;
+	private ArrayList<Tuple<String, Integer>> media;
 
     public Release() {
 		territories = new ArrayList<Tuple<String, String>>();
+		media = new ArrayList<Tuple<String, Integer>>();
 	}
 
     public Release(AbstractMovie m) {
         this.releaseTitle = m.getReleaseTitle();
         this.releaseYear = m.getReleaseYear();
 		setTerritoriesJson(m.getTerritories(), m.getClassifications());
+		setMediaJson(m.getMedia());
     }
 
     public String getReleaseTitle() {
@@ -71,7 +74,7 @@ public class Release {
 			return;
 
 		JSONArray territoriesArray = new JSONArray(territoriesJson);
-		
+
 		for (int i = 0; i < territoriesArray.length(); i++) {
 			JSONObject territory = (JSONObject)territoriesArray.get(i);
 			String territoryName = territory.keySet().toArray(new String[0])[0];
@@ -95,12 +98,45 @@ public class Release {
 		JSONArray classificationsArray = new JSONArray(classificationsJson);
 		if (territoriesArray.length() != classificationsArray.length())
 			throw new IllegalArgumentException("Territories and classifications must have the same length");
-		
+
 		for (int i = 0; i < territoriesArray.length(); i++) {
 			String territory = (String)territoriesArray.get(i);
 			String classificatoin = (String)classificationsArray.get(i);
 			territories.add(new Tuple<String, String>(territory, classificatoin));
 		}
 		return territories;
+	}
+
+	public ArrayList<Tuple<String, Integer>> getMedia() {
+		return media;
+	}
+
+	public void setMedia(ArrayList<Tuple<String, Integer>> value) {
+		this.media = value;
+	}
+
+	public void setMediaJson(String json) {
+		media = new ArrayList<Tuple<String, Integer>>();
+		if (Utils.isNullOrEmpty(json))
+			return;
+
+		JSONArray array = new JSONArray(json);
+
+		for (int i = 0; i < array.length(); i++) {
+			JSONObject obj = (JSONObject)array.get(i);
+			String name = obj.keySet().toArray(new String[0])[0];
+			Integer value = obj.getInt(name);
+			media.add(new Tuple<String, Integer>(name, value));
+		}
+	}
+
+	public String getMediaJson() {
+		JSONArray json = new JSONArray();
+		for (Tuple<String, Integer> med : media) {
+			JSONObject obj = new JSONObject();
+			obj.put(med.getValue1(), med.getValue2());
+			json.put(obj);
+		}
+		return json.toString();
 	}
 }
