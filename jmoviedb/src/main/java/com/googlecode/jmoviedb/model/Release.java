@@ -1,6 +1,7 @@
 package com.googlecode.jmoviedb.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,12 +16,14 @@ public class Release {
 	private ArrayList<Tuple<String, Integer>> media;
 	private ArrayList<Tuple<String, String>> identifiers;
 	private ArrayList<String> releaseTypes;
+	private ArrayList<String> companies;
 
     public Release() {
 		territories = new ArrayList<Tuple<String, String>>();
 		media = new ArrayList<Tuple<String, Integer>>();
 		identifiers = new ArrayList<Tuple<String, String>>();
 		releaseTypes = new ArrayList<String>();
+		companies = new ArrayList<String>();
 	}
 
     public Release(AbstractMovie m) {
@@ -30,6 +33,7 @@ public class Release {
 		setMediaJson(m.getMedia());
 		setIdentifiersJson(m.getIdentifiers());
 		setReleaseTypesJson(m.getReleaseType());
+		setCompaniesJson(m.getCompanies());
     }
 
     public String getReleaseTitle() {
@@ -206,6 +210,10 @@ public class Release {
 		releaseTypes = value;
 	}
 
+	public void setReleaseTypes(List<String> value) {
+		releaseTypes = new ArrayList<String>(value);
+	}
+
 	public void setReleaseTypesJson(String json) {
 		releaseTypes = parseReleaseTypes(json);
 	}
@@ -223,4 +231,19 @@ public class Release {
 		}
 		return releaseTypes;
     }
+
+	public String getCompaniesJson() {
+		return null;
+	}
+
+    public void setCompaniesJson(String string) {
+    }
+
+    public ArrayList<String> getCompanies() {
+        return companies;
+    }
+
+	public void setCompanies(ArrayList<String> value) {
+		companies = value;
+	}
 }

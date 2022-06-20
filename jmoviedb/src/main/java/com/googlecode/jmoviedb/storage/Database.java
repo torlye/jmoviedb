@@ -209,7 +209,7 @@ public class Database {
 			Statement s = connection.createStatement();
 			s.execute("CREATE TABLE RELEASE(URL VARCHAR(512), TITLE VARCHAR(256), " +
 				"TERRITORIES VARCHAR(2048), IDENTIFIERS VARCHAR(2048), RELEASEYEAR SMALLINT, " +
-				"TYPE VARCHAR(256), MEDIA VARCHAR(512), PRIMARY KEY(URL))"
+				"TYPE VARCHAR(256), MEDIA VARCHAR(512), COMPANIES VARCHAR(2048) PRIMARY KEY(URL))"
 			);
 		} catch (SQLException e) {
 			if(!e.getSQLState().equals("X0Y32"))
@@ -271,8 +271,8 @@ public class Database {
 		getAudioTracks = connection.prepareStatement("SELECT * FROM MOVIEAUDIO WHERE MOVIEID = ?");
 		getSubtitleTracks = connection.prepareStatement("SELECT * FROM MOVIESUBTITLE WHERE MOVIEID = ?");
 		getReleaseInfo = connection.prepareStatement("SELECT * FROM RELEASE WHERE URL = ?");
-		addReleaseInfo = connection.prepareStatement("INSERT INTO RELEASE VALUES(?, ?, ?, ?, ?, ?, ?)");
-		updateReleaseInfo = connection.prepareStatement("UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ? WHERE URL = ?");
+		addReleaseInfo = connection.prepareStatement("INSERT INTO RELEASE VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+		updateReleaseInfo = connection.prepareStatement("UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ?, COMPANIES = ? WHERE URL = ?");
 	}
 
 	private Pattern namePattern = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
@@ -722,7 +722,8 @@ public class Database {
 				updateReleaseInfo.setInt(4, r.getReleaseYear());
 				updateReleaseInfo.setString(5, r.getReleaseTypesJson());
 				updateReleaseInfo.setString(6, r.getMediaJson());
-				updateReleaseInfo.setString(7, m.getUrl2String());
+				updateReleaseInfo.setString(7, r.getCompaniesJson());
+				updateReleaseInfo.setString(8, m.getUrl2String());
 				updateReleaseInfo.execute();
 				updateReleaseInfo.clearParameters();
 			} else {
@@ -733,6 +734,7 @@ public class Database {
 				addReleaseInfo.setInt(5, r.getReleaseYear());
 				addReleaseInfo.setString(6, r.getReleaseTypesJson());
 				addReleaseInfo.setString(7, r.getMediaJson());
+				addReleaseInfo.setString(8, r.getCompaniesJson());
 				addReleaseInfo.execute();
 				addReleaseInfo.clearParameters();
 			}
@@ -967,6 +969,7 @@ public class Database {
 				r.setMediaJson(result.getString("MEDIA"));
 				r.setIdentifiersJson(result.getString("IDENTIFIERS"));
 				r.setReleaseTypesJson(result.getString("TYPE"));
+				r.setCompaniesJson(result.getString("COMPANIES"));
 			}
 		}
 		return null;

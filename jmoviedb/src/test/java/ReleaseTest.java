@@ -98,7 +98,3 @@ public class ReleaseTest {
         Assert.isTrue(release.getReleaseTypesJson().equals("[\"rental\"]"));
     }
 }
-
-/* https://www.blu-ray.com/dvd/Dead-Poets-Society-DVD/35375/	Døde Poeters Klub		[{\"barcode\":\"7393834220601\"},{\"catalogNumber\":\"Z6D/30911014\"}]	2002	["retail"]	[{"DVD":1}]
-https://www.blu-ray.com/dvd/1944-The-Final-Defence-DVD/242170/	1944 The Final Defence	["United Kingdom","Ireland"]	[{"barcode":"5055002558740"},{"catalogNumber":"MTD5874"}]	2014	["retail"]	[{"DVD":1}]
-*/

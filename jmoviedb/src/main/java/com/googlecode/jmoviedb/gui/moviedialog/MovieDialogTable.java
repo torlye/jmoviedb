@@ -1,6 +1,7 @@
 package com.googlecode.jmoviedb.gui.moviedialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
@@ -70,6 +71,10 @@ public abstract class MovieDialogTable<T> {
 
 		// Add the buttons
 		createButtons(c);
+	}
+
+	public void setModel(List<T> list) {
+		setModel(new ArrayList<T>(list));
 	}
 
 	public void setModel(ArrayList<T> arrayList) {
