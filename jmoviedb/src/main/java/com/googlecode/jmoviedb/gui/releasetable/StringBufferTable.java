@@ -10,13 +10,10 @@ import org.eclipse.swt.widgets.Composite;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.ComboBoxTextCellEditor;
 import com.googlecode.jmoviedb.gui.moviedialog.MovieDialogTable;
 
-public class StringBufferTable extends MovieDialogTable<StringBuffer> {
-
-    private String[] items;
+public abstract class StringBufferTable extends MovieDialogTable<StringBuffer> {
 
     public StringBufferTable(Composite parent, String name)  {
         super(parent, new String[] { name });
-        items = new String[0];
     }
 
     @Override
@@ -47,11 +44,9 @@ public class StringBufferTable extends MovieDialogTable<StringBuffer> {
     @Override
     protected CellEditor[] createCellEditors() {
         CellEditor[] editors = new CellEditor[columnNames.length];
-		editors[0] = new ComboBoxTextCellEditor(table, items, SWT.DROP_DOWN);
+		editors[0] = new ComboBoxTextCellEditor(table, getItems(), SWT.DROP_DOWN);
 		return editors;
     }
 
-    public void setItems(String[] items) {
-        this.items = items;
-    }
+    public abstract String[] getItems();
 }

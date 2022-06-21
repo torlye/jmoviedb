@@ -47,7 +47,7 @@ public class MediaTable extends MovieDialogTable<Tuple<String, Integer>> {
     @Override
     protected CellEditor[] createCellEditors() {
         CellEditor[] editors = new CellEditor[columnNames.length];
-		editors[0] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllLanguages(), SWT.DROP_DOWN);
+		editors[0] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllMediaTypes(), SWT.DROP_DOWN);
 		editors[1] = new TextCellEditor(table);
 		return editors;
     }

@@ -23,7 +23,7 @@ public class StringBufferModifier implements ICellModifier {
     @Override
     public Object getValue(Object element, String property) {
         int columnIndex = Arrays.asList(columnNames).indexOf(property);
-        return IdentifiersLabelProvider.getColumnTextForIndex(element, columnIndex);
+        return StringBufferLabelProvider.getColumnTextForIndex(element, columnIndex);
     }
 
     @Override

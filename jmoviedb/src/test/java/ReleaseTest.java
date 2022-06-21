@@ -97,4 +97,20 @@ public class ReleaseTest {
         release.getReleaseTypes().add("rental");
         Assert.isTrue(release.getReleaseTypesJson().equals("[\"rental\"]"));
     }
+
+    @Test
+    public void setCompaniesJson() {
+        Release release = new Release();
+        release.setCompaniesJson("[\"Universal Studios\"]");
+        Assert.isTrue(release.getCompanies().size() == 1);
+        Assert.isTrue(release.getCompanies().get(0).equals("Universal Studios"));
+    }
+
+    @Test
+    public void getCompaniesJson() {
+        Release release = new Release();
+        Assert.isTrue(release.getCompaniesJson().equals("[]"));
+        release.getCompanies().add("Universal Studios");
+        Assert.isTrue(release.getCompaniesJson().equals("[\"Universal Studios\"]"));
+    }
 }

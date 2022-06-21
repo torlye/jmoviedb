@@ -42,6 +42,11 @@ public abstract class MovieDialogTable<T> {
 	private Image upImage;
 	private Image downImage;
 
+	private Button up;
+	private Button down;
+	private Button add;
+	private Button delete;
+
 	public MovieDialogTable(Composite parent, String[] columnNames) {
 		int iconSize = Math.round(16*MainWindow.DPI_SCALE);
 		addImage = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_ADD).getImageData(100), iconSize, iconSize);
@@ -174,7 +179,7 @@ public abstract class MovieDialogTable<T> {
 	private void createButtons(Composite parent) {
 
 		// Create and configure the "Up" button
-		Button up = new Button(parent, SWT.PUSH | SWT.CENTER);
+		up = new Button(parent, SWT.PUSH | SWT.CENTER);
 		up.setImage(upImage);
 		up.setToolTipText("Move up");
 
@@ -196,7 +201,7 @@ public abstract class MovieDialogTable<T> {
 		});
 
 		// Create and configure the "Down" button
-		Button down = new Button(parent, SWT.PUSH | SWT.CENTER);
+		down = new Button(parent, SWT.PUSH | SWT.CENTER);
 		down.setImage(downImage);
 		down.setToolTipText("Move down");
 
@@ -218,7 +223,7 @@ public abstract class MovieDialogTable<T> {
 		});
 
 		// Create and configure the "Add" button
-		Button add = new Button(parent, SWT.PUSH | SWT.CENTER);
+		add = new Button(parent, SWT.PUSH | SWT.CENTER);
 		add.setImage(addImage);
 		add.setToolTipText(getAddButtonTooltip());
 
@@ -232,7 +237,7 @@ public abstract class MovieDialogTable<T> {
 		});
 
 		//	Create and configure the "Delete" button
-		Button delete = new Button(parent, SWT.PUSH | SWT.CENTER);
+		delete = new Button(parent, SWT.PUSH | SWT.CENTER);
 		delete.setImage(removeImage);
 		delete.setToolTipText(getDeleteButtonTooltip());
 
@@ -254,4 +259,11 @@ public abstract class MovieDialogTable<T> {
 	protected abstract String getDeleteButtonTooltip();
 
     protected abstract T getNewObject();
+
+	protected void setEnabled(boolean enabled) {
+		up.setEnabled(enabled);
+		down.setEnabled(enabled);
+		add.setEnabled(enabled);
+		delete.setEnabled(enabled);
+	}
 }

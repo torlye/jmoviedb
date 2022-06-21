@@ -1112,4 +1112,21 @@ public abstract class AbstractMovie implements Cloneable {
 			return notes + "\n" + sceneReleaseName;
 		}
 	}
+
+    public String getCompaniesJson() {
+        JSONArray array = jsonNotes.optJSONArray("companies");
+		return array.toString();
+    }
+
+	public boolean isJsonNote() {
+		if (Utils.isNullOrEmpty(notes))
+			return false;
+		try {
+			new JSONObject(notes);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
 }

@@ -50,6 +50,7 @@ public class Moviedb {
 //	private int[] sortedMovieList;
 	private String title;
 	private boolean saved;
+	private ArrayList<Release> releases;
 
 	private Database database;
 	private String saveFile;
@@ -104,7 +105,17 @@ public class Moviedb {
 		new ZipWorker(file, dbTempPath).extract();
 		database = new Database(dbTempPath);
 		movies.addAll(database.getMovieList());
+		reloadReleases();
 		setSaved(true);
+	}
+
+	public void reloadReleases() throws SQLException {
+		releases = database.getReleaseList();
+	}
+
+	public void addUpdateRelease(String id, Release r) throws SQLException {
+		database.addUpdateRelease(id, r);
+		setSaved(false);
 	}
 
 	/**
@@ -342,6 +353,53 @@ public class Moviedb {
 	}
 
 	public String[] getAllReleaseTypes() {
-		return new String[] { "retail", "rental" };
+		return Stream.concat(Stream.of(new String[] { "retail", "rental" }),
+			releases.stream()
+				.<String>mapMulti((r, consumer) -> {
+					r.getReleaseTypes().forEach(consumer);
+				})).distinct().sorted().toArray(String[]::new);
+	}
+
+	public String[] getAllIdentifierTypes() {
+		return Stream.concat(Stream.of(new String[]{ "barcode", "isbn", "catalogNumber" }),
+			releases.stream()
+				.<String>mapMulti((r, consumer) -> {
+					for (Tuple<String, String> identifier : r.getIdentifiers())
+						consumer.accept(identifier.getValue1());
+				})).distinct().sorted().toArray(String[]::new);
+	}
+
+	public String[] getAllCompanies() {
+		return releases.stream()
+			.<String>mapMulti((r, consumer) -> {
+				r.getCompanies().forEach(consumer);
+			}).distinct().sorted().toArray(String[]::new);
+	}
+
+	public String[] getAllTerritories() {
+		return releases.stream()
+			.<String>mapMulti((r, consumer) -> {
+				for (Tuple<String, String> territory : r.getTerritories()) {
+					consumer.accept(territory.getValue1());
+				}
+			}).distinct().sorted().toArray(String[]::new);
+	}
+
+	public String[] getAllClasifications() {
+		return releases.stream()
+			.<String>mapMulti((r, consumer) -> {
+				for (Tuple<String, String> territory : r.getTerritories()) {
+					consumer.accept(territory.getValue2());
+				}
+			}).distinct().sorted().toArray(String[]::new);
+	}
+
+	public String[] getAllMediaTypes() {
+		return releases.stream()
+			.<String>mapMulti((r, consumer) -> {
+				for (Tuple<String, Integer> m : r.getMedia()) {
+					consumer.accept(m.getValue1());
+				}
+			}).distinct().sorted().toArray(String[]::new);
 	}
 }

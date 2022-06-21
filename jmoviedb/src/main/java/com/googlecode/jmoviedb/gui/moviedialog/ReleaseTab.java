@@ -1,26 +1,28 @@
 package com.googlecode.jmoviedb.gui.moviedialog;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
+import com.googlecode.jmoviedb.gui.releasetable.CompaniesTable;
 import com.googlecode.jmoviedb.gui.releasetable.IdentifiersTable;
 import com.googlecode.jmoviedb.gui.releasetable.MediaTable;
+import com.googlecode.jmoviedb.gui.releasetable.ReleaseTypeTable;
 import com.googlecode.jmoviedb.gui.releasetable.StringBufferTable;
 import com.googlecode.jmoviedb.gui.releasetable.TerritoriesTable;
 import com.googlecode.jmoviedb.model.Release;
@@ -36,6 +38,8 @@ public class ReleaseTab implements IMovieDialogTab {
     MediaTable mediaTable;
     StringBufferTable releaseTypeTable;
     StringBufferTable companiesTable;
+    Button saveButton;
+    private AbstractMovie movie;
 
     @Override
     public void createTabArea(CTabFolder tabFolder) {
@@ -55,7 +59,7 @@ public class ReleaseTab implements IMovieDialogTab {
 
         Label urlLabel = new Label(c, SWT.CENTER);
         urlLabel.setText("URL/ID");
-        urlText = new Text(c, SWT.READ_ONLY|SWT.SINGLE|SWT.BORDER);
+        urlText = new Text(c, SWT.SINGLE|SWT.BORDER);
         urlText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, defaultHorizontalSpan, 1));
 
         Label releaseLabel = new Label(c, SWT.CENTER);
@@ -71,8 +75,11 @@ public class ReleaseTab implements IMovieDialogTab {
         territoriesTable = new TerritoriesTable(t);
         identifiersTable = new IdentifiersTable(t);
         mediaTable = new MediaTable(t);
-        releaseTypeTable = new StringBufferTable(t, "Release type");
-        companiesTable = new StringBufferTable(t, "Company");
+        releaseTypeTable = new ReleaseTypeTable(t);
+        companiesTable = new CompaniesTable(t);
+
+        saveButton = new Button(t, SWT.PUSH | SWT.CENTER);
+        saveButton.setText("Save release");
 
         tab.setControl(c);
     }
@@ -84,31 +91,43 @@ public class ReleaseTab implements IMovieDialogTab {
             @Override
             public void modifyText(ModifyEvent event) {
                 String text = ((Text)event.widget).getText();
-                boolean isvalid = Utils.isNullOrEmpty(text);
-                // setEnabled(isvalid);
+                boolean isvalid = !Utils.isNullOrEmpty(text);
+                setEnabled(isvalid);
                 if (isvalid) {
-                    Release release;
                     try {
-                        release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(text);
-                        if (release == null) {
-                            setReleaseModel(release);
-                        }
+                        Release release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(text);
+                        if (release == null && movie.isJsonNote())
+                            release = new Release(movie);
+                            
+                        setReleaseModel(release != null ? release : new Release());
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
             }
         });
+
+        saveButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				saveRelease();
+			}
+		});
     }
 
-    // private void setEnabled(boolean enabled) {
-    //     titleText.setEnabled(enabled);
-    //     yearText.setEnabled(enabled);
-    //     releaseTypeTable.setEnabled(enabled);
-    // }
+    private void setEnabled(boolean enabled) {
+        titleText.setEnabled(enabled);
+        yearText.setEnabled(enabled);
+        territoriesTable.setEnabled(enabled);
+        identifiersTable.setEnabled(enabled);
+        mediaTable.setEnabled(enabled);
+        releaseTypeTable.setEnabled(enabled);
+        companiesTable.setEnabled(enabled);
+        saveButton.setEnabled(enabled);
+    }
 
     @Override
     public void setModel(AbstractMovie m) {
+        movie = m;
         urlText.setText(m.getUrl2String());
         if (m.getUrl2() != null) {
             try {
@@ -136,37 +155,28 @@ public class ReleaseTab implements IMovieDialogTab {
         territoriesTable.setModel(release.getTerritories());
         identifiersTable.setModel(release.getIdentifiers());
         mediaTable.setModel(release.getMedia());
-        setListModel(release.getReleaseTypes());
-        companiesTable.setModel(release.getCompanies());
-    }
-
-    private void setListModel(ArrayList<String> selectedItems) {
-        String[] releaseTypeOptions = Stream.concat(
-            Arrays.stream(MainWindow.getMainWindow().getDB().getAllReleaseTypes()),
-            selectedItems.stream()
-        ).distinct().toArray(String[]::new);
-
-        releaseTypeTable.setItems(releaseTypeOptions);
-        releaseTypeTable.setModel(selectedItems.stream().map(s -> new StringBuffer(s)).collect(Collectors.toList()));
+        releaseTypeTable.setModel(release.getReleaseTypes().stream().map(s -> new StringBuffer(s)).collect(Collectors.toList()));
+        companiesTable.setModel(release.getCompanies().stream().map(s -> new StringBuffer(s)).collect(Collectors.toList()));
     }
 
     @Override
     public void save(AbstractMovie movie) {
-        if (release == null)
-            release = new Release();
         movie.setUrl2(urlText.getText());
-        saveRelease(movie);
     }
 
-    private void saveRelease(AbstractMovie movie) {
+    private void saveRelease() {
+        if (release == null)
+            release = new Release();
         release.setReleaseTitle(titleText.getText());
         release.setReleaseYear(yearText.getText());
         release.setTerritories(territoriesTable.getModel());
         release.setIdentifiers(identifiersTable.getModel());
         release.setMedia(mediaTable.getModel());
         release.setReleaseTypes(releaseTypeTable.getModel().stream().map(b -> b.toString()).collect(Collectors.toList()));
+        release.setCompanies(companiesTable.getModel().stream().map(b -> b.toString()).collect(Collectors.toList()));
         try {
-            MainWindow.getMainWindow().getDB().getDatabase().addUpdateRelease(movie, release);
+            MainWindow.getMainWindow().getDB().addUpdateRelease(urlText.getText(), release);
+            MainWindow.getMainWindow().getDB().reloadReleases();
         }
         catch (SQLException e) {}
     }

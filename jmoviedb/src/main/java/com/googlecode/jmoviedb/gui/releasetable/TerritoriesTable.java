@@ -46,8 +46,8 @@ public class TerritoriesTable extends MovieDialogTable<Tuple<String, String>> {
     @Override
     protected CellEditor[] createCellEditors() {
         CellEditor[] editors = new CellEditor[columnNames.length];
-		editors[0] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllLanguages(), SWT.DROP_DOWN);
-		editors[1] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllLanguages(), SWT.DROP_DOWN);
+		editors[0] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllTerritories(), SWT.DROP_DOWN);
+		editors[1] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllClasifications(), SWT.DROP_DOWN);
 		return editors;
     }
 }

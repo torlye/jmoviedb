@@ -19,6 +19,7 @@ public class Release {
 	private ArrayList<String> companies;
 
     public Release() {
+		this.releaseTitle = "";
 		territories = new ArrayList<Tuple<String, String>>();
 		media = new ArrayList<Tuple<String, Integer>>();
 		identifiers = new ArrayList<Tuple<String, String>>();
@@ -33,7 +34,7 @@ public class Release {
 		setMediaJson(m.getMedia());
 		setIdentifiersJson(m.getIdentifiers());
 		setReleaseTypesJson(m.getReleaseType());
-		setCompaniesJson(m.getCompanies());
+		setCompaniesJson(m.getCompaniesJson());
     }
 
     public String getReleaseTitle() {
@@ -199,8 +200,12 @@ public class Release {
 	}
 
 	public String getReleaseTypesJson() {
+		return serializeToJsonArray(releaseTypes);
+	}
+
+	private static String serializeToJsonArray(ArrayList<String> value) {
 		JSONArray json = new JSONArray();
-		for (String r : releaseTypes) {
+		for (String r : value) {
 			json.put(r);
 		}
 		return json.toString();
@@ -215,28 +220,29 @@ public class Release {
 	}
 
 	public void setReleaseTypesJson(String json) {
-		releaseTypes = parseReleaseTypes(json);
+		releaseTypes = parseJsonArray(json);
 	}
 
-    public static ArrayList<String> parseReleaseTypes(String json) {
-        ArrayList<String> releaseTypes = new ArrayList<String>();
+    public static ArrayList<String> parseJsonArray(String json) {
+        ArrayList<String> collection = new ArrayList<String>();
 		if (Utils.isNullOrEmpty(json))
-			return releaseTypes;
+			return collection;
 
 		JSONArray array = new JSONArray(json);
 
 		for (int i = 0; i < array.length(); i++) {
 			String s = (String)array.get(i);
-			releaseTypes.add(s);
+			collection.add(s);
 		}
-		return releaseTypes;
+		return collection;
     }
 
 	public String getCompaniesJson() {
-		return null;
+		return serializeToJsonArray(companies);
 	}
 
-    public void setCompaniesJson(String string) {
+    public void setCompaniesJson(String json) {
+		companies = parseJsonArray(json);
     }
 
     public ArrayList<String> getCompanies() {
@@ -246,4 +252,8 @@ public class Release {
 	public void setCompanies(ArrayList<String> value) {
 		companies = value;
 	}
+
+    public void setCompanies(List<String> list) {
+		companies = new ArrayList<String>(list);
+    }
 }

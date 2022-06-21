@@ -101,6 +101,7 @@ public class Database {
 	private PreparedStatement getReleaseInfo;
 	private PreparedStatement addReleaseInfo;
 	private PreparedStatement updateReleaseInfo;
+	private PreparedStatement getAllReleaseInfo;
 
 	/**
 	 * The default constructor. It opens a new database connection and, if
@@ -209,7 +210,7 @@ public class Database {
 			Statement s = connection.createStatement();
 			s.execute("CREATE TABLE RELEASE(URL VARCHAR(512), TITLE VARCHAR(256), " +
 				"TERRITORIES VARCHAR(2048), IDENTIFIERS VARCHAR(2048), RELEASEYEAR SMALLINT, " +
-				"TYPE VARCHAR(256), MEDIA VARCHAR(512), COMPANIES VARCHAR(2048) PRIMARY KEY(URL))"
+				"TYPE VARCHAR(256), MEDIA VARCHAR(512), COMPANIES VARCHAR(2048), PRIMARY KEY(URL))"
 			);
 		} catch (SQLException e) {
 			if(!e.getSQLState().equals("X0Y32"))
@@ -273,6 +274,7 @@ public class Database {
 		getReleaseInfo = connection.prepareStatement("SELECT * FROM RELEASE WHERE URL = ?");
 		addReleaseInfo = connection.prepareStatement("INSERT INTO RELEASE VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
 		updateReleaseInfo = connection.prepareStatement("UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ?, COMPANIES = ? WHERE URL = ?");
+		getAllReleaseInfo = connection.prepareStatement("SELECT * FROM RELEASE");
 	}
 
 	private Pattern namePattern = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
@@ -707,9 +709,9 @@ public class Database {
 		}
 	}
 
-	public void addUpdateRelease(AbstractMovie m, Release r) throws SQLException {
-		if (m.getUrl2StringOrNull() != null) {
-			getReleaseInfo.setString(1, m.getUrl2StringOrNull());
+	public void addUpdateRelease(String id, Release r) throws SQLException {
+		if (!Utils.isNullOrEmpty(id)) {
+			getReleaseInfo.setString(1, id);
 			ResultSet result = getReleaseInfo.executeQuery();
 			boolean hasResult = result.next();
 			getReleaseInfo.clearParameters();
@@ -723,11 +725,11 @@ public class Database {
 				updateReleaseInfo.setString(5, r.getReleaseTypesJson());
 				updateReleaseInfo.setString(6, r.getMediaJson());
 				updateReleaseInfo.setString(7, r.getCompaniesJson());
-				updateReleaseInfo.setString(8, m.getUrl2String());
+				updateReleaseInfo.setString(8, id);
 				updateReleaseInfo.execute();
 				updateReleaseInfo.clearParameters();
 			} else {
-				addReleaseInfo.setString(1, m.getUrl2String());
+				addReleaseInfo.setString(1, id);
 				addReleaseInfo.setString(2, r.getReleaseTitle());
 				addReleaseInfo.setString(3, r.getTerritoriesJson());
 				addReleaseInfo.setString(4, r.getIdentifiersJson());
@@ -961,18 +963,39 @@ public class Database {
 			getReleaseInfo.setString(1, id);
 			ResultSet result = getReleaseInfo.executeQuery();
 			getReleaseInfo.clearParameters();
+			Release r = null;
 			if (result.next()) {
-				Release r = new Release();
-				r.setReleaseTitle(result.getString("TITLE"));
-				r.setReleaseYear(result.getInt("RELEASEYEAR"));
-				r.setTerritoriesJson(result.getString("TERRITORIES"));
-				r.setMediaJson(result.getString("MEDIA"));
-				r.setIdentifiersJson(result.getString("IDENTIFIERS"));
-				r.setReleaseTypesJson(result.getString("TYPE"));
-				r.setCompaniesJson(result.getString("COMPANIES"));
+				r = CreateRelease(result);
 			}
+			result.close();
+			return r;
 		}
 		return null;
+	}
+
+	private Release CreateRelease(ResultSet result) throws SQLException {
+		Release r = new Release();
+		r.setReleaseTitle(result.getString("TITLE"));
+		r.setReleaseYear(result.getInt("RELEASEYEAR"));
+		r.setTerritoriesJson(result.getString("TERRITORIES"));
+		r.setMediaJson(result.getString("MEDIA"));
+		r.setIdentifiersJson(result.getString("IDENTIFIERS"));
+		r.setReleaseTypesJson(result.getString("TYPE"));
+		r.setCompaniesJson(result.getString("COMPANIES"));
+		return r;
+	}
+
+	public ArrayList<Release> getReleaseList() throws SQLException
+	{
+		ResultSet rs = getAllReleaseInfo.executeQuery();
+		ArrayList<Release> list = new ArrayList<Release>();
+
+		while(rs.next()) {
+			list.add(CreateRelease(rs));
+		}
+
+		rs.close();
+		return list;
 	}
 
 	public void deleteMovie(AbstractMovie m) throws SQLException {

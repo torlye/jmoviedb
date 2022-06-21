@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.audiosubtitletable.ComboBoxTextCellEditor;
 import com.googlecode.jmoviedb.gui.moviedialog.MovieDialogTable;
 import com.googlecode.jmoviedb.model.Tuple;
@@ -46,7 +47,7 @@ public class IdentifiersTable extends MovieDialogTable<Tuple<String, String>> {
     @Override
     protected CellEditor[] createCellEditors() {
         CellEditor[] editors = new CellEditor[columnNames.length];
-		editors[0] = new ComboBoxTextCellEditor(table, new String[]{ "barcode", "isbn", "catalogNumber" }, SWT.DROP_DOWN);
+		editors[0] = new ComboBoxTextCellEditor(table, MainWindow.getMainWindow().getDB().getAllIdentifierTypes(), SWT.DROP_DOWN);
 		editors[1] = new TextCellEditor(table);
 		return editors;
     }
