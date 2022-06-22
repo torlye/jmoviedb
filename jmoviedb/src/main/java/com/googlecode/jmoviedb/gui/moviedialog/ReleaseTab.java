@@ -8,11 +8,8 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -38,7 +35,6 @@ public class ReleaseTab implements IMovieDialogTab {
     MediaTable mediaTable;
     StringBufferTable releaseTypeTable;
     StringBufferTable companiesTable;
-    Button saveButton;
     private AbstractMovie movie;
 
     @Override
@@ -78,9 +74,6 @@ public class ReleaseTab implements IMovieDialogTab {
         releaseTypeTable = new ReleaseTypeTable(t);
         companiesTable = new CompaniesTable(t);
 
-        saveButton = new Button(t, SWT.PUSH | SWT.CENTER);
-        saveButton.setText("Save release");
-
         tab.setControl(c);
     }
 
@@ -106,12 +99,6 @@ public class ReleaseTab implements IMovieDialogTab {
                 }
             }
         });
-
-        saveButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				saveRelease();
-			}
-		});
     }
 
     private void setEnabled(boolean enabled) {
@@ -122,7 +109,6 @@ public class ReleaseTab implements IMovieDialogTab {
         mediaTable.setEnabled(enabled);
         releaseTypeTable.setEnabled(enabled);
         companiesTable.setEnabled(enabled);
-        saveButton.setEnabled(enabled);
     }
 
     @Override
@@ -154,7 +140,10 @@ public class ReleaseTab implements IMovieDialogTab {
 
     @Override
     public void save(AbstractMovie movie) {
-        movie.setUrl2(urlText.getText());
+        String text = urlText.getText();
+        movie.setUrl2(text);
+        if (!Utils.isNullOrEmpty(text))
+            saveRelease();
     }
 
     private void saveRelease() {
