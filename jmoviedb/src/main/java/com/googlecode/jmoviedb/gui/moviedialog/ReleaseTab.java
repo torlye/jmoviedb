@@ -144,7 +144,7 @@ public class ReleaseTab implements IMovieDialogTab {
     private void setReleaseModel(Release release) {
         this.release = release;
         titleText.setText(release.getReleaseTitle());
-        yearText.setText(release.getReleaseYear() + "");
+        yearText.setText(release.getReleaseYear() == null ? "" : (release.getReleaseYear() + ""));
         territoriesTable.setModel(release.getTerritories());
         identifiersTable.setModel(release.getIdentifiers());
         mediaTable.setModel(release.getMedia());

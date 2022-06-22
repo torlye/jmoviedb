@@ -102,18 +102,18 @@ public class Release {
 		ArrayList<Tuple<String, String>> territories = new ArrayList<Tuple<String, String>>();
 		if (Utils.isNullOrEmpty(territoriesJson) && Utils.isNullOrEmpty(classificationsJson))
 			return territories;
-		if (Utils.isNullOrEmpty(territoriesJson) != Utils.isNullOrEmpty(classificationsJson))
-			throw new IllegalArgumentException("Territories and classifications must both be specified or both omitted");
+		if (Utils.isNullOrEmpty(territoriesJson))
+			throw new IllegalArgumentException("If classifications is specified, territories must too");
 
 		JSONArray territoriesArray = new JSONArray(territoriesJson);
-		JSONArray classificationsArray = new JSONArray(classificationsJson);
-		if (territoriesArray.length() != classificationsArray.length())
+		JSONArray classificationsArray = Utils.isNullOrEmpty(classificationsJson) ? new JSONArray() : new JSONArray(classificationsJson);
+		if (territoriesArray.length() < classificationsArray.length())
 			throw new IllegalArgumentException("Territories and classifications must have the same length");
 
 		for (int i = 0; i < territoriesArray.length(); i++) {
 			String territory = (String)territoriesArray.get(i);
-			String classificatoin = (String)classificationsArray.get(i);
-			territories.add(new Tuple<String, String>(territory, classificatoin));
+			String classification = classificationsArray.length() > i ? (String)classificationsArray.get(i) : "";
+			territories.add(new Tuple<String, String>(territory, classification));
 		}
 		return territories;
 	}

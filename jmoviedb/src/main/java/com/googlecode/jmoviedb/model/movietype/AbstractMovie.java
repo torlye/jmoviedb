@@ -1068,7 +1068,15 @@ public abstract class AbstractMovie implements Cloneable {
 		if (!valueFromProp.isEmpty())
 			return valueFromProp;
 		else
-			return "[{\"" + getDisc().getName() + "\": -1}]";
+			return "[{\"" + getDiscFormattedForMedia() + "\": -1}]";
+	}
+
+	private String getDiscFormattedForMedia() {
+		if (getDisc() == DiscType.dvd)
+			return "DVD";
+		if (getDisc() == DiscType.bd)
+			return "BD";
+		return getDisc().getName();
 	}
 
 	public String getReleaseType() {
