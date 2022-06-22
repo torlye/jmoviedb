@@ -98,7 +98,7 @@ public class ReleaseTab implements IMovieDialogTab {
                         Release release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(text);
                         if (release == null && movie.isJsonNote())
                             release = new Release(movie);
-                            
+
                         setReleaseModel(release != null ? release : new Release());
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -133,14 +133,7 @@ public class ReleaseTab implements IMovieDialogTab {
             try {
                 Release release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(m.getUrl2StringOrNull());
                 if (release == null) {
-                    release = new Release();
-                    release.setReleaseTitle(m.getReleaseTitle());
-                    release.setReleaseYear(m.getReleaseYear());
-                    release.setTerritoriesJson(m.getTerritories(), m.getClassifications());
-                    release.setIdentifiersJson(m.getIdentifiers());
-                    release.setMediaJson(m.getMedia());
-                    release.setReleaseTypesJson(m.getReleaseType());
-                    release.setCompaniesJson(m.getCompaniesJson());
+                    release = new Release(m);
                 }
                 setReleaseModel(release);
             }
