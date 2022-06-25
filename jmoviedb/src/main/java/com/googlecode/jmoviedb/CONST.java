@@ -308,6 +308,8 @@ public class CONST {
 	 */
 	public static final URL ICON_MOVIEDIALOG_AUDIOSUBTAB = ClassLoader.getSystemResource("icon-silk/comments.png");
 	
+	public static final URL ICON_MOVIEDIALOG_RELEASETAB = ClassLoader.getSystemResource("icon-silk/book.png");
+	
 	/**
 	 * Icon file for the "add film" action
 	 */

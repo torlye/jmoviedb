@@ -3,17 +3,20 @@ package com.googlecode.jmoviedb.gui.moviedialog;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.googlecode.jmoviedb.CONST;
 import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.gui.MainWindow;
 import com.googlecode.jmoviedb.gui.releasetable.CompaniesTable;
@@ -36,11 +39,17 @@ public class ReleaseTab implements IMovieDialogTab {
     StringBufferTable releaseTypeTable;
     StringBufferTable companiesTable;
     private AbstractMovie movie;
+    Image tabIcon;
+
+    public ReleaseTab(int iconSize) {
+        tabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_RELEASETAB).createImage(), iconSize, iconSize);
+    }
 
     @Override
     public void createTabArea(CTabFolder tabFolder) {
         CTabItem tab = new CTabItem(tabFolder, SWT.NULL);
 		tab.setText("Release");
+        tab.setImage(tabIcon);
 		Composite c = new Composite(tabFolder, SWT.NULL);
 
         int layoutColumns = 4;
@@ -165,5 +174,6 @@ public class ReleaseTab implements IMovieDialogTab {
 
     @Override
     public void dispose() {
+        tabIcon.dispose();
     }
 }

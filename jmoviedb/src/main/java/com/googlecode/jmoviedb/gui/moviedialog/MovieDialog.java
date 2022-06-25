@@ -70,7 +70,7 @@ public class MovieDialog extends Dialog {
 		actorsTab = new ActorsTab(iconSize);
 		formatTab = new FormatTab(iconSize);
 		audioSubTab = new AudioSubTab(iconSize, formatTab);
-		releaseTab = new ReleaseTab();
+		releaseTab = new ReleaseTab(iconSize);
 		
 		this.movie = movie;
 		
