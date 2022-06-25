@@ -124,7 +124,7 @@ public class ReleaseTab implements IMovieDialogTab {
     public void setModel(AbstractMovie m) {
         movie = m;
         urlText.setText(m.getUrl2String());
-        if (m.getUrl2() != null) {
+        if (!Utils.isNullOrEmpty(m.getUrl2String())) {
             try {
                 Release release = MainWindow.getMainWindow().getDB().getDatabase().getRelease(m.getUrl2StringOrNull());
                 if (release == null) {

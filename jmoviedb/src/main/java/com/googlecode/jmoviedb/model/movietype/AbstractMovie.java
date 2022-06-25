@@ -100,7 +100,7 @@ public abstract class AbstractMovie implements Cloneable {
 	private boolean[] dvdRegion;
 
 	private URL url1;
-	private URL url2;
+	private String url2;
 
 	private byte[] imageBytes;
 	private JSONObject jsonNotes;
@@ -839,32 +839,19 @@ public abstract class AbstractMovie implements Cloneable {
 		this.url1 = url;
 	}
 
-	public URL getUrl2() {
+	public String getUrl2StringOrNull() {
 		return url2;
 	}
 
 	public String getUrl2String() {
-		URL url = getUrl2();
+		String url = getUrl2StringOrNull();
 		if (url != null) {
-			return url.toString();
+			return url;
 		}
 		return "";
 	}
 
-	public String getUrl2StringOrNull() {
-		URL url = getUrl2();
-		if (url != null) {
-			return url.toString();
-		}
-		return null;
-	}
-
-
 	public void setUrl2(String url) {
-		this.url2 = setUrl(url);
-	}
-
-	public void setUrl2(URL url) {
 		this.url2 = url;
 	}
 
