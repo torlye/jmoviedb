@@ -41,6 +41,15 @@ public enum ColorFormat {
 		return null;
 	}
 
+    public static ColorFormat stringToEnum(String str) {
+		if(str == null)
+			return null;
+		for(ColorFormat t : ColorFormat.values())
+			if(t.getName().equals(str))
+				return t;
+		return null;
+	}
+
     public static String[] getAllFormatsStringArray() {
 		return getStringArray(ColorFormat.values().length);
 	}

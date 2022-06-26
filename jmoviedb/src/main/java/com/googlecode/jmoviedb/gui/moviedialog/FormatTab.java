@@ -1,5 +1,7 @@
 package com.googlecode.jmoviedb.gui.moviedialog;
 
+import java.util.Arrays;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -210,14 +212,17 @@ public class FormatTab implements IMovieDialogTab {
 
 				FormatType selectedValue = FormatType.values()[formatCombo.getSelectionIndex()];
 
-				int selectedColor = colour.getSelectionIndex();
+				int selectedIdx = colour.getSelectionIndex();
+				String selectedColor = selectedIdx >= 0 ? colour.getItem(selectedIdx) : "";
 				colour.setItems(
 					selectedValue == FormatType.other || selectedValue == FormatType.file || selectedValue == FormatType.uhdbluray
 					? ColorFormat.getAllFormatsStringArray()
 					: selectedValue == FormatType.bluray ? ColorFormat.getBDFormatsStringArray()
 					: ColorFormat.getSDRFormatsStringArray());
-				if (selectedColor < colour.getItemCount())
-					colour.select(selectedColor);
+				
+				int newSelectedIndex = Arrays.asList(colour.getItems()).indexOf(selectedColor);
+				if (newSelectedIndex >= 0)
+					colour.select(newSelectedIndex);
 				else
 					colour.select(0);
 
@@ -451,7 +456,7 @@ public class FormatTab implements IMovieDialogTab {
 //		myEncodeCheckListener.widgetSelected(null);
 		r0CheckListener.widgetSelected(null);
 
-		colour.select(m.getColor().ordinal());
+		colour.select(Arrays.asList(colour.getItems()).indexOf(m.getColor().getName()));
     }
 
     @Override
@@ -472,7 +477,7 @@ public class FormatTab implements IMovieDialogTab {
 					r7.getSelection(),
 					r8.getSelection(),
 				});
-		movie.setColor(ColorFormat.values()[colour.getSelectionIndex()]);
+		movie.setColor(ColorFormat.stringToEnum(colour.getItem(colour.getSelectionIndex())));
 		movie.setLegal(legalCheck.getSelection());
 		movie.setDisc(DiscType.values()[discCombo.getSelectionIndex()]);
 		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
