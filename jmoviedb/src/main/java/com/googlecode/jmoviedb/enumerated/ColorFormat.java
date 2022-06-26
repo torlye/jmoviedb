@@ -8,7 +8,9 @@ public enum ColorFormat {
     color(1, "Colour"),
     hdr10(2, "HDR10"),
     hdr10plus(3, "HDR10+"),
-    dolbyvision(4, "Dolby Vision");
+    dolbyvision(4, "Dolby Vision"),
+    dolbyvisionhdr10plus(5, "Dolby Vision/HDR10+"),
+    xvycc(6, "xvYCC");
 
     private int id;
     private String name;
@@ -42,10 +44,14 @@ public enum ColorFormat {
     public static String[] getAllFormatsStringArray() {
 		return getStringArray(ColorFormat.values().length);
 	}
-    
+
     public static String[] getSDRFormatsStringArray() {
         return getStringArray(3);
 	}
+
+    public static String[] getBDFormatsStringArray() {
+        return new String[] { none.getName(), bw.getName(), color.getName(), xvycc.getName() };
+    }
 
     private static String[] getStringArray(int length) {
         String[] strings = new String[length];

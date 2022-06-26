@@ -30,7 +30,7 @@ public class FormatTab implements IMovieDialogTab {
 	private Combo aspectCombo;
 //	private Text url1Text;
 	private Text url2Text;
-	
+
 	private Combo formatCombo;
 	private Combo videoCodecCombo;
 	private Combo containerCombo;
@@ -51,7 +51,7 @@ public class FormatTab implements IMovieDialogTab {
 	private SelectionListener legalCheckListener;
 //	private SelectionListener myEncodeCheckListener;
 	private SelectionListener r0CheckListener;
-	
+
     public FormatTab(int iconSize) {
         formatTabIcon = Utils.resizePreserveAspect(ImageDescriptor.createFromURL(CONST.ICON_MOVIEDIALOG_FORMATTAB).createImage(), iconSize, iconSize);
     }
@@ -61,16 +61,16 @@ public class FormatTab implements IMovieDialogTab {
         CTabItem tab4 = new CTabItem(tabFolder, SWT.NULL);
 		tab4.setText("Format and video");
 		tab4.setImage(formatTabIcon);
-		
+
 		Composite c = new Composite(tabFolder, SWT.NULL);
 		GridLayout compositeLayout = new GridLayout(10, false);
 		compositeLayout.makeColumnsEqualWidth = false;
 		c.setLayout(compositeLayout);
-		
+
 		int comboHorizontalAlignment = SWT.BEGINNING;
 		boolean comboGrabExcessHorizontalSpace = true;
 		int comboHorizontalSpan = 9;
-		
+
 		Label formatLabel = new Label(c, SWT.CENTER);
 		formatLabel.setText("Format:");
 		formatCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -78,7 +78,7 @@ public class FormatTab implements IMovieDialogTab {
 		formatCombo.setItems(FormatType.getStringArray());
 		formatCombo.select(0);
 		formatCombo.setVisibleItemCount(FormatType.getStringArray().length); //make all items visible
-		
+
 		Label containerLabel = new Label(c, SWT.CENTER);
 		containerLabel.setText("Container format:");
 		containerCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -86,7 +86,7 @@ public class FormatTab implements IMovieDialogTab {
 		containerCombo.setItems(ContainerFormat.getStringArray());
 		containerCombo.select(0);
 		containerCombo.setVisibleItemCount(ContainerFormat.getStringArray().length); //make all items visible
-		
+
 		Label videoCodecLabel = new Label(c, SWT.CENTER);
 		videoCodecLabel.setText("Video format:");
 		videoCodecCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -94,7 +94,7 @@ public class FormatTab implements IMovieDialogTab {
 		videoCodecCombo.setItems(VideoCodec.getStringArray());
 		videoCodecCombo.select(0);
 		videoCodecCombo.setVisibleItemCount(VideoCodec.getStringArray().length); //make all items visible
-		
+
 		Label resolutionLabel = new Label(c, SWT.CENTER);
 		resolutionLabel.setText("Video resolution:");
 		resolutionCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -102,7 +102,7 @@ public class FormatTab implements IMovieDialogTab {
 		resolutionCombo.setItems(Resolution.getStringArray());
 		resolutionCombo.select(0);
 		resolutionCombo.setVisibleItemCount(Resolution.getStringArray().length); //make all items visible
-		
+
 		Label aspectLabel = new Label(c, SWT.CENTER);
 		aspectLabel.setText("Aspect ratio");
 		aspectCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -110,7 +110,7 @@ public class FormatTab implements IMovieDialogTab {
 		aspectCombo.setItems(AspectRatio.getStringArray());
 		aspectCombo.select(0);
 		aspectCombo.setVisibleItemCount(AspectRatio.getStringArray().length); //make all items visible
-		
+
 		Label tvSystemLabel = new Label(c, SWT.CENTER);
 		tvSystemLabel.setText("TV system:");
 		tvSystemCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -118,13 +118,13 @@ public class FormatTab implements IMovieDialogTab {
 		tvSystemCombo.setItems(TVsystem.getStringArray());
 		tvSystemCombo.select(0);
 		tvSystemCombo.setVisibleItemCount(TVsystem.getStringArray().length); //make all items visible
-		
+
 		Label colorLabel = new Label(c, SWT.CENTER);
 		colorLabel.setText("Colour");
 		colour = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
 		colour.setLayoutData(new GridData(comboHorizontalAlignment, SWT.CENTER, false, false, 3, 1));
 		colour.setItems(ColorFormat.getAllFormatsStringArray());
-		
+
 		regionLabel = new Label(c, SWT.CENTER);
 		regionLabel.setText("Region:");
 		r0 = new Button(c, SWT.CHECK);
@@ -145,7 +145,7 @@ public class FormatTab implements IMovieDialogTab {
 		r7.setText("R7");
 		r8 = new Button(c, SWT.CHECK);
 		r8.setText("R8");
-		
+
 		Label discLabel = new Label(c, SWT.CENTER);
 		discLabel.setText("Storage medium:");
 		discCombo = new Combo(c, SWT.DROP_DOWN|SWT.READ_ONLY);
@@ -153,37 +153,37 @@ public class FormatTab implements IMovieDialogTab {
 		discCombo.setItems(DiscType.getStringArray());
 		discCombo.select(0);
 		discCombo.setVisibleItemCount(DiscType.getStringArray().length); //make all items visible
-		
+
 		Label locationLabel = new Label(c, SWT.CENTER);
 		locationLabel.setText("Storage location:");
 		locationText = new Text(c, SWT.SINGLE|SWT.BORDER);
 		locationText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
-		
+
 		legalCheck = new Button(c, SWT.CHECK);
 		legalCheck.setText("Original");
 		legalCheck.setSelection(true);
 		legalCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
-		
+
 //		myEncodeCheck = new Button(c, SWT.CHECK);
 //		myEncodeCheck.setText("Encoded by me");
 //		myEncodeCheck.setSelection(true);
 //		myEncodeCheck.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, comboHorizontalSpan+1, 1));
-		
+
 		Label sceneNameLabel = new Label(c, SWT.CENTER);
 		sceneNameLabel.setText("Scene release name:");
 		sceneNameText = new Text(c, SWT.SINGLE|SWT.BORDER);
 		sceneNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
-		
+
 //		Label urlLabel1 = new Label(c, SWT.CENTER);
 //		urlLabel1.setText("Discogs URL");
 //		url1Text = new Text(c, SWT.SINGLE|SWT.BORDER);
 //		url1Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
-		
+
 		Label urlLabel2 = new Label(c, SWT.CENTER);
 		urlLabel2.setText("blu-ray.com/lddb.com");
 		url2Text = new Text(c, SWT.SINGLE|SWT.BORDER);
 		url2Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
-		
+
 		tab4.setControl(c);
     }
 
@@ -207,28 +207,30 @@ public class FormatTab implements IMovieDialogTab {
 				r6.setVisible(false);
 				r7.setVisible(false);
 				r8.setVisible(false);
-				
+
 				FormatType selectedValue = FormatType.values()[formatCombo.getSelectionIndex()];
-				
+
 				int selectedColor = colour.getSelectionIndex();
 				colour.setItems(
-					selectedValue == FormatType.other || selectedValue == FormatType.file || selectedValue == FormatType.uhdbluray 
-					? ColorFormat.getAllFormatsStringArray() : ColorFormat.getSDRFormatsStringArray());
+					selectedValue == FormatType.other || selectedValue == FormatType.file || selectedValue == FormatType.uhdbluray
+					? ColorFormat.getAllFormatsStringArray()
+					: selectedValue == FormatType.bluray ? ColorFormat.getBDFormatsStringArray()
+					: ColorFormat.getSDRFormatsStringArray());
 				if (selectedColor < colour.getItemCount())
 					colour.select(selectedColor);
 				else
 					colour.select(0);
-				
+
 				if(selectedValue == FormatType.dvd) {
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					containerCombo.select(ContainerFormat.vob.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
 					discCombo.select(DiscType.dvd.ordinal());
-					
+
 					videoCodecCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
-					
+
 					regionLabel.setVisible(true);
 					r0.setVisible(true);
 					r1.setVisible(true);
@@ -242,12 +244,12 @@ public class FormatTab implements IMovieDialogTab {
 					r1.setText("R1");
 					r2.setText("R2");
 					r3.setText("R3");
-					
+
 				} else if(selectedValue == FormatType.bluray || selectedValue == FormatType.bluray3d) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					discCombo.select(DiscType.bd.ordinal());
-					
+
 					regionLabel.setVisible(true);
 					r0.setVisible(true);
 					r1.setVisible(true);
@@ -260,12 +262,12 @@ public class FormatTab implements IMovieDialogTab {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
 					discCombo.select(DiscType.uhdbd.ordinal());
-					
+
 				} else if(selectedValue == FormatType.hddvd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					discCombo.select(DiscType.hddvd.ordinal());
 					containerCombo.setEnabled(false);
-					
+
 				} else if(selectedValue == FormatType.avchd) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					containerCombo.setEnabled(false);
@@ -282,28 +284,28 @@ public class FormatTab implements IMovieDialogTab {
 					containerCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
-					
+
 				}  else if(selectedValue == FormatType.svcd) {
 					containerCombo.select(ContainerFormat.mpeg.ordinal());
 					videoCodecCombo.select(VideoCodec.mpeg2.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
 					discCombo.select(DiscType.cd.ordinal());
-					
+
 					containerCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
-					
+
 				} else if(selectedValue == FormatType.laserdisc) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
 					discCombo.select(DiscType.ld.ordinal());
-					
+
 					containerCombo.setEnabled(false);
 					videoCodecCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
-					
+
 				} else if(selectedValue == FormatType.vhs) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
@@ -314,7 +316,7 @@ public class FormatTab implements IMovieDialogTab {
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
-					
+
 				} else if(selectedValue == FormatType.betamax) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
@@ -325,7 +327,7 @@ public class FormatTab implements IMovieDialogTab {
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
-					
+
 				} else if(selectedValue == FormatType.video8) {
 					containerCombo.select(ContainerFormat.medianative.ordinal());
 					videoCodecCombo.select(VideoCodec.analog.ordinal());
@@ -342,12 +344,12 @@ public class FormatTab implements IMovieDialogTab {
 					videoCodecCombo.select(VideoCodec.h264.ordinal());
 					resolutionCombo.select(Resolution.sd.ordinal());
 					discCombo.select(DiscType.umd.ordinal());
-					
+
 					containerCombo.setEnabled(false);
 					containerCombo.setEnabled(false);
 					resolutionCombo.setEnabled(false);
 					discCombo.setEnabled(false);
-					
+
 					regionLabel.setVisible(true);
 					r0.setVisible(true);
 					r1.setVisible(true);
@@ -360,7 +362,7 @@ public class FormatTab implements IMovieDialogTab {
 			}
 		};
 		formatCombo.addSelectionListener(formatComboListener);
-		
+
 		legalCheckListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
@@ -375,7 +377,7 @@ public class FormatTab implements IMovieDialogTab {
 			}
 		};
 		legalCheck.addSelectionListener(legalCheckListener);
-		
+
 //		myEncodeCheckListener = new SelectionListener() {
 //			public void widgetDefaultSelected(SelectionEvent e) {}
 //			public void widgetSelected(SelectionEvent e) {
@@ -391,7 +393,7 @@ public class FormatTab implements IMovieDialogTab {
 //			}
 //		};
 //		myEncodeCheck.addSelectionListener(myEncodeCheckListener);
-		
+
 		r0CheckListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
@@ -443,7 +445,7 @@ public class FormatTab implements IMovieDialogTab {
 		sceneNameText.setText(m.getSceneReleaseName());
 //		url1Text.setText(m.getUrl1String());
 		url2Text.setText(m.getUrl2String());
-        
+
 		formatComboListener.widgetSelected(null);
 		legalCheckListener.widgetSelected(null);
 //		myEncodeCheckListener.widgetSelected(null);
@@ -460,7 +462,7 @@ public class FormatTab implements IMovieDialogTab {
 		movie.setResolution(Resolution.values()[resolutionCombo.getSelectionIndex()]);
 		movie.setTvSystem(TVsystem.values()[tvSystemCombo.getSelectionIndex()]);
 		movie.setDvdRegion(new boolean[]
-				{	r0.getSelection(), 
+				{	r0.getSelection(),
 					r1.getSelection(),
 					r2.getSelection(),
 					r3.getSelection(),
@@ -483,9 +485,9 @@ public class FormatTab implements IMovieDialogTab {
 
     @Override
     public void dispose() {
-        formatTabIcon.dispose();   
+        formatTabIcon.dispose();
     }
-    
+
     public Combo getFormatCombo() {
         return formatCombo;
     }
