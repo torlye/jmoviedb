@@ -213,7 +213,9 @@ public class FormatTab implements IMovieDialogTab {
 				int selectedColor = colour.getSelectionIndex();
 				colour.setItems(
 					selectedValue == FormatType.other || selectedValue == FormatType.file || selectedValue == FormatType.uhdbluray
-					? ColorFormat.getAllFormatsStringArray() : ColorFormat.getSDRFormatsStringArray());
+					? ColorFormat.getAllFormatsStringArray()
+					: selectedValue == FormatType.bluray ? ColorFormat.getBDFormatsStringArray()
+					: ColorFormat.getSDRFormatsStringArray());
 				if (selectedColor < colour.getItemCount())
 					colour.select(selectedColor);
 				else
