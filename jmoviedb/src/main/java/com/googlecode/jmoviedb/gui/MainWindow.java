@@ -1,18 +1,18 @@
 /*
  * This file is part of JMoviedb.
- * 
+ *
  * Copyright (C) Tor Arne Lye torarnelye@gmail.com
- * 
+ *
  * JMoviedb is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * JMoviedb is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -76,13 +76,13 @@ import org.eclipse.swt.widgets.Shell;
 
 public class MainWindow extends ApplicationWindow implements IPropertyChangeListener {
 	private String[] cmdLineArgs;
-        
+
 	//setup
 	private static final int coolBarStyle = SWT.FLAT;
 	private static final int toolBarStyle = SWT.FLAT;
-	
+
 	private static MainWindow instance;
-	
+
 	//actions
 	private FileNewAction newAction;
 	private FileOpenAction fileOpenAction;
@@ -94,7 +94,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private OpenPreviousAction openPreviousAction3;
 	private OpenPreviousAction openPreviousAction4;
 	private FileExitAction fileExitAction;
-	
+
 	private SortParameterAction sortByIdAction;
 	private SortParameterAction sortByTitleAction;
 	private SortParameterAction sortByYearAction;
@@ -102,7 +102,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private SortParameterAction sortByRatingAction;
 	private SortParameterAction sortAscendingAction;
 	private SortParameterAction sortDescendingAction;
-	
+
 	private AddMovieAction addFilmAction;
 	private AddMovieAction addMovieSerialAction;
 	private AddMovieAction addTvSeriesAction;
@@ -110,13 +110,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private AddMovieAction addMiniSeriesAction;
 	private AddMovieAction addVideomovieAction;
 	private AddMovieDropdownMenu addMovieDropdownMenu;
-	
+
 	private HelpHelpAction helpHelpAction;
 	private HelpAboutAction helpAboutAction;
-	
+
 	private MenuManager menuManager;
 	private MenuManager fileMenu;
-	
+
 	private Moviedb currentlyOpenDb;
 //	private List list;
 //	private EventListViewer viewer;
@@ -124,20 +124,20 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private FilterList<AbstractMovie> filteredList;
 	private KTable table;
 	private EventKTableModel viewer;
-	
+
 	private SearchField searchField;
     private SearchDropDownMenu dropdownMenu;
 //	private ClearSearchfieldAction clearSearchfieldAction;
-        
+
 	private StatusLineThreadManager statusLine;
-	
+
 	private ExceptionHandler exceptionHandler;
 	private BrowserLauncher browserLauncher;
-	
+
 	private int tableCellFontHeight = 17;
-	
+
 	private Settings settings;
-	
+
 	public static final int DPI_CURRENT = Display.getDefault().getDPI().x;
 	public static final float DPI_DEFAULT = 96.0f;
 	public static final float DPI_SCALE = DPI_CURRENT / DPI_DEFAULT;
@@ -154,18 +154,18 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			browserLauncher = new BrowserLauncher(null, exceptionHandler);
 			/*
 			 * If one of the following exceptions are thrown and caught,
-			 * the system will not be able to open browsers. 
+			 * the system will not be able to open browsers.
 			 */
 		} catch (BrowserLaunchingInitializingException e) {handleException(e);
 		} catch (UnsupportedOperatingSystemException e) {handleException(e);}
-		
+
 		setDefaultImages(new Image[]{
-				ImageDescriptor.createFromURL(CONST.ICON_MAIN_16).createImage(), 
-				ImageDescriptor.createFromURL(CONST.ICON_MAIN_32).createImage(), 
-				ImageDescriptor.createFromURL(CONST.ICON_MAIN_64).createImage(), 
-				ImageDescriptor.createFromURL(CONST.ICON_MAIN_128).createImage(), 
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_16).createImage(),
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_32).createImage(),
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_64).createImage(),
+				ImageDescriptor.createFromURL(CONST.ICON_MAIN_128).createImage(),
 				ImageDescriptor.createFromURL(CONST.ICON_MAIN_256).createImage()});
-		
+
 		fileSaveAsAction = new FileSaveAsAction();
 		fileSaveAction = new FileSaveAction(fileSaveAsAction);
 		newAction = new FileNewAction();
@@ -186,8 +186,8 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		searchField = new SearchField();
                 searchField.setEventReceiver(this); //MainWindow receives events from searchField
                 dropdownMenu = new SearchDropDownMenu();
-                dropdownMenu.setEventReceiver(searchField); //SearchWindow receives events from dropdownMenu  
-		
+                dropdownMenu.setEventReceiver(searchField); //SearchWindow receives events from dropdownMenu
+
 		addFilmAction = new AddMovieAction(CONST.MOVIETYPE_FILM);
 		addMovieSerialAction = new AddMovieAction(CONST.MOVIETYPE_MOVIESERIAL);
 		addVideomovieAction = new AddMovieAction(CONST.MOVIETYPE_VIDEOMOVIE);
@@ -195,13 +195,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		addTvSeriesAction = new AddMovieAction(CONST.MOVIETYPE_TVSERIES);
 		addMiniSeriesAction = new AddMovieAction(CONST.MOVIETYPE_MINISERIES);
 		addMovieDropdownMenu = new AddMovieDropdownMenu();
-		
+
 		addMenuBar();
 		addCoolBar(coolBarStyle);
 		addStatusLine();
-		
+
 		statusLine = new StatusLineThreadManager(getStatusLineManager());
-		
+
 		setSearchParameters();
 	}
 
@@ -210,7 +210,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	 */
 	protected MenuManager createMenuManager(){
 		menuManager = new MenuManager();
-		
+
 		fileMenu = new MenuManager("&File");
 		fileMenu.add(newAction);
 		fileMenu.add(fileOpenAction);
@@ -227,22 +227,22 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		fileMenu.add(new Separator());
 		fileMenu.add(fileExitAction);
 		menuManager.add(fileMenu);
-		
+
 		MenuManager exportMenu = new MenuManager("&Import/Export");
 		exportMenu.add(new FileImportAction(1));
 		exportMenu.add(new FileImportAction(2));
 		exportMenu.add(new ExportCsvReleasesAction());
 		exportMenu.add(new ExportCsvLetterboxdAction());
 		menuManager.add(exportMenu);
-		
+
 		/*MenuManager editMenu = new MenuManager("&Edit");
 		editMenu.add(new TestAction("Test!", false));
 		menuManager.add(editMenu);
-		
+
 		MenuManager viewMenu = new MenuManager("&View");
 		viewMenu.add(new TestAction("Test!", false));
 		menuManager.add(viewMenu);*/
-		
+
 		MenuManager sortMenu = new MenuManager("&Sort");
 		sortMenu.add(sortByIdAction);
 		sortMenu.add(sortByTitleAction);
@@ -253,7 +253,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		sortMenu.add(sortAscendingAction);
 		sortMenu.add(sortDescendingAction);
 		menuManager.add(sortMenu);
-		
+
 		MenuManager actionMenu = new MenuManager("&Action");
 		actionMenu.add(new MassUpdateAction());
 		actionMenu.add(new TmdbUrlAction());
@@ -264,13 +264,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		actionMenu.add(addMiniSeriesAction);
 		actionMenu.add(addMovieSerialAction);
 		menuManager.add(actionMenu);
-		
+
 		MenuManager helpMenu = new MenuManager("&Help");
 		helpMenu.add(helpHelpAction);
 		helpMenu.add(new Separator());
 		helpMenu.add(helpAboutAction);
 		menuManager.add(helpMenu);
-		
+
 		return menuManager;
 	}
 
@@ -316,15 +316,15 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	protected void initializeBounds(){
 		//read the stored window size from settings file
 		getShell().setSize(settings.getWindowSize());
-		
-		//if the window position is undefined, put the window in the middle of the screen. 
+
+		//if the window position is undefined, put the window in the middle of the screen.
 		if(settings.getWindowPosition().x == -1)
 			getShell().setLocation(getCenterScreenPos(settings.getWindowSize()));
 		else
 			getShell().setLocation(settings.getWindowPosition());
 	}
 
-	protected Control createContents(Composite parent) {	
+	protected Control createContents(Composite parent) {
 		table = new KTable(parent, SWTX.FILL_WITH_LASTCOL|SWT.FULL_SELECTION|SWT.V_SCROLL|SWT.BORDER);
 		table.setBackground(new Color(Display.getCurrent(), 255, 255, 255));
 		table.addCellDoubleClickListener(new KTableCellDoubleClickListener(){
@@ -333,7 +333,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 					openMovieDialog(null);
 				} catch (Exception ex) {
 					handleException(ex);
-				}	
+				}
 			}
 			public void fixedCellDoubleClicked(int col, int row, int statemask) {}
 		});
@@ -355,7 +355,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			public void keyReleased(KeyEvent e) {
 				//Do nothing
 			}});
-		
+
 		boolean success = false;
 		if(cmdLineArgs.length>0) {
 			if(CONST.DEBUG_MODE) System.out.println("Opening file frome command line argument");
@@ -381,7 +381,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			if(CONST.DEBUG_MODE) System.out.println("Falling back to open an empty database");
 			openDB(null);
 		}
-		
+
 		return table;
 	}
 
@@ -392,17 +392,17 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		super.configureShell(newShell);
 		newShell.setText("JMoviedb");
 	}
-	
+
 	/**
 	 * Saves the configuration file
 	 */
 	private void saveSettings() {
 		settings.setWindowSize(getShell().getSize());
 		settings.setWindowPosition(getShell().getLocation());
-		
+
 		settings.save();
 	}
-	
+
 	/**
 	 * Calculates the screen coordinates the window should move to if it is to be centered on the screen.
 	 * @param dimension
@@ -414,21 +414,21 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 				getShell().getDisplay().getClientArea().height);
 		return new Point((screenSize.x-dimension.x)/2, (screenSize.y-dimension.y)/2);
 	}
-	
+
 	/**
 	 * Returns all the "add movie" actions
 	 * @return an array of actions
 	 */
 	public AddMovieAction[] getAddMovieActions() {
 		return new AddMovieAction[]{
-				addFilmAction, 
-				addVideomovieAction, 
-				addTvMovieAction, 
-				addTvSeriesAction, 
-				addMiniSeriesAction, 
+				addFilmAction,
+				addVideomovieAction,
+				addTvMovieAction,
+				addTvSeriesAction,
+				addMiniSeriesAction,
 				addMovieSerialAction};
 	}
-	
+
 	/**
 	 * Sets a new message in the main window status line
 	 * @param message the message to be set
@@ -436,7 +436,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public void setStatusLineMessage(String message) {
 		statusLine.setMessage(message);
 	}
-	
+
 	/**
 	 * Opens a new database in the main window
 	 * @param path to the database, or null
@@ -459,7 +459,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			return false;
 		}
 	}
-	
+
 	private void internalOpen(String path) throws InvocationTargetException, InterruptedException {
 		this.tableCellFontHeight = getFontSize();
 		new ProgressMonitorDialog(getShell()).run(true, false, new OpenDBWorker(path));
@@ -469,7 +469,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		if(currentlyOpenDb.getMovieCount()>0)
 			setStatusLineMessage("Opened "+currentlyOpenDb.getMovieCount()+" movies");
 	}
-	
+
 	/**
 	 * Opens a recently used database file
 	 * @param the position in the recently used files list to open. 0 to try each file until one has been successfully opened.
@@ -498,7 +498,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			}
 		}
 	}
-        
+
 //	/**
 //	 * Updates filteredList and sortedList, called when search-parameter is changed,
 //	 * is needed because filteredList needs to use new matcherEditor created in SearchField
@@ -518,7 +518,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //			e.printStackTrace();
 //		}
 //	}
-	
+
 	public void updateSearchFilter() {
 		filteredList.setMatcherEditor(searchField.getMatcherEditor());
 	}
@@ -541,7 +541,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 						throw new FileNotFoundException();
 				}
 				Moviedb db = new Moviedb(path);
-				
+
 				if(currentlyOpenDb != null) {
 					monitor.subTask("Closing previous database");
 					sortedList.dispose();
@@ -564,7 +564,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 								setStatusLineMessage("Displaying "+filteredList.size()+" of "+currentlyOpenDb.getMovieCount()+" movies");
 								else
 								setStatusLineMessage("Displaying "+filteredList.size()+" movies");
-								
+
 							}
 						});
 
@@ -576,9 +576,9 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			} finally {
 				monitor.done();
 			}
-		}                
+		}
 	}
-        
+
 //        /**
 //         * Used when the lists needs to be updated, and no new database needs to be loaded
 //         */
@@ -586,7 +586,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //		public UpdateListsWorker() {}
 //
 //		public void run(IProgressMonitor monitor) throws InvocationTargetException {
-//			try {   
+//			try {
 //				//Unregister listeners
 //				sortedList.dispose();
 //				filteredList.dispose();
@@ -611,7 +611,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 //			}
 //		}
 //	}
-	
+
 	/**
 	 * Returns the currently open database
 	 * @return the database
@@ -619,14 +619,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public Moviedb getDB() {
 		return currentlyOpenDb;
 	}
-	
+
 	/**
 	 * Sorts the movie list
 	 */
 	public void reSort() {
 		sortedList.setComparator(getComparator());
 	}
-	
+
 	/**
 	 * Creates a new Comparator according to the stored sort parameters
 	 * @return a comparator
@@ -634,11 +634,11 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	private Comparator<AbstractMovie> getComparator() {
 		int sortBy = Settings.getSettings().getSortBy();
 		int sortDir = Settings.getSettings().getSortDirection();
-		
+
 		boolean descending = false;
 		if(sortDir == CONST.SORT_DESCENDING)
 			descending = true;
-		
+
 		//sorting according to the correct parameter
 		if(sortBy == CONST.SORT_BY_ID) {
 			if(CONST.DEBUG_MODE)
@@ -663,7 +663,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Updates the text on the title bar (i.e. the shelltext)
 	 * Call this whenever a new file is opened, or if an open file
@@ -680,21 +680,21 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 		getShell().setText("JMoviedb - " + fileName);
 	}
-	
+
 	/**
 	 * Open a movie dialog
-	 * @param movie a fresh AbstractMovie subclass if creating a new movie, or null if opening the selected item in the movie list. 
+	 * @param movie a fresh AbstractMovie subclass if creating a new movie, or null if opening the selected item in the movie list.
 	 * @throws SQLException
 	 * @throws IOException
 	 */
 	public void openMovieDialog(AbstractMovie movie) throws SQLException, IOException {
-		
+
 		if(movie==null) {
 			if(table.getRowSelection().length <= 0)
 				return;
 			movie = filteredList.get(table.getRowSelection()[0]);
 		}
-		
+
 		MovieDialog d = new MovieDialog(movie);
 		int returnCode = d.open();
 
@@ -735,7 +735,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		addTvSeriesAction.setEnabled(enabled);
 		addMiniSeriesAction.setEnabled(enabled);
 		addMovieDropdownMenu.setEnabled(enabled);
-		
+
 		sortByIdAction.setEnabled(enabled);
 		sortByTitleAction.setEnabled(enabled);
 		sortByYearAction.setEnabled(enabled);
@@ -758,7 +758,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		// Dispose the display when exiting
 		Display.getCurrent().dispose();
 	}
-	
+
 	/**
 	 * Called when the application is shutting down
 	 */
@@ -772,14 +772,14 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		close();
 		getDB().closeDatabase();
 	}
-	
+
 	/**
 	 * Asks the user whether or not (s)he wants to save the currently open file before closing it.
 	 * @return CONST.ANSWER_SAVE, CONST.ANSWER_DONT_SAVE or CONST.ANSWER_CANCEL
 	 */
 	public int saveOnCloseQuestion() {
 		int returnCode = CONST.ANSWER_DONT_SAVE;
-		
+
 		if(getDB() != null && getDB().isSaved() == false) {
 			returnCode = new MessageDialog(getShell(), "JMoviedb", null, "Do you want to save changes?", MessageDialog.QUESTION, new String[]{"Save", "Don't save", "Cancel"}, 0).open();
 			if(returnCode == CONST.ANSWER_SAVE)
@@ -787,7 +787,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		}
 		return returnCode;
 	}
-	
+
 	/**
 	 * Returns the running instance of MainWindow
 	 * @return
@@ -795,7 +795,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public static MainWindow getMainWindow() {
 		return instance;
 	}
-	
+
 	/**
 	 * Workaround to enable MainWindow's ExceptionHandler to handle exceptions thrown
 	 * insisde other classes.
@@ -805,13 +805,13 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 	public void handleException(Throwable t) {
 		this.exceptionHandler.handleException(t);
 	}
-	
+
 	/**
 	 * Create or rebuild the recent files menu (rebuild each time the contents change)
 	 */
 	private void createRecentFilesMenu() {
 		if(CONST.DEBUG_MODE) System.out.println("BUILDING RECENT FILES MENU:");
-		
+
 		String[] recentFiles = settings.getRecentFiles();
 		boolean[] recentEnabled = new boolean[4];
 		for(int i = 0; i < recentFiles.length; i++) {
@@ -820,7 +820,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			else
 				recentEnabled[i] = true;
 		}
-		
+
 		openPreviousAction1 = new OpenPreviousAction(1, recentFiles[0], fileSaveAction);
 		openPreviousAction1.setEnabled(recentEnabled[0]);
 		openPreviousAction2 = new OpenPreviousAction(2, recentFiles[1], fileSaveAction);
@@ -836,7 +836,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			if(openPreviousAction4.isEnabled()) System.out.println(recentFiles[3]);
 		}
 	}
-	
+
 	/**
 	 * Opens the specified URL in the system's web browser
 	 * @param url the URL to open
@@ -847,7 +847,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			browserLauncher.openURLinBrowser(url);
 		}
 		else
-			MessageDialog.openError(this.getShell(), "Browser error!", 
+			MessageDialog.openError(this.getShell(), "Browser error!",
 					"Unable to open a web browser on this platform. Please browse to " + url + " manually.");
 	}
 
@@ -873,7 +873,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			//menuManager.updateAll(true); //TODO why does this not work?
 		}
 	}
-	
+
 	/**
 	 * Upon startup, sets the correct checked/unchecked status of the sort menu items
 	 * according to the previously stored settings.
@@ -884,7 +884,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			sortAscendingAction.setChecked(true);
 		else
 			sortDescendingAction.setChecked(true);
-		
+
 		switch(s.getSortBy()) {
 			case CONST.SORT_BY_ID: sortByIdAction.setChecked(true); break;
 			case CONST.SORT_BY_TITLE: sortByTitleAction.setChecked(true); break;
@@ -893,7 +893,7 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 			case CONST.SORT_BY_RATING: sortByRatingAction.setChecked(true); break;
 		}
 	}
-	
+
 	private int getFontSize() {
 		Composite c = new Composite(getShell(), SWT.NONE);
 		GC gc = new GC(c);
@@ -901,15 +901,15 @@ public class MainWindow extends ApplicationWindow implements IPropertyChangeList
 		FontMetrics fontMetrics = gc.getFontMetrics();
 		gc.dispose();
 		c.dispose();
-		
+
 		return fontMetrics.getHeight();
 	}
-	
+
 //	public AbstractMovie getSelectedItem() throws SQLException, IOException {
 //		return filteredList.get(list.getSelectionIndex());
-//		
+//
 ////		if(list.getSelectionIndex() != -1)
-////			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());			
+////			return currentlyOpenDb.getMovie(filteredList.get(list.getSelectionIndex()).getID());
 ////		return null;
 //	}
 }

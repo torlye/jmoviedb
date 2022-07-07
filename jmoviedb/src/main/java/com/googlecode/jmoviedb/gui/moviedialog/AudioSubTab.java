@@ -31,20 +31,15 @@ public class AudioSubTab implements IMovieDialogTab {
         CTabItem tab5 = new CTabItem(tabFolder, SWT.NULL);
 		tab5.setText("Audio and subtitles");
 		tab5.setImage(audioTabIcon);
-		
-		Composite c = new Composite(tabFolder, SWT.NULL);
-		
-//		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_BOTH);
-//		parent.setLayoutData(gridData);
 
-		// Set numColumns to 3 for the buttons 
-		GridLayout layout = new GridLayout(4, false);
-		layout.marginWidth = 4;
+		Composite c = new Composite(tabFolder, SWT.NULL);
+
+		GridLayout layout = new GridLayout(1, false);
 		c.setLayout(layout);
-		
+
 		audioTable = new AudioTable(c, formatTab.getFormatCombo());
 		subtitleTable = new SubtitleTable(c, formatTab.getFormatCombo());
-		
+
 		tab5.setControl(c);
     }
 

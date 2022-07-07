@@ -58,6 +58,7 @@ public class MovieDialog extends Dialog {
 	private IMovieDialogTab actorsTab;
 	private FormatTab formatTab;
 	private IMovieDialogTab audioSubTab;
+	private IMovieDialogTab releaseTab;
 	
 	public MovieDialog(AbstractMovie movie) {
 		super(MainWindow.getMainWindow());
@@ -69,6 +70,7 @@ public class MovieDialog extends Dialog {
 		actorsTab = new ActorsTab(iconSize);
 		formatTab = new FormatTab(iconSize);
 		audioSubTab = new AudioSubTab(iconSize, formatTab);
+		releaseTab = new ReleaseTab(iconSize);
 		
 		this.movie = movie;
 		
@@ -126,10 +128,10 @@ public class MovieDialog extends Dialog {
 						this.getShell().getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT)
 				},  new int[] {100}, true);
 		
-		
 		mainTab.createTabArea(tabFolder);
 		taglineTab.createTabArea(tabFolder);
 		actorsTab.createTabArea(tabFolder);
+		releaseTab.createTabArea(tabFolder);
 		formatTab.createTabArea(tabFolder);
 		audioSubTab.createTabArea(tabFolder);
 
@@ -144,6 +146,7 @@ public class MovieDialog extends Dialog {
 		mainTab.configureListeners();
 		taglineTab.configureListeners();
 		actorsTab.configureListeners();
+		releaseTab.configureListeners();
 		formatTab.configureListeners();
 		audioSubTab.configureListeners();
 	}
@@ -157,6 +160,7 @@ public class MovieDialog extends Dialog {
 		mainTab.setModel(m);
 		taglineTab.setModel(m);
 		actorsTab.setModel(m);
+		releaseTab.setModel(m);
 		formatTab.setModel(m);
 		audioSubTab.setModel(m);
 	}
@@ -207,6 +211,7 @@ public class MovieDialog extends Dialog {
 		mainTab.dispose();
 		taglineTab.dispose();
 		actorsTab.dispose();
+		releaseTab.dispose();
 		formatTab.dispose();
 		audioSubTab.dispose();
 		return super.close();
@@ -225,6 +230,7 @@ public class MovieDialog extends Dialog {
 		actorsTab.save(movie);
 		formatTab.save(movie);
 		audioSubTab.save(movie);
+		releaseTab.save(movie);
 	}
 	
 	public AbstractMovie getModel() {

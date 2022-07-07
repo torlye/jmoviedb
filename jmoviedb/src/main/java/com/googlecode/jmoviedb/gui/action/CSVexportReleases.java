@@ -171,7 +171,7 @@ public class CSVexportReleases implements IRunnableWithProgress {
 		}
 		releaseRecord[2] = firstMovie.getTerritories();
 		releaseRecord[3] = firstMovie.getClassifications();
-		releaseRecord[4] = firstMovie.getReleaseYear();
+		releaseRecord[4] = firstMovie.getReleaseYear() + "";
 
 		releaseRecord[5] = firstMovie.getIdentifiers();
 		releaseRecord[6] = firstMovie.getReleaseUrls();

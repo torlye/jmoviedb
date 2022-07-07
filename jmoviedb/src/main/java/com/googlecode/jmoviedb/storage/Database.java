@@ -1,18 +1,18 @@
 /*
  * This file is part of JMoviedb.
- * 
+ *
  * Copyright (C) Tor Arne Lye torarnelye@gmail.com
- * 
+ *
  * JMoviedb is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * JMoviedb is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import com.googlecode.jmoviedb.CONST;
+import com.googlecode.jmoviedb.Utils;
 import com.googlecode.jmoviedb.enumerated.AspectRatio;
 import com.googlecode.jmoviedb.enumerated.AudioChannels;
 import com.googlecode.jmoviedb.enumerated.AudioCodec;
@@ -60,11 +61,11 @@ import com.googlecode.jmoviedb.model.movietype.*;
  *
  */
 public class Database {
-	
+
 	private String path;
-	
+
 	private Connection connection = null;
-	
+
 	private PreparedStatement addMovieStatement;
 	private PreparedStatement editMovieStatement;
 	private PreparedStatement getMovieStatement;
@@ -97,20 +98,24 @@ public class Database {
 	private PreparedStatement getCountries;
 	private PreparedStatement getAudioTracks;
 	private PreparedStatement getSubtitleTracks;
-	
+	private PreparedStatement getReleaseInfo;
+	private PreparedStatement addReleaseInfo;
+	private PreparedStatement updateReleaseInfo;
+	private PreparedStatement getAllReleaseInfo;
+
 	/**
-	 * The default constructor. It opens a new database connection and, if 
+	 * The default constructor. It opens a new database connection and, if
 	 * @param path the path to keep the database storage files. If database files already
-	 * exist, they will be opened. Otherwise, new files are created. 
+	 * exist, they will be opened. Otherwise, new files are created.
 	 * @throws ClassNotFoundException if the Derby driver cannot be loaded
 	 * @throws SQLException if Derby throws an exception
 	 */
 	public Database(String path) throws ClassNotFoundException, SQLException {
 		this.path = path;
-		System.out.println("Creating database @ " + path); 
+		System.out.println("Creating database @ " + path);
 		Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 		connection = DriverManager.getConnection("jdbc:derby:"+path+";create=true");
-		
+
 		try {
 			createTables();
 		} catch (SQLException e) {
@@ -125,7 +130,7 @@ public class Database {
 //				s.execute("ALTER TABLE MOVIEAUDIO ADD COLUMN CHANNELID SMALLINT");
 //			}
 		}
-		
+
 		//Upgrade
 		try {
 			Statement s = connection.createStatement();
@@ -134,7 +139,7 @@ public class Database {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
-		
+
 		try {
 			Statement s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIEAUDIO ADD COLUMN DESCRIPTIVE SMALLINT");
@@ -142,7 +147,7 @@ public class Database {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
-		
+
 		try {
 			Statement s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIESUBTITLE ADD COLUMN FORCED SMALLINT");
@@ -150,7 +155,7 @@ public class Database {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
-		
+
 		//Upgrade
 		try {
 			Statement s = connection.createStatement();
@@ -161,20 +166,20 @@ public class Database {
 			if(!e.getSQLState().equals("X0Y32"))
 				throw e;
 		}
-				
+
 		try {
 			Statement s = connection.createStatement();
 			s.execute("ALTER TABLE PERSON ADD COLUMN PERSONID_LONG VARCHAR(8)");
-			
+
 			s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIEACTOR ADD COLUMN PERSONID_LONG VARCHAR(8)");
-			
+
 			s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIEDIRECTOR ADD COLUMN PERSONID_LONG VARCHAR(8)");
-			
+
 			s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIEWRITER ADD COLUMN PERSONID_LONG VARCHAR(8)");
-			
+
 			s = connection.createStatement();
 			s.execute("ALTER TABLE MOVIE ADD COLUMN IMDBID_LONG VARCHAR(8)");
 		} catch (SQLException e) {
@@ -192,6 +197,7 @@ public class Database {
 				throw e;
 		}
 
+		//1.2.0
 		tryAddColumn("MOVIEAUDIO", "TRACKTYPE", "VARCHAR(250)");
 		tryAddColumn("MOVIEAUDIO", "LANGUAGE", "VARCHAR(250)");
 		tryAddColumn("MOVIEAUDIO", "NOTE", "VARCHAR(250)");
@@ -199,19 +205,31 @@ public class Database {
 		tryAddColumn("MOVIESUBTITLE", "LANGUAGE", "VARCHAR(250)");
 		tryAddColumn("MOVIESUBTITLE", "NOTE", "VARCHAR(250)");
 
+		//1.3.0
+		try {
+			Statement s = connection.createStatement();
+			s.execute("CREATE TABLE RELEASE(URL VARCHAR(512), TITLE VARCHAR(256), " +
+				"TERRITORIES VARCHAR(2048), IDENTIFIERS VARCHAR(2048), RELEASEYEAR SMALLINT, " +
+				"TYPE VARCHAR(256), MEDIA VARCHAR(512), COMPANIES VARCHAR(2048), PRIMARY KEY(URL))"
+			);
+		} catch (SQLException e) {
+			if(!e.getSQLState().equals("X0Y32"))
+				throw e;
+		}
+
 		//Note: Make sure addMovieStatement and editMovieStatement have the same column names at all times
 		addMovieStatement = connection.prepareStatement("INSERT INTO MOVIE (" +
-				"TYPE, IMDBID_LONG, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " + 
+				"TYPE, IMDBID_LONG, TITLE, CUSTOMTITLE, MOVIEYEAR, RATING, " +
 				"PLOTOUTLINE, TAGLINE, COLOR, RUNTIME, NOTES, VERSION, " +
 				"CUSTOMFILMVERSION, LEGAL, SEEN, LOCATION, FORMAT, DISC, VIDEO, " +
 				"MYENCODE, DVDREGION, TVSYSTEM, SCENERELEASENAME, " +
 				"VIDEORESOLUTION, VIDEOASPECT, COVER, CONTAINER, COMPLETENESS, " +
-				"COMPLETENESSDETAIL, YEAR2, URL1, URL2, TMDBID, TMDBTYPE) " + 
+				"COMPLETENESSDETAIL, YEAR2, URL1, URL2, TMDBID, TMDBTYPE) " +
 				"VALUES (" +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
 				"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-				"?, ?, ?, ?)", 
+				"?, ?, ?, ?)",
 				PreparedStatement.RETURN_GENERATED_KEYS);
 		editMovieStatement = connection.prepareStatement("UPDATE MOVIE SET " +
 				"TYPE = ?, IMDBID_LONG = ?, TITLE = ?, CUSTOMTITLE = ?, " +
@@ -253,8 +271,12 @@ public class Database {
 		getCountries = connection.prepareStatement("SELECT * FROM MOVIECOUNTRY WHERE MOVIEID = ?");
 		getAudioTracks = connection.prepareStatement("SELECT * FROM MOVIEAUDIO WHERE MOVIEID = ?");
 		getSubtitleTracks = connection.prepareStatement("SELECT * FROM MOVIESUBTITLE WHERE MOVIEID = ?");
+		getReleaseInfo = connection.prepareStatement("SELECT * FROM RELEASE WHERE URL = ?");
+		addReleaseInfo = connection.prepareStatement("INSERT INTO RELEASE VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+		updateReleaseInfo = connection.prepareStatement("UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ?, COMPANIES = ? WHERE URL = ?");
+		getAllReleaseInfo = connection.prepareStatement("SELECT * FROM RELEASE");
 	}
-	
+
 	private Pattern namePattern = Pattern.compile("^[A-Z0-9]+$", Pattern.CASE_INSENSITIVE);
 	private Pattern typePattern = Pattern.compile("^[A-Z0-9\\(\\)]+$", Pattern.CASE_INSENSITIVE);
 
@@ -350,20 +372,20 @@ public class Database {
 				")";
 		String movieGenre = "CREATE TABLE MOVIEGENRE(" +
 				"MOVIEID INTEGER NOT NULL, " +
-				"GENREID SMALLINT NOT NULL, " + 
-				"PRIMARY KEY (MOVIEID, GENREID), " + 
+				"GENREID SMALLINT NOT NULL, " +
+				"PRIMARY KEY (MOVIEID, GENREID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
 		String movieCountry = "CREATE TABLE MOVIECOUNTRY(" +
 				"MOVIEID INTEGER NOT NULL, " +
-				"COUNTRYID SMALLINT NOT NULL, " + 
-				"PRIMARY KEY (MOVIEID, COUNTRYID), " + 
+				"COUNTRYID SMALLINT NOT NULL, " +
+				"PRIMARY KEY (MOVIEID, COUNTRYID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
 		String movieLanguage = "CREATE TABLE MOVIELANGUAGE(" +
 				"MOVIEID INTEGER NOT NULL, " +
-				"LANGUAGEID SMALLINT NOT NULL, " + 
-				"PRIMARY KEY (MOVIEID, LANGUAGEID), " + 
+				"LANGUAGEID SMALLINT NOT NULL, " +
+				"PRIMARY KEY (MOVIEID, LANGUAGEID), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
 		String movieAudio = "CREATE TABLE MOVIEAUDIO(" +
@@ -377,7 +399,7 @@ public class Database {
 				"TRACKTYPE VARCHAR(250), " +
 				"LANGUAGE VARCHAR(250), " +
 				"NOTE VARCHAR(250), " +
-				"PRIMARY KEY (MOVIEID, TRACKNR), " + 
+				"PRIMARY KEY (MOVIEID, TRACKNR), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
 
@@ -392,19 +414,19 @@ public class Database {
 				"TRACKTYPE VARCHAR(250), " +
 				"LANGUAGE VARCHAR(250), " +
 				"NOTE VARCHAR(250), " +
-				"PRIMARY KEY (MOVIEID, TRACKNR), " + 
+				"PRIMARY KEY (MOVIEID, TRACKNR), " +
 				"FOREIGN KEY (MOVIEID) REFERENCES MOVIE ON DELETE CASCADE" +
 				")";
 
 		for(String query : new String[]{movie, person, movieActor, movieDirector,
-				movieWriter, movieGenre, movieCountry, movieLanguage, movieAudio, 
+				movieWriter, movieGenre, movieCountry, movieLanguage, movieAudio,
 				movieSubtitle}) {
 			Statement statement = connection.createStatement();
 			statement.executeUpdate(query);
 			statement.close();
 		}
 	}
-	
+
 	/**
 	 * Closes all PreparedStatements and shuts down the connection.
 	 * @throws SQLException
@@ -444,7 +466,7 @@ public class Database {
 		getSubtitleTracks.close();
 
 		connection.close();
-		
+
 		// Shut down Derby
 		try {
 			DriverManager.getConnection("jdbc:derby:"+path+";shutdown=true");
@@ -454,29 +476,29 @@ public class Database {
 				System.out.println("Derby was shut down");
 		}
 	}
-	
-	
+
+
 	public ArrayList<AbstractMovie> getMovieList() throws SQLException, IOException {
 		ResultSet rs  = getMovieList.executeQuery();
 		ArrayList<AbstractMovie> list = new ArrayList<AbstractMovie>();
-		
+
 		while(rs.next()) {
 			list.add(getMovieFull(rs.getInt("MOVIEID")));
 		}
-		
+
 		rs.close();
-		
+
 		return list;
 	}
-	
+
 	public void saveMovie(AbstractMovie m) throws SQLException {
 		if(CONST.DEBUG_MODE)
 			System.out.println("DATABASE: saveMovie ID " + m.getID() + " Type " + MovieType.abstractMovieToInt(m));
-		
+
 		int type = MovieType.abstractMovieToInt(m);
 		PreparedStatement statement;
 		boolean edit;
-		
+
 		if(m.getID() == -1) {
 			statement = addMovieStatement;
 			edit = false;
@@ -484,7 +506,7 @@ public class Database {
 			statement = editMovieStatement;
 			edit = true;
 		}
-		
+
 		statement.setInt(1, type);
 		statement.setString(2, m.getImdbID());
 		statement.setString(3, m.getTitle());
@@ -515,7 +537,7 @@ public class Database {
 		statement.setString(32, m.getUrl2StringOrNull());
 		setInteger(statement, 33, m.getTmdbID());
 		statement.setString(34, m.getTmdbType());
-		
+
 		if (m instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)m;
 			statement.setInt(28, series.getCompleteness().getID());
@@ -524,19 +546,19 @@ public class Database {
 			statement.setInt(28, 0);
 			statement.setString(29, null);
 		}
-		
+
 		if(m.getImageBytes() != null)
 			statement.setBinaryStream(26, new ByteArrayInputStream(m.getImageBytes()), m.getImageBytes().length);
 		else
 			statement.setNull(26, Types.BLOB);
-		
+
 		statement.setInt(27, m.getContainer().getID());
-		
+
 		if(edit)
 			statement.setInt(35, m.getID());
-		
+
 		statement.execute();
-		
+
 		if(!edit) {
 			ResultSet generatedKey = statement.getGeneratedKeys();
 			if(generatedKey.next()) {
@@ -547,7 +569,7 @@ public class Database {
 			}
 		}
 		statement.clearParameters();
-		
+
 		updateRelations(m);
 	}
 
@@ -557,21 +579,21 @@ public class Database {
 		else
 			statement.setInt(parameterIndex, value);
 	}
-	
+
 	/**
 	 * Checks the Actors, directors and writers for the movie and inserts them in the database
 	 * if they're not there already.
 	 * @param m
 	 */
 	private void updateRelations(AbstractMovie m) throws SQLException {
-		
+
 		clearDirectors.setInt(1, m.getID());
 		clearDirectors.execute();
 		clearDirectors.clearParameters();
-		
+
 		for(Person p : m.getDirectors()) {
 			addOrUpdatePerson(p);
-			
+
 			addDirector.setInt(1, m.getID());
 			addDirector.setString(2, shortenToSevenDigits(p.getID()));
 			addDirector.setString(3, "");
@@ -579,14 +601,14 @@ public class Database {
 			addDirector.execute();
 			addDirector.clearParameters();
 		}
-		
+
 		clearWriters.setInt(1, m.getID());
 		clearWriters.execute();
 		clearWriters.clearParameters();
-		
-		for(Person p : m.getWriters()) {			
+
+		for(Person p : m.getWriters()) {
 			addOrUpdatePerson(p);
-			
+
 			addWriter.setInt(1, m.getID());
 			addWriter.setString(2, shortenToSevenDigits(p.getID()));
 			addWriter.setString(3, "");
@@ -594,16 +616,16 @@ public class Database {
 			addWriter.execute(); //TODO fix cases where a writer or director is listed twice
 			addWriter.clearParameters();
 		}
-		
+
 		clearActors.setInt(1, m.getID());
 		clearActors.execute();
 		clearActors.clearParameters();
-		
+
 		for(int i=0; i<m.getActors().size(); i++) {
 			ActorInfo a = m.getActors().get(i);
-			
+
 			addOrUpdatePerson(a.getPerson());
-			
+
 			addActor.setInt(1, m.getID());
 			addActor.setString(2, shortenToSevenDigits(a.getPerson().getID()));
 			addActor.setInt(3, i);
@@ -616,40 +638,40 @@ public class Database {
 		clearGenres.setInt(1, m.getID());
 		clearGenres.execute();
 		clearGenres.clearParameters();
-		
+
 		for(Genre g : m.getGenres()) {
 			addGenre.setInt(1, m.getID());
 			addGenre.setInt(2, g.getID());
 			addGenre.execute();
 			addGenre.clearParameters();
 		}
-		
+
 		clearLanguages.setInt(1, m.getID());
 		clearLanguages.execute();
 		clearLanguages.clearParameters();
-		
+
 		for(Language l : m.getLanguages()) {
 			addLanguage.setInt(1, m.getID());
 			addLanguage.setInt(2, l.getID());
 			addLanguage.execute();
 			addLanguage.clearParameters();
 		}
-		
+
 		clearCountries.setInt(1, m.getID());
 		clearCountries.execute();
 		clearCountries.clearParameters();
-		
+
 		for(Country c : m.getCountries()) {
 			addCountry.setInt(1, m.getID());
 			addCountry.setInt(2, c.getID());
 			addCountry.execute();
 			addCountry.clearParameters();
 		}
-		
+
 		clearAudioTracks.setInt(1, m.getID());
 		clearAudioTracks.execute();
 		clearAudioTracks.clearParameters();
-		
+
 		for (int i = 0; i < m.getAudioTracks().size(); i++) {
 			AudioTrack track = m.getAudioTracks().get(i);
 			addAudioTrack.setInt(1, m.getID());
@@ -665,11 +687,11 @@ public class Database {
 			addAudioTrack.execute();
 			addAudioTrack.clearParameters();
 		}
-		
+
 		clearSubtitleTracks.setInt(1, m.getID());
 		clearSubtitleTracks.execute();
 		clearSubtitleTracks.clearParameters();
-		
+
 		for (int i = 0; i < m.getSubtitles().size(); i++) {
 			SubtitleTrack track = m.getSubtitles().get(i);
 			addSubtitleTrack.setInt(1, m.getID());
@@ -686,7 +708,47 @@ public class Database {
 			addSubtitleTrack.clearParameters();
 		}
 	}
-	
+
+	public void addUpdateRelease(String id, Release r) throws SQLException {
+		if (!Utils.isNullOrEmpty(id)) {
+			getReleaseInfo.setString(1, id);
+			ResultSet result = getReleaseInfo.executeQuery();
+			boolean hasResult = result.next();
+			getReleaseInfo.clearParameters();
+
+			if (hasResult) {
+				// "UPDATE RELEASE SET TITLE = ?, TERRITORIES = ?, IDENTIFIERS = ?, RELEASEYEAR = ?, TYPE = ?, MEDIA = ? WHERE URL = ?"
+				updateReleaseInfo.setString(1, r.getReleaseTitle());
+				updateReleaseInfo.setString(2, r.getTerritoriesJson());
+				updateReleaseInfo.setString(3, r.getIdentifiersJson());
+				if (r.getReleaseYear() == null)
+					updateReleaseInfo.setNull(4, Types.SMALLINT);
+				else
+					updateReleaseInfo.setInt(4, r.getReleaseYear());
+				updateReleaseInfo.setString(5, r.getReleaseTypesJson());
+				updateReleaseInfo.setString(6, r.getMediaJson());
+				updateReleaseInfo.setString(7, r.getCompaniesJson());
+				updateReleaseInfo.setString(8, id);
+				updateReleaseInfo.execute();
+				updateReleaseInfo.clearParameters();
+			} else {
+				addReleaseInfo.setString(1, id);
+				addReleaseInfo.setString(2, r.getReleaseTitle());
+				addReleaseInfo.setString(3, r.getTerritoriesJson());
+				addReleaseInfo.setString(4, r.getIdentifiersJson());
+				if (r.getReleaseYear() == null)
+					addReleaseInfo.setNull(5, Types.SMALLINT);
+				else
+					addReleaseInfo.setInt(5, r.getReleaseYear());
+				addReleaseInfo.setString(6, r.getReleaseTypesJson());
+				addReleaseInfo.setString(7, r.getMediaJson());
+				addReleaseInfo.setString(8, r.getCompaniesJson());
+				addReleaseInfo.execute();
+				addReleaseInfo.clearParameters();
+			}
+		}
+	}
+
 	/**
 	 * Loads a movie from the database.
 	 * @param id
@@ -698,12 +760,12 @@ public class Database {
 		ResultSet rs = getMovieStatement.executeQuery();
 		if(!rs.next())
 			return null;
-		
+
 		AbstractMovie m = MovieType.intToAbstractMovie(rs.getInt("TYPE"));
 		if(m == null) {
 			throw new SQLException("Invalid Type ID encountered in database: " + rs.getInt("TYPE"));
 		}
-		
+
 		m.setID(rs.getInt("MOVIEID"));
 		m.setImdbID(resolveShortOrLong(rs, "IMDBID", "IMDBID_LONG"));
 		m.setTmdbID(rs.getObject("TMDBID", Integer.class));
@@ -735,13 +797,13 @@ public class Database {
 		m.setContainer(ContainerFormat.intToEnum(rs.getInt("CONTAINER")));
 		m.setUrl1(rs.getString("URL1"));
 		m.setUrl2(rs.getString("URL2"));
-		
+
 		if (m instanceof AbstractSeries) {
 			AbstractSeries series = (AbstractSeries)m;
 			series.setCompleteness(Completeness.intToEnum(rs.getInt("COMPLETENESS")));
 			series.setCompletenessDetail(rs.getString("COMPLETENESSDETAIL"));
 		}
-		
+
 		InputStream stream = rs.getBinaryStream("COVER");
 		if(stream != null) {
 			byte[] imageBytes = new byte[0];
@@ -761,7 +823,7 @@ public class Database {
 				imageBytes = newBytes;
 			}
 			stream.close();
-			
+
 			if(CONST.isValidImage(imageBytes))
 				m.setImageBytes(imageBytes);
 		}
@@ -776,7 +838,7 @@ public class Database {
 			return longVal;
 		return expandFromSevenDigits(rs.getString(shortColumnID));
 	}
-	
+
 	private String shortenToSevenDigits(String dec) throws SQLException {
 		if (dec.length() > 7) {
 			int numericId = Integer.parseInt(dec);
@@ -790,7 +852,7 @@ public class Database {
 		}
 		return dec;
 	}
-	
+
 	private String expandFromSevenDigits(String hex) {
 		if (hex.startsWith("x"))
 		{
@@ -800,20 +862,20 @@ public class Database {
 		}
 		return hex;
 	}
-	
+
 	public AbstractMovie getMovieFull(int id) throws SQLException, IOException {
 		AbstractMovie m = getMovieLite(id);
-		
+
 		getActors.setInt(1, id);
 		ResultSet rsA = getActors.executeQuery();
 		ArrayList<ActorInfo> actors = new ArrayList<ActorInfo>();
-		
+
 		while(rsA.next())
 			actors.add(new ActorInfo(rsA.getInt("CHARACTERNUMBER"), new Person(resolveShortOrLong(rsA, "PERSONID", "PERSONID_LONG"), rsA.getString("NAME")), rsA.getString("CHARACTERDESCRIPTION")));
 		Collections.sort(actors);
 		m.setActors(actors);
 		rsA.close();
-		
+
 		getDirectors.setInt(1, id);
 		ResultSet rsD = getDirectors.executeQuery();
 		ArrayList<Person> directors = new ArrayList<Person>();
@@ -821,7 +883,7 @@ public class Database {
 			directors.add(new Person(resolveShortOrLong(rsD, "PERSONID", "PERSONID_LONG"), rsD.getString("NAME")));
 		m.setDirectors(directors);
 		rsD.close();
-		
+
 		getWriters.setInt(1, id);
 		ResultSet rsW = getWriters.executeQuery();
 		ArrayList<Person> writers = new ArrayList<Person>();
@@ -829,7 +891,7 @@ public class Database {
 			writers.add(new Person(resolveShortOrLong(rsW, "PERSONID", "PERSONID_LONG"), rsW.getString("NAME")));
 		m.setWriters(writers);
 		rsW.close();
-		
+
 		getGenres.setInt(1, id);
 		ResultSet rsG = getGenres.executeQuery();
 		ArrayList<Genre> genres = new ArrayList<Genre>();
@@ -837,7 +899,7 @@ public class Database {
 			genres.add(Genre.intToEnum(rsG.getInt("GENREID")));
 		m.setGenres(genres);
 		rsG.close();
-		
+
 		getLanguages.setInt(1, id);
 		ResultSet rsL = getLanguages.executeQuery();
 		ArrayList<Language> languages = new ArrayList<Language>();
@@ -845,7 +907,7 @@ public class Database {
 			languages.add(Language.intToEnum(rsL.getInt("LANGUAGEID")));
 		m.setLanguages(languages);
 		rsL.close();
-		
+
 		getCountries.setInt(1, id);
 		ResultSet rsC = getCountries.executeQuery();
 		ArrayList<Country> countries = new ArrayList<Country>();
@@ -853,7 +915,7 @@ public class Database {
 			countries.add(Country.intToEnum(rsC.getInt("COUNTRYID")));
 		m.setCountries(countries);
 		rsC.close();
-		
+
 		getAudioTracks.setInt(1, id);
 		ResultSet rsAud = getAudioTracks.executeQuery();
 		HashMap<Integer, AudioTrack> audioHash = new HashMap<Integer, AudioTrack>();
@@ -875,7 +937,7 @@ public class Database {
 		}
 		m.setAudioTracks(audioTracks);
 		rsAud.close();
-		
+
 		getSubtitleTracks.setInt(1, id);
 		ResultSet rsSub = getSubtitleTracks.executeQuery();
 		HashMap<Integer, SubtitleTrack> subHash = new HashMap<Integer, SubtitleTrack>();
@@ -898,19 +960,59 @@ public class Database {
 		}
 		m.setSubtitles(subTracks);
 		rsSub.close();
-		
+
 		return m;
 	}
-	
+
+	public Release getRelease(String id) throws SQLException {
+		if (!Utils.isNullOrEmpty(id)) {
+			getReleaseInfo.setString(1, id);
+			ResultSet result = getReleaseInfo.executeQuery();
+			getReleaseInfo.clearParameters();
+			Release r = null;
+			if (result.next()) {
+				r = CreateRelease(result);
+			}
+			result.close();
+			return r;
+		}
+		return null;
+	}
+
+	private Release CreateRelease(ResultSet result) throws SQLException {
+		Release r = new Release();
+		r.setReleaseTitle(result.getString("TITLE"));
+		r.setReleaseYear(result.getInt("RELEASEYEAR"));
+		r.setTerritoriesJson(result.getString("TERRITORIES"));
+		r.setMediaJson(result.getString("MEDIA"));
+		r.setIdentifiersJson(result.getString("IDENTIFIERS"));
+		r.setReleaseTypesJson(result.getString("TYPE"));
+		r.setCompaniesJson(result.getString("COMPANIES"));
+		return r;
+	}
+
+	public ArrayList<Release> getReleaseList() throws SQLException
+	{
+		ResultSet rs = getAllReleaseInfo.executeQuery();
+		ArrayList<Release> list = new ArrayList<Release>();
+
+		while(rs.next()) {
+			list.add(CreateRelease(rs));
+		}
+
+		rs.close();
+		return list;
+	}
+
 	public void deleteMovie(AbstractMovie m) throws SQLException {
 		if(m.getID()!=-1) {
 			deleteMovieStatement.setInt(1, m.getID());
 			deleteMovieStatement.execute();
-			deleteMovieStatement.clearParameters();			
+			deleteMovieStatement.clearParameters();
 		}
 		m = null;
 	}
-	
+
 	private void addOrUpdatePerson(Person p) throws SQLException {
 		checkPersonStatement.setString(1, shortenToSevenDigits(p.getID()));
 		ResultSet rs = checkPersonStatement.executeQuery();
@@ -931,11 +1033,11 @@ public class Database {
 			addPersonStatement.clearParameters();
 		}
 	}
-	
+
 	/**
 	 * Runs a custom SQL query against the database
 	 * @param query the query to run
-	 * @return an Object, either a ResultSet containing the results or 
+	 * @return an Object, either a ResultSet containing the results or
 	 * an Integer containing the number of updated rows.
 	 * @throws SQLException
 	 */

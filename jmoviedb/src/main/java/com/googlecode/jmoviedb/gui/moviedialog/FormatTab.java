@@ -1,5 +1,7 @@
 package com.googlecode.jmoviedb.gui.moviedialog;
 
+import java.util.Arrays;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -29,7 +31,7 @@ public class FormatTab implements IMovieDialogTab {
 	private Text sceneNameText;
 	private Combo aspectCombo;
 //	private Text url1Text;
-	private Text url2Text;
+	// private Text url2Text;
 
 	private Combo formatCombo;
 	private Combo videoCodecCombo;
@@ -179,10 +181,10 @@ public class FormatTab implements IMovieDialogTab {
 //		url1Text = new Text(c, SWT.SINGLE|SWT.BORDER);
 //		url1Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
 
-		Label urlLabel2 = new Label(c, SWT.CENTER);
-		urlLabel2.setText("blu-ray.com/lddb.com");
-		url2Text = new Text(c, SWT.SINGLE|SWT.BORDER);
-		url2Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
+		// Label urlLabel2 = new Label(c, SWT.CENTER);
+		// urlLabel2.setText("blu-ray.com/lddb.com");
+		// url2Text = new Text(c, SWT.SINGLE|SWT.BORDER);
+		// url2Text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, comboHorizontalSpan, 1));
 
 		tab4.setControl(c);
     }
@@ -210,14 +212,17 @@ public class FormatTab implements IMovieDialogTab {
 
 				FormatType selectedValue = FormatType.values()[formatCombo.getSelectionIndex()];
 
-				int selectedColor = colour.getSelectionIndex();
+				int selectedIdx = colour.getSelectionIndex();
+				String selectedColor = selectedIdx >= 0 ? colour.getItem(selectedIdx) : "";
 				colour.setItems(
 					selectedValue == FormatType.other || selectedValue == FormatType.file || selectedValue == FormatType.uhdbluray
 					? ColorFormat.getAllFormatsStringArray()
 					: selectedValue == FormatType.bluray ? ColorFormat.getBDFormatsStringArray()
 					: ColorFormat.getSDRFormatsStringArray());
-				if (selectedColor < colour.getItemCount())
-					colour.select(selectedColor);
+				
+				int newSelectedIndex = Arrays.asList(colour.getItems()).indexOf(selectedColor);
+				if (newSelectedIndex >= 0)
+					colour.select(newSelectedIndex);
 				else
 					colour.select(0);
 
@@ -444,14 +449,14 @@ public class FormatTab implements IMovieDialogTab {
 //		myEncodeCheck.setSelection(m.isMyEncode());
 		sceneNameText.setText(m.getSceneReleaseName());
 //		url1Text.setText(m.getUrl1String());
-		url2Text.setText(m.getUrl2String());
+		// url2Text.setText(m.getUrl2String());
 
 		formatComboListener.widgetSelected(null);
 		legalCheckListener.widgetSelected(null);
 //		myEncodeCheckListener.widgetSelected(null);
 		r0CheckListener.widgetSelected(null);
 
-		colour.select(m.getColor().ordinal());
+		colour.select(Arrays.asList(colour.getItems()).indexOf(m.getColor().getName()));
     }
 
     @Override
@@ -472,14 +477,14 @@ public class FormatTab implements IMovieDialogTab {
 					r7.getSelection(),
 					r8.getSelection(),
 				});
-		movie.setColor(ColorFormat.values()[colour.getSelectionIndex()]);
+		movie.setColor(ColorFormat.stringToEnum(colour.getItem(colour.getSelectionIndex())));
 		movie.setLegal(legalCheck.getSelection());
 		movie.setDisc(DiscType.values()[discCombo.getSelectionIndex()]);
 		movie.setAspectRatio(AspectRatio.values()[aspectCombo.getSelectionIndex()]);
 		movie.setLocation(locationText.getText());
 		movie.setSceneReleaseName(sceneNameText.getText());
 //		movie.setUrl1(url1Text.getText());
-		movie.setUrl2(url2Text.getText());
+		// movie.setUrl2(url2Text.getText());
 //		movie.setMyEncode(myEncodeCheck.getSelection());
     }
 

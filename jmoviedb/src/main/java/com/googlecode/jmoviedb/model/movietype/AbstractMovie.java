@@ -1,18 +1,18 @@
 /*
  * This file is part of JMoviedb.
- * 
+ *
  * Copyright (C) Tor Arne Lye torarnelye@gmail.com
- * 
+ *
  * JMoviedb is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * JMoviedb is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -87,7 +87,7 @@ public abstract class AbstractMovie implements Cloneable {
 	private boolean seen;
 	private boolean myEncode;
 	private String location;
-	
+
 	private FormatType format;
 	private ContainerFormat container;
 	private DiscType disc;
@@ -98,13 +98,13 @@ public abstract class AbstractMovie implements Cloneable {
 	private Resolution resolution;
 	private AspectRatio aspectRatio;
 	private boolean[] dvdRegion;
-	
+
 	private URL url1;
-	private URL url2;
-	
+	private String url2;
+
 	private byte[] imageBytes;
 	private JSONObject jsonNotes;
-	
+
 	/**
 	 * Database constructor, to be used when loading movies from the database.
 	 * @param id
@@ -140,11 +140,11 @@ public abstract class AbstractMovie implements Cloneable {
 			String customTitle,
 			int year,
 			int year2,
-			int rating, 
-			String plotOutline, 
-			String tagline, 
-			int color, 
-			int runTime, 
+			int rating,
+			String plotOutline,
+			String tagline,
+			int color,
+			int runTime,
 			String notes,
 			int version,
 			String customVersion,
@@ -187,7 +187,7 @@ public abstract class AbstractMovie implements Cloneable {
 		setAspectRatio(AspectRatio.intToEnum(aspectID));
 		setImageBytes(null);
 	}
-	
+
 	/**
 	 * The default constructor. All attributes are set to default values.
 	 *
@@ -238,9 +238,9 @@ public abstract class AbstractMovie implements Cloneable {
 	public ArrayList<ActorInfo> getActors() {
 		return actors;
 	}
-	
+
 	/**
-	 * Returns a list of all actors in a single string 
+	 * Returns a list of all actors in a single string
 	 * @return actors
 	 */
 	public String getActorsAsString() {
@@ -268,7 +268,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public ColorFormat getColor() {
 		return color;
 	}
-	
+
 	public int getColorInt() {
 		return color.getId();
 	}
@@ -276,7 +276,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setColor(ColorFormat color) {
 		this.color = color;
 	}
-	
+
 	public void setColorInt(int color) {
 		this.color = ColorFormat.intToEnum(color);
 	}
@@ -284,7 +284,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public ArrayList<Country> getCountries() {
 		return countries;
 	}
-	
+
 	public String getCountriesAsString() {
 		String s = "";
 		for(Country c : countries) {
@@ -312,7 +312,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	/**
-	 * Returns a list of all directors in a single string 
+	 * Returns a list of all directors in a single string
 	 * @return directors
 	 */
 	public String getDirectorsAsString() {
@@ -344,11 +344,11 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setCustomTitle(String customTitle) {
 		this.customTitle = customTitle;
 	}
-	
+
 	public String getLocation() {
 		return location;
 	}
-	
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
@@ -364,7 +364,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public ArrayList<Genre> getGenres() {
 		return genres;
 	}
-	
+
 	public String getGenresAsString() {
 		String s = "";
 		for(Genre g : genres) {
@@ -392,7 +392,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	/**
-	 * Sets the IMDb ID from a string containing exactly seven 
+	 * Sets the IMDb ID from a string containing exactly seven
 	 * consecutive numerical digits. The String is parsed
 	 * and only the numerical part is stored.
 	 * @param imdbID a string containing the IMDb ID
@@ -404,9 +404,9 @@ public abstract class AbstractMovie implements Cloneable {
 		if(matcher.find())
 			this.imdbID = matcher.group(1);
 	}
-	
+
 	/**
-	 * Returns the IMDb URL (as a String) of the current movie. 
+	 * Returns the IMDb URL (as a String) of the current movie.
 	 * @return IMDb URL
 	 */
 	public String getImdbUrl() {
@@ -414,7 +414,7 @@ public abstract class AbstractMovie implements Cloneable {
 			return "";
 		return Settings.getSettings().getImdbUrl() + getImdbID() + "/";
 	}
-	
+
 	/**
 	 * Checks whether or not the IMDb URL will be valid if it is requested now
 	 * @return
@@ -429,7 +429,7 @@ public abstract class AbstractMovie implements Cloneable {
 		}
 		return true;
 	}
-	
+
 
 	public Integer getTmdbID() {
 		if (tmdbId == null || tmdbId <= 0)
@@ -440,7 +440,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public String getTmdbType() {
 		return tmdbType;
 	}
-	
+
 	public void setTmdbID(Integer val) {
 		tmdbId = val;
 	}
@@ -453,7 +453,7 @@ public abstract class AbstractMovie implements Cloneable {
 	}
 
 	/**
-	 * Sets the TMDB ID and type from a string containing  
+	 * Sets the TMDB ID and type from a string containing
 	 * the TMDB URL.
 	 * @param url a string containing the TMDB URL
 	 */
@@ -466,9 +466,9 @@ public abstract class AbstractMovie implements Cloneable {
 			this.tmdbId = Integer.parseInt(matcher.group(2));
 		}
 	}
-	
+
 	/**
-	 * Returns the TMDB URL (as a String) of the current movie. 
+	 * Returns the TMDB URL (as a String) of the current movie.
 	 * @return TMDB URL
 	 */
 	public String getTmdbUrl() {
@@ -476,7 +476,7 @@ public abstract class AbstractMovie implements Cloneable {
 			return "";
 		return CONST.TMDB_BASE_URL+getTmdbType()+"/"+getTmdbID();
 	}
-	
+
 	/**
 	 * Checks whether or not the TMDB URL will be valid if it is requested now
 	 * @return
@@ -495,7 +495,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public ArrayList<Language> getLanguages() {
 		return imdbLanguages;
 	}
-	
+
 	public String getLanguagesAsString() {
 		String s = "";
 		for(Language l : imdbLanguages) {
@@ -517,7 +517,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setLegal(boolean legal) {
 		this.legal = legal;
 	}
-	
+
 	public void setLegal(int legal) {
 		setLegal(CONST.intToBoolean(legal));
 	}
@@ -549,7 +549,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public double getRating() {
 		return rating;
 	}
-	
+
 	public int getRatingAsInt() {
 		Double r = Double.valueOf(rating*10);
 		return r.intValue();
@@ -558,7 +558,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setRating(double rating) {
 		this.rating = rating;
 	}
-	
+
 	public void setRatingAsInt(int rating) {
 		this.rating = (double)rating/10;
 	}
@@ -570,7 +570,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setRunTime(int runTime) {
 		this.runTime = runTime;
 	}
-	
+
 	public void setRunTime(String runTime) {
 		try {
 			setRunTime(Integer.valueOf(runTime));
@@ -578,7 +578,7 @@ public abstract class AbstractMovie implements Cloneable {
 			setRunTime(0);
 		}
 	}
-	
+
 	public String getRuntimeAsHourMinuteString() {
 		if(runTime>=60)
 			return runTime/60 + "h " + runTime%60 + "m";
@@ -592,7 +592,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setSeen(boolean seen) {
 		this.seen = seen;
 	}
-	
+
 	public void setSeen(int seen) {
 		setSeen(CONST.intToBoolean(seen));
 	}
@@ -604,7 +604,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setSubtitles(ArrayList<SubtitleTrack> subtitles) {
 		this.subtitles = subtitles;
 	}
-	
+
 	public void addSubtitle(SubtitleTrack subtitle) {
 		this.subtitles.add(subtitle);
 	}
@@ -644,9 +644,9 @@ public abstract class AbstractMovie implements Cloneable {
 	public ArrayList<Person> getWriters() {
 		return writers;
 	}
-	
+
 	/**
-	 * Returns a list of all writers in a single string 
+	 * Returns a list of all writers in a single string
 	 * @return writers
 	 */
 	public String getWritersAsString() {
@@ -673,7 +673,7 @@ public abstract class AbstractMovie implements Cloneable {
 		else
 			this.year = 0;
 	}
-	
+
 	public void setYear(String year) {
 		try {
 			int yearInt = Integer.valueOf(year).intValue();
@@ -682,11 +682,11 @@ public abstract class AbstractMovie implements Cloneable {
 			setYear(0);
 		}
 	}
-	
+
 	public int getYear2() {
 		return year2;
 	}
-	
+
 	public boolean hasYear2() {
 		return year2 > 0 && year2 < 9999;
 	}
@@ -697,7 +697,7 @@ public abstract class AbstractMovie implements Cloneable {
 		else
 			this.year2 = 0;
 	}
-	
+
 	public void setYear2(String year) {
 		try {
 			int yearInt = Integer.valueOf(year).intValue();
@@ -714,7 +714,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setContainer(ContainerFormat container) {
 		this.container = container;
 	}
-	
+
 	/**
 	 * Returns the movie title as it should be displayed in the movie list.
 	 * If at custom title exists, it is returned. If not, the normal title is
@@ -727,7 +727,7 @@ public abstract class AbstractMovie implements Cloneable {
 		else
 			return getTitle();
 	}
-	
+
 	/**
 	 * Returns a modified version of the movie title, to be used for
 	 * alphabetical sorting.
@@ -735,14 +735,14 @@ public abstract class AbstractMovie implements Cloneable {
 	 */
 	public String getSortTitle() {
 		String sortString = getDisplayTitle();
-		
+
 		if(sortString.toLowerCase().startsWith("the "))
 			sortString = sortString.substring(4);
 		else if(sortString.toLowerCase().startsWith("a "))
 			sortString = sortString.substring(2);
 		if(sortString.startsWith("'"))
 			sortString = sortString.substring(1);
-		
+
 		return sortString;
 	}
 
@@ -753,7 +753,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setMyEncode(boolean myEncode) {
 		this.myEncode = myEncode;
 	}
-	
+
 	public void setMyEncode(int myEncode) {
 		setMyEncode(CONST.intToBoolean(myEncode));
 	}
@@ -797,7 +797,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setDvdRegion(boolean[] dvdRegion) {
 		this.dvdRegion = dvdRegion;
 	}
-	
+
 	private static URL setUrl(String url) {
 		if (url != null && url.length() > 0)
 		{
@@ -810,11 +810,11 @@ public abstract class AbstractMovie implements Cloneable {
 			return null;
 		}
 	}
-	
+
 	public URL getUrl1() {
 		return url1;
 	}
-	
+
 	public String getUrl1String() {
 		URL url = getUrl1();
 		if (url != null) {
@@ -822,7 +822,7 @@ public abstract class AbstractMovie implements Cloneable {
 		}
 		return "";
 	}
-	
+
 	public String getUrl1StringOrNull() {
 		URL url = getUrl1();
 		if (url != null) {
@@ -834,40 +834,27 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setUrl1(String url) {
 		this.url1 = setUrl(url);
 	}
-	
+
 	public void setUrl1(URL url) {
 		this.url1 = url;
 	}
-	
-	public URL getUrl2() {
+
+	public String getUrl2StringOrNull() {
 		return url2;
 	}
-	
+
 	public String getUrl2String() {
-		URL url = getUrl2();
+		String url = getUrl2StringOrNull();
 		if (url != null) {
-			return url.toString();
+			return url;
 		}
 		return "";
 	}
-	
-	public String getUrl2StringOrNull() {
-		URL url = getUrl2();
-		if (url != null) {
-			return url.toString();
-		}
-		return null;
-	}
-	
-	
-	public void setUrl2(String url) {
-		this.url2 = setUrl(url);
-	}
 
-	public void setUrl2(URL url) {
+	public void setUrl2(String url) {
 		this.url2 = url;
 	}
-	
+
 	public void setDvdRegionAsInt(int region) {
 //		System.out.println("SET "+region);
 		if((region & CONST.R0) == CONST.R0) dvdRegion[0] = true; else dvdRegion[0] = false;
@@ -880,9 +867,9 @@ public abstract class AbstractMovie implements Cloneable {
 		if((region & CONST.R7) == CONST.R7) dvdRegion[7] = true; else dvdRegion[7] = false;
 		if((region & CONST.R8) == CONST.R8) dvdRegion[8] = true; else dvdRegion[8] = false;
 	}
-	
+
 	/**
-	 * Returns the movie's DVD region(s) as an int. 
+	 * Returns the movie's DVD region(s) as an int.
 	 * The value is 0 if the movie doesn't have a region set.
 	 * @return all DVD regions encoded in an int
 	 */
@@ -897,7 +884,7 @@ public abstract class AbstractMovie implements Cloneable {
 		if(dvdRegion[6]) region += CONST.R6;
 		if(dvdRegion[7]) region += CONST.R7;
 		if(dvdRegion[8]) region += CONST.R8;
-		
+
 //		System.out.println("GET "+region);
 		return region;
 	}
@@ -917,7 +904,7 @@ public abstract class AbstractMovie implements Cloneable {
 	public void setImageBytes(byte[] imageBytes) {
 		this.imageBytes = imageBytes;
 	}
-	
+
 	/**
 	 * Creates and returns the image data for this movie.
 	 * @return ImageData for cover image
@@ -931,12 +918,12 @@ public abstract class AbstractMovie implements Cloneable {
 			return ImageDescriptor.createFromURL(CONST.NO_COVER_IMAGE).getImageData(100);
 		}
 	}
-	
+
 	public AbstractMovie clone() {
 		//TODO finish
 		return null;
 	}
-	
+
 	public AbstractMovie copyTo(AbstractMovie movie) {
 		movie.imdbID = this.imdbID;
 		movie.title = this.title;
@@ -979,7 +966,7 @@ public abstract class AbstractMovie implements Cloneable {
 		movie.tmdbType = this.tmdbType;
 		return movie;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AbstractMovie) {
@@ -991,6 +978,10 @@ public abstract class AbstractMovie implements Cloneable {
 
 	private String getJsonArrayProperty(String name) {
 		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.optJSONArray(name).toString() : "";
+	}
+
+	private Integer getJsonIntProperty(String name) {
+		return jsonNotes != null && jsonNotes.has(name) ? jsonNotes.getInt(name) : null;
 	}
 
 	private String getJsonStringProperty(String name) {
@@ -1037,8 +1028,8 @@ public abstract class AbstractMovie implements Cloneable {
 		return outArray.toString();
 	}
 
-	public String getReleaseYear() {
-		return getJsonStringProperty("2006");
+	public Integer getReleaseYear() {
+		return getJsonIntProperty("releaseYear");
 	}
 
 	public List<FormatType> getFormats() {
@@ -1064,7 +1055,15 @@ public abstract class AbstractMovie implements Cloneable {
 		if (!valueFromProp.isEmpty())
 			return valueFromProp;
 		else
-			return "[{\"" + getDisc().getName() + "\": NaN}]";
+			return "[{\"" + getDiscFormattedForMedia() + "\": -1}]";
+	}
+
+	private String getDiscFormattedForMedia() {
+		if (getDisc() == DiscType.dvd)
+			return "DVD";
+		if (getDisc() == DiscType.bd)
+			return "BD";
+		return getDisc().getName();
 	}
 
 	public String getReleaseType() {
@@ -1106,6 +1105,27 @@ public abstract class AbstractMovie implements Cloneable {
 		}
 		else {
 			return notes + "\n" + sceneReleaseName;
+		}
+	}
+
+    public String getCompaniesJson() {
+		if (jsonNotes != null) {
+        	JSONArray array = jsonNotes.optJSONArray("companies");
+			if (array != null)
+				return array.toString();
+		}
+		return "[]";
+    }
+
+	public boolean isJsonNote() {
+		if (Utils.isNullOrEmpty(notes))
+			return false;
+		try {
+			new JSONObject(notes);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
 		}
 	}
 }
