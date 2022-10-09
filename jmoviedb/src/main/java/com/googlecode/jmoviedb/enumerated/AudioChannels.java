@@ -5,6 +5,7 @@ import com.googlecode.jmoviedb.CONST;
 public enum AudioChannels {
 	none(0, ""),
 	mono(1, "Mono 1.0"),
+	twopointoh(10, "2.0"),
 	mono2(9, "Mono 2.0"),
 	stereo(2, "Stereo 2.0"),
 	surround51(3, "5.1"),
@@ -14,10 +15,10 @@ public enum AudioChannels {
 	surround50(7, "5.0"),
 	surround40(8, "4.0"),
 	;
-	
+
 	private int id;
 	private String description;
-	
+
 	private AudioChannels(int id, String desc) {
 		this.id = id;
 		this.description = desc;
@@ -30,7 +31,7 @@ public enum AudioChannels {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/**
 	 * Looks up the correct enum value from an int ID
 	 * @param i the ID to look up
@@ -44,7 +45,7 @@ public enum AudioChannels {
 			System.out.println("Unrecognised audio channel ID: " + id);
 		return null;
 	}
-	
+
 	public static String[] getStringArray() {
 		String[] strings = new String[AudioChannels.values().length];
 		for(int i = 0; i < AudioChannels.values().length; i++)
