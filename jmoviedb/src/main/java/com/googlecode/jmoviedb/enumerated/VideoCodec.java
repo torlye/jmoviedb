@@ -1,18 +1,18 @@
 /*
  * This file is part of JMoviedb.
- * 
+ *
  * Copyright (C) Tor Arne Lye torarnelye@gmail.com
- * 
+ *
  * JMoviedb is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * JMoviedb is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -43,14 +43,15 @@ public enum VideoCodec {
 	sorenson3(13, "SVQ3", "Sorenson Video 3", null, null),
 	vp8(14, "VP8", "VP8", null, null),
 	hevc(15, "H.265 HEVC", "H.265 HEVC MPEG-H Part 2", "", null),
+	av1(16, "AV1", "AOMedia Video 1", "", null),
 	analog(99, "Analog video", "", "", null);
-	
+
 	private int id;
 	private String shortName;
 	private String longName;
 	private String description;
 	private URL url;
-	
+
 	VideoCodec(int id, String shortName, String longName, String description, URL url) {
 		this.id = id;
 		this.shortName = shortName;
@@ -58,7 +59,7 @@ public enum VideoCodec {
 		this.description = description;
 		this.url = url;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
@@ -70,11 +71,11 @@ public enum VideoCodec {
 	public String getShortName() {
 		return shortName;
 	}
-	
+
 	public String toString() {
 		return shortName;
 	}
-	
+
 	public static VideoCodec StringToEnum(String string) {
 		if(string == null) {
 			return null;
@@ -82,10 +83,10 @@ public enum VideoCodec {
 		for(VideoCodec v : VideoCodec.values())
 			if(string.toLowerCase().equals(v.toString().toLowerCase()))
 				return v;
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Looks up the correct enum value from an int ID
 	 * @param i the ID to look up
@@ -107,7 +108,7 @@ public enum VideoCodec {
 	public URL getUrl() {
 		return url;
 	}
-	
+
 	public static String[] getStringArray() {
 		String[] strings = new String[VideoCodec.values().length];
 		for(int i = 0; i < VideoCodec.values().length; i++)
