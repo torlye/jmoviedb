@@ -842,7 +842,7 @@ public class Database {
 	private String shortenToSevenDigits(String dec) throws SQLException {
 		if (dec.length() > 7) {
 			int numericId = Integer.parseInt(dec);
-			String hex = "x" + Integer.toString(numericId, 16).toUpperCase();
+			String hex = "m" + Integer.toString(numericId, Character.MAX_RADIX).toUpperCase();
 			if (hex.length() <= 7) {
 				return hex;
 			}
@@ -857,8 +857,11 @@ public class Database {
 		if (hex.startsWith("x"))
 		{
 			int numericId = Integer.parseInt(hex.substring(1), 16);
-			String dec = Integer.toString(numericId, 10);
-			return dec;
+			return Integer.toString(numericId, 10);
+		}
+		else if (hex.startsWith("m")) {
+			int numericId = Integer.parseInt(hex.substring(1), Character.MAX_RADIX);
+			return Integer.toString(numericId, 10);
 		}
 		return hex;
 	}
